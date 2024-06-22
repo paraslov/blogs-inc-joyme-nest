@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { BlogDocument } from './api/model/mongoose';
+import { BlogDocument } from '../domain/mongoose/blogs.entity';
 
 @Injectable()
-export class BlogsCommandRepository {
+export class BlogsRepository {
   async saveBlog(blog: BlogDocument) {
     return blog.save();
   }

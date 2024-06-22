@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBlogDto } from './dto/create-blog.dto';
-import { UpdateBlogDto } from './dto/update-blog.dto';
+import { CreateBlogDto } from '../api/models/input/create-blog.dto';
+import { UpdateBlogDto } from '../api/models/input/update-blog.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from './api/model/mongoose';
+import { Blog } from '../domain/mongoose/blogs.entity';
 import { Model } from 'mongoose';
-import { BlogsCommandRepository } from './blogs.command.repository';
+import { BlogsRepository } from '../infrastructure/blogs.repository';
 
 @Injectable()
 export class BlogsService {
   constructor(
     @InjectModel(Blog.name) private blogModel: Model<Blog>,
-    private blogsCommandRepository: BlogsCommandRepository,
+    private blogsCommandRepository: BlogsRepository,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {

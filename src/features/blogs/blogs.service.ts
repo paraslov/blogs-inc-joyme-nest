@@ -4,28 +4,36 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from './api/model/mongoose';
 import { Model } from 'mongoose';
+import { BlogsCommandRepository } from './blogs.command.repository';
 
 @Injectable()
 export class BlogsService {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<Blog>,
+    private blogsCommandRepository: BlogsCommandRepository,
+  ) {}
 
-  create(createBlogDto: CreateBlogDto) {
-    return 'This action adds a new blog';
+  async create(createBlogDto: CreateBlogDto) {
+    const createdBlog = new this.blogModel(createBlogDto);
+
+    return await this.blogsCommandRepository.saveBlog(createdBlog);
   }
 
-  findAll() {
+  async findAll() {
     return this.blogModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} blog`;
+  async findOne(id: string) {
+    return this.blogModel.findOne({ _id: id }).exec();
   }
 
-  update(id: number, updateBlogDto: UpdateBlogDto) {
-    return `This action updates a #${id} blog`;
+  async update(id: string, updateBlogDto: UpdateBlogDto) {
+    return this.blogModel.updateOne({ _id: id }, updateBlogDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+  async remove(id: string) {
+    await this.blogModel.deleteOne({ _id: id });
+
+    return;
   }
 }

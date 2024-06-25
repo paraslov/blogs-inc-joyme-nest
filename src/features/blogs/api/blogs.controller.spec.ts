@@ -12,9 +12,9 @@ describe('BlogsController', () => {
     }).compile();
 
     controller = module.get<BlogsController>(BlogsController);
-  });
+  })
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
+  })
 });

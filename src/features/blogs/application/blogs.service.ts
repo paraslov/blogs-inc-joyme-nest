@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from '../domain/mongoose/blogs.entity';
 import { Model } from 'mongoose';
 import { BlogsRepository } from '../infrastructure/blogs.repository';
+import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 
 @Injectable()
 export class BlogsService {
@@ -19,7 +20,7 @@ export class BlogsService {
     return await this.blogsCommandRepository.saveBlog(createdBlog);
   }
 
-  async findAll() {
+  async findAll(query: StandardInputFilters) {
     return this.blogModel.find().exec();
   }
 
@@ -34,6 +35,6 @@ export class BlogsService {
   async remove(id: string) {
     await this.blogModel.deleteOne({ _id: id });
 
-    return;
+    return
   }
 }

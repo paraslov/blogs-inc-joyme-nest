@@ -7,10 +7,12 @@ import {
   Delete,
   HttpCode,
   Put,
-} from '@nestjs/common';
+  Query, ValidationPipe,
+} from '@nestjs/common'
 import { BlogsService } from '../application/blogs.service';
 import { CreateBlogDto } from './models/input/create-blog.dto';
 import { UpdateBlogDto } from './models/input/update-blog.dto';
+import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 
 @Controller('blogs')
 export class BlogsController {
@@ -23,8 +25,9 @@ export class BlogsController {
   }
 
   @Get()
-  findAll() {
-    return this.blogsService.findAll();
+  findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFilters) {
+    console.log('@> query: ', query);
+    return this.blogsService.findAll(query);
   }
 
   @Get(':id')

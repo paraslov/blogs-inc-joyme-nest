@@ -1,39 +1,41 @@
-import { Injectable } from '@nestjs/common';
-import { CreateBlogDto } from '../api/models/input/create-blog.dto';
-import { UpdateBlogDto } from '../api/models/input/update-blog.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from '../domain/mongoose/blogs.entity';
-import { Model } from 'mongoose';
-import { BlogsRepository } from '../infrastructure/blogs.repository';
+import { Injectable } from '@nestjs/common'
+import { CreateBlogDto } from '../api/models/input/create-blog.dto'
+import { UpdateBlogDto } from '../api/models/input/update-blog.dto'
+import { InjectModel } from '@nestjs/mongoose'
+import { Blog } from '../domain/mongoose/blogs.entity'
+import { Model } from 'mongoose'
+import { BlogsRepository } from '../infrastructure/blogs.repository'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
+import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 
 @Injectable()
 export class BlogsService {
   constructor(
-    @InjectModel(Blog.name) private blogModel: Model<Blog>,
-    private blogsCommandRepository: BlogsRepository,
+    @InjectModel(Blog.name) private blogsModel: Model<Blog>,
+    private blogsRepository: BlogsRepository,
+    private blogsQueryRepository: BlogsQueryRepository,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
-    const createdBlog = new this.blogModel(createBlogDto);
+    const createdBlog = new this.blogsModel(createBlogDto)
 
-    return await this.blogsCommandRepository.saveBlog(createdBlog);
+    return await this.blogsRepository.saveBlog(createdBlog)
   }
 
   async findAll(query: StandardInputFilters) {
-    return this.blogModel.find().exec();
+    return this.blogsQueryRepository.getAllBlogs(query)
   }
 
   async findOne(id: string) {
-    return this.blogModel.findOne({ _id: id }).exec();
+    return this.blogsModel.findOne({ _id: id }).exec()
   }
 
   async update(id: string, updateBlogDto: UpdateBlogDto) {
-    return this.blogModel.updateOne({ _id: id }, updateBlogDto);
+    return this.blogsModel.updateOne({ _id: id }, updateBlogDto)
   }
 
   async remove(id: string) {
-    await this.blogModel.deleteOne({ _id: id });
+    await this.blogsModel.deleteOne({ _id: id })
 
     return
   }

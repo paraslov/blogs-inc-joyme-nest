@@ -1,11 +1,13 @@
 import { BlogDocument } from '../domain/mongoose/blogs.entity'
 import { BlogOutputModel } from '../api/models/output/blog.entity'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class BlogsMappers {
-  outputModel(blog: BlogDocument) {
+  mapBlogToOutput(blog: BlogDocument): BlogOutputModel {
     const blogModel = new BlogOutputModel()
 
-    blogModel.id = blog.id
+    blogModel.id = blog._id.toString()
     blogModel.name = blog.name
     blogModel.description = blog.description
     blogModel.websiteUrl = blog.websiteUrl

@@ -5,12 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { Blog, BlogSchema } from './domain/mongoose/blogs.entity'
 import { BlogsRepository } from './infrastructure/blogs.repository'
 import { BlogsQueryRepository } from './infrastructure/blogs.query-repository'
+import { BlogsMappers } from './infrastructure/blogs.mappers'
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
-  ],
+  imports: [MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }])],
   controllers: [BlogsController],
-  providers: [BlogsService, BlogsRepository, BlogsQueryRepository],
+  providers: [BlogsService, BlogsRepository, BlogsQueryRepository, BlogsMappers],
 })
 export class BlogsModule {}

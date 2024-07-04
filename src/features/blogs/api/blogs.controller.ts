@@ -24,22 +24,17 @@ export class BlogsController {
 
   @HttpCode(201)
   @Post()
-  create(
-    @Body(new ValidationPipe({ transform: true })) createBlogDto: CreateBlogDto,
-  ) {
+  create(@Body(new ValidationPipe({ transform: true })) createBlogDto: CreateBlogDto) {
     return this.blogsService.create(createBlogDto)
   }
 
   @Get()
-  findAll(
-    @Query(new ValidationPipe({ transform: true })) query: StandardInputFilters,
-  ) {
+  findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFilters) {
     return this.blogsService.findAll(query)
   }
 
   @Get(':id')
-  @UsePipes(new ObjectIdValidationPipe())
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ObjectIdValidationPipe) id: string) {
     const blog = await this.blogsService.findOne(id)
 
     if (!blog) {
@@ -51,8 +46,15 @@ export class BlogsController {
 
   @HttpCode(204)
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    return this.blogsService.update(id, updateBlogDto)
+  async update(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Body(new ValidationPipe({ transform: true })) updateBlogDto: UpdateBlogDto,
+  ) {
+    const updateResult = await this.blogsService.update(id, updateBlogDto)
+
+    if (!updateResult) {
+      throw new NotFoundException(`Couldn't update Blog with ID ${id}`)
+    }
   }
 
   @HttpCode(204)

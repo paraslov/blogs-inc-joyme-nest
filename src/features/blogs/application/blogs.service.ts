@@ -34,8 +34,8 @@ export class BlogsService {
     return await this.blogsQueryRepository.getBlogById(id)
   }
 
-  async update(id: string, updateBlogDto: UpdateBlogDto) {
-    return this.blogsModel.updateOne({ _id: id }, updateBlogDto)
+  async update(id: string, updateBlog: UpdateBlogDto) {
+    return this.blogsRepository.updateBlog(id, updateBlog)
   }
 
   async remove(id: string) {

@@ -13,8 +13,7 @@ export class BlogsQueryRepository {
   ) {}
 
   async getAllBlogs(query: StandardInputFilters) {
-    const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
-      query
+    const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } = query
 
     const filter = {
       name: { $regex: new RegExp(searchNameTerm, 'i') },

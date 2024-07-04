@@ -5,6 +5,10 @@ import { Injectable } from '@nestjs/common'
 @Injectable()
 export class BlogsMappers {
   mapBlogToOutput(blog: BlogDocument): BlogOutputModel {
+    if (!blog) {
+      return null
+    }
+
     const blogModel = new BlogOutputModel()
 
     blogModel.id = blog._id.toString()

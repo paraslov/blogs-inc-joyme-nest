@@ -27,11 +27,11 @@ export class BlogsService {
   }
 
   async findAll(query: StandardInputFilters) {
-    return this.blogsQueryRepository.getAllBlogs(query)
+    return await this.blogsQueryRepository.getAllBlogs(query)
   }
 
   async findOne(id: string) {
-    return this.blogsModel.findOne({ _id: id }).exec()
+    return await this.blogsQueryRepository.getBlogById(id)
   }
 
   async update(id: string, updateBlogDto: UpdateBlogDto) {

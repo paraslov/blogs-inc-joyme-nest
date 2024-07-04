@@ -34,4 +34,8 @@ export class BlogsQueryRepository {
       items: blogs,
     }
   }
+
+  async getBlogById(id: string) {
+    return this.blogsModel.findById(id).exec()
+  }
 }

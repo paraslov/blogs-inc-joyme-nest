@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { BlogDocument } from '../domain/mongoose/blogs.entity'
+import { Blog } from '../domain/mongoose/blogs.entity'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
 
 @Injectable()
 export class BlogsRepository {
-  async saveBlog(blog: BlogDocument) {
-    return blog.save()
+  constructor(@InjectModel(Blog.name) private blogsModel: Model<Blog>) {}
+
+  async saveBlog(blog: Blog) {
+    return new this.blogsModel(blog).save()
   }
 }

@@ -3,6 +3,6 @@ export class BlogOutputModel {
   name: string
   description: string
   websiteUrl: string
+  isMembership: boolean
   createdAt?: string
-  isMembership?: boolean
 }

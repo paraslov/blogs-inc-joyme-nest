@@ -17,7 +17,11 @@ export class BlogsService {
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
-    const createdBlog = new this.blogsModel(createBlogDto)
+    const createdBlog: Blog = {
+      ...createBlogDto,
+      createdAt: new Date().toISOString(),
+      isMembership: true,
+    }
 
     return await this.blogsRepository.saveBlog(createdBlog)
   }

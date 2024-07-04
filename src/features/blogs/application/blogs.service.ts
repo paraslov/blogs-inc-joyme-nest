@@ -39,8 +39,6 @@ export class BlogsService {
   }
 
   async remove(id: string) {
-    await this.blogsModel.deleteOne({ _id: id })
-
-    return
+    return this.blogsRepository.deleteBlog(id)
   }
 }

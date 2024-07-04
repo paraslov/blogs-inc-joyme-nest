@@ -9,7 +9,6 @@ import {
   Put,
   Query,
   ValidationPipe,
-  UsePipes,
   NotFoundException,
 } from '@nestjs/common'
 import { BlogsService } from '../application/blogs.service'
@@ -59,7 +58,11 @@ export class BlogsController {
 
   @HttpCode(204)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.blogsService.remove(id)
+  async remove(@Param('id', ObjectIdValidationPipe) id: string) {
+    const deleteResult = await this.blogsService.remove(id)
+
+    if (!deleteResult) {
+      throw new NotFoundException(`Couldn't delete Blog with ID ${id}`)
+    }
   }
 }

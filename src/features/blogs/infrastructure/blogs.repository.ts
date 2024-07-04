@@ -16,4 +16,9 @@ export class BlogsRepository {
 
     return Boolean(updateResult.matchedCount)
   }
+  async deleteBlog(id: string) {
+    const deleteResult = await this.blogsModel.deleteOne({ _id: id })
+
+    return Boolean(deleteResult.deletedCount)
+  }
 }

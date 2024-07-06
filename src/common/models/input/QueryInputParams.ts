@@ -16,9 +16,7 @@ export class SearchInputModel {
   searchNameTerm: string | null
 }
 
-export class StandardInputFilters
-  implements PaginationInputModel, SortingInputModel, SearchInputModel
-{
+export class StandardInputFilters implements PaginationInputModel, SortingInputModel, SearchInputModel {
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))

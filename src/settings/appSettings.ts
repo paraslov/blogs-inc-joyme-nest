@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'dotenv/config'
 
 export const AppSettings = {
   PORT: 3003,
@@ -10,4 +10,4 @@ export const AppSettings = {
   DB_NAME: process.env.MONGO_DB_NAME,
   SEND_MAIL_SERVICE_EMAIL: process.env.SEND_MAIL_SERVICE_EMAIL,
   SEND_MAIL_SERVICE_PASSWORD: process.env.SEND_MAIL_SERVICE_PASSWORD,
-};
+}

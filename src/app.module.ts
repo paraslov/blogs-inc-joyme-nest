@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { BlogsModule } from './features/blogs/blogs.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { AppSettings } from './settings/appSettings';
+import { Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { BlogsModule } from './features/blogs/blogs.module'
+import { MongooseModule } from '@nestjs/mongoose'
+import { AppSettings } from './settings/appSettings'
 
 @Module({
   imports: [

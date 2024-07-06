@@ -7,6 +7,7 @@ import { Model } from 'mongoose'
 import { BlogsRepository } from '../infrastructure/blogs.repository'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
+import { BlogsMappers } from '../infrastructure/blogs.mappers'
 
 @Injectable()
 export class BlogsService {
@@ -14,6 +15,7 @@ export class BlogsService {
     @InjectModel(Blog.name) private blogsModel: Model<Blog>,
     private blogsRepository: BlogsRepository,
     private blogsQueryRepository: BlogsQueryRepository,
+    private blogsMappers: BlogsMappers,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
@@ -22,8 +24,9 @@ export class BlogsService {
       createdAt: new Date().toISOString(),
       isMembership: true,
     }
+    const saveBlogResult = await this.blogsRepository.saveBlog(createdBlog)
 
-    return await this.blogsRepository.saveBlog(createdBlog)
+    return this.blogsMappers.mapBlogToOutput(saveBlogResult)
   }
 
   async findAll(query: StandardInputFilters) {

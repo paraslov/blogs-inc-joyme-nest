@@ -4,10 +4,12 @@ import { AppService } from './app.service'
 import { BlogsModule } from './features/blogs/blogs.module'
 import { MongooseModule } from '@nestjs/mongoose'
 import { AppSettings } from './settings/appSettings'
+import { PostsModule } from './features/posts/posts.module'
 
 @Module({
   imports: [
     BlogsModule,
+    PostsModule,
     MongooseModule.forRoot(AppSettings.MONGO_URI, {
       dbName: AppSettings.DB_NAME,
     }),

@@ -1,5 +1,5 @@
 import { BlogDocument } from '../domain/mongoose/blogs.entity'
-import { BlogOutputModel } from '../api/models/output/blog.entity'
+import { BlogOutputModel } from '../api/models/output/blog.dto'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()

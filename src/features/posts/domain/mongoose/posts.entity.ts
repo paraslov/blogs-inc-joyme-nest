@@ -1,4 +1,7 @@
-import { Prop, Schema } from '@nestjs/mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { HydratedDocument } from 'mongoose'
+
+export type PostDocument = HydratedDocument<Post>
 
 @Schema()
 export class Post {
@@ -23,3 +26,5 @@ export class Post {
   @Prop({ type: String })
   extendedLikeInfo: null
 }
+
+export const PostSchema = SchemaFactory.createForClass(Post)

@@ -14,7 +14,7 @@ import {
 import { BlogsService } from '../application/blogs.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
 import { UpdateBlogDto } from './models/input/update-blog.dto'
-import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
+import { StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 
 @Controller('blogs')
@@ -28,7 +28,7 @@ export class BlogsController {
   }
 
   @Get()
-  findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFilters) {
+  findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFiltersWithSearchTerm) {
     return this.blogsService.findAll(query)
   }
 

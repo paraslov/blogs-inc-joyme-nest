@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Blog } from '../domain/mongoose/blogs.entity'
-import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
+import { StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { BlogsMappers } from './blogs.mappers'
@@ -12,7 +12,7 @@ export class BlogsQueryRepository {
     private blogsMappers: BlogsMappers,
   ) {}
 
-  async getAllBlogs(query: StandardInputFilters) {
+  async getAllBlogs(query: StandardInputFiltersWithSearchTerm) {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } = query
 
     const filter = {

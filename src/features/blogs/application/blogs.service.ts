@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Blog } from '../domain/mongoose/blogs.entity'
 import { Model } from 'mongoose'
 import { BlogsRepository } from '../infrastructure/blogs.repository'
-import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
+import { StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { BlogsMappers } from '../infrastructure/blogs.mappers'
 
@@ -29,7 +29,7 @@ export class BlogsService {
     return this.blogsMappers.mapBlogToOutput(saveBlogResult)
   }
 
-  async findAll(query: StandardInputFilters) {
+  async findAll(query: StandardInputFiltersWithSearchTerm) {
     return await this.blogsQueryRepository.getAllBlogs(query)
   }
 

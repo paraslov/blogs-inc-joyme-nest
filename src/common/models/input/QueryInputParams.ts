@@ -16,7 +16,14 @@ export class SearchInputModel {
   searchNameTerm: string | null
 }
 
-export class StandardInputFilters implements PaginationInputModel, SortingInputModel, SearchInputModel {
+export class StandardInputFilters implements PaginationInputModel, SortingInputModel {
+  constructor() {
+    this.pageSize = 10
+    this.pageNumber = 1
+    this.sortBy = 'createdAt'
+    this.sortDirection = SortDirection.DESC
+  }
+
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
@@ -33,16 +40,17 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
   @IsEnum(SortDirection)
   @Transform(({ value }) => value)
   sortDirection: SortDirection
+}
+
+export class StandardInputFiltersWithSearchTerm extends StandardInputFilters {
+  constructor() {
+    super()
+
+    this.searchNameTerm = ''
+  }
+
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value)
   searchNameTerm: string
-
-  constructor() {
-    this.pageSize = 10
-    this.pageNumber = 1
-    this.sortBy = 'createdAt'
-    this.sortDirection = SortDirection.DESC
-    this.searchNameTerm = ''
-  }
 }

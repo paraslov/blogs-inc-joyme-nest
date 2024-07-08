@@ -8,10 +8,9 @@ import { PostsService } from './application/posts.service'
 import { PostsRepository } from './infrastructure/posts.repository'
 import { BlogsMappers, BlogsMongooseModule, BlogsQueryRepository } from '../blogs'
 
-
 @Module({
-  imports: [ MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), BlogsMongooseModule ],
-  controllers: [ PostsController ],
-  providers: [ PostsQueryRepository, PostsMappers, PostsService, PostsRepository, BlogsQueryRepository, BlogsMappers ],
+  imports: [MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), BlogsMongooseModule],
+  controllers: [PostsController],
+  providers: [PostsQueryRepository, PostsMappers, PostsService, PostsRepository, BlogsQueryRepository, BlogsMappers],
 })
 export class PostsModule {}

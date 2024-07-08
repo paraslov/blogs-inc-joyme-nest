@@ -5,9 +5,7 @@ import { PostsRepository } from '../infrastructure/posts.repository'
 
 @Injectable()
 export class PostsService {
-  constructor(
-    private postsRepository: PostsRepository,
-  ) {}
+  constructor(private postsRepository: PostsRepository) {}
 
   async createPost(createPostDto: CreatePostDto, blogName: string) {
     const newPost: Post = {

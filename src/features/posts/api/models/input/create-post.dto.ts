@@ -2,7 +2,7 @@ import { IsString, MaxLength } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { toMongoObjectId } from '../../../../../base/transformers/toMongoObjectId'
 
-export class PostCreateDto {
+export class CreatePostDto {
   @IsString()
   @MaxLength(30)
   title: string

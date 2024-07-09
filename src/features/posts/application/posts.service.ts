@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { CreatePostDto } from '../api/models/input/create-post.dto'
 import { Post } from '../domain/mongoose/posts.entity'
 import { PostsRepository } from '../infrastructure/posts.repository'
+import { UpdatePostDto } from '../api/models/input/update-post.dto'
 
 @Injectable()
 export class PostsService {
@@ -16,5 +17,8 @@ export class PostsService {
     }
 
     return this.postsRepository.savePost(newPost)
+  }
+  async updatePost(id: string, updatePostDto: UpdatePostDto) {
+    return this.postsRepository.updatePost(id, updatePostDto)
   }
 }

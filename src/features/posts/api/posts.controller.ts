@@ -1,10 +1,22 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Query, ValidationPipe } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../infrastructure/posts.query-repository'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 import { CreatePostDto } from './models/input/create-post.dto'
 import { PostsService } from '../application/posts.service'
 import { BlogsQueryRepository } from '../../blogs'
+import { UpdatePostDto } from './models/input/update-post.dto'
 
 @Controller('posts')
 export class PostsController {
@@ -39,5 +51,22 @@ export class PostsController {
     }
 
     return this.postsService.createPost(createPostDto, blog.name)
+  }
+
+  @HttpCode(204)
+  @Put(':id')
+  async updateOne(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Body(new ValidationPipe({ transform: true })) updatePostDto: UpdatePostDto,
+  ) {
+    const blog = await this.blogsQueryRepository.getBlogById(updatePostDto.blogId)
+    if (!blog) {
+      throw new NotFoundException(`Blog with ID ${updatePostDto.blogId} not found`)
+    }
+
+    const updateResult = await this.postsService.updatePost(id, updatePostDto)
+    if (!updateResult) {
+      throw new NotFoundException(`Post with ID ${id} not found`)
+    }
   }
 }

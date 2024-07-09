@@ -22,4 +22,9 @@ export class PostsRepository {
 
     return Boolean(updateResult.matchedCount)
   }
+  async deletePost(id: string) {
+    const deleteResult = await this.postsModel.deleteOne({ _id: id })
+
+    return Boolean(deleteResult.deletedCount)
+  }
 }

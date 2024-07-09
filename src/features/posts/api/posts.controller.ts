@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   NotFoundException,
@@ -17,6 +18,7 @@ import { CreatePostDto } from './models/input/create-post.dto'
 import { PostsService } from '../application/posts.service'
 import { BlogsQueryRepository } from '../../blogs'
 import { UpdatePostDto } from './models/input/update-post.dto'
+import { HttpStatusCodes } from '../../../common/models'
 
 @Controller('posts')
 export class PostsController {
@@ -53,7 +55,7 @@ export class PostsController {
     return this.postsService.createPost(createPostDto, blog.name)
   }
 
-  @HttpCode(204)
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Put(':id')
   async updateOne(
     @Param('id', ObjectIdValidationPipe) id: string,
@@ -66,6 +68,16 @@ export class PostsController {
 
     const updateResult = await this.postsService.updatePost(id, updatePostDto)
     if (!updateResult) {
+      throw new NotFoundException(`Post with ID ${id} not found`)
+    }
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @Delete(':id')
+  async deleteOne(@Param('id', ObjectIdValidationPipe) id: string) {
+    const deleteResult = await this.postsService.deleteOne(id)
+
+    if (!deleteResult) {
       throw new NotFoundException(`Post with ID ${id} not found`)
     }
   }

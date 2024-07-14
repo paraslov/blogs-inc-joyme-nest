@@ -4,6 +4,7 @@ import { AppSettings } from './settings/appSettings'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  app.enableCors()
   await app.listen(AppSettings.PORT)
 }
 bootstrap()

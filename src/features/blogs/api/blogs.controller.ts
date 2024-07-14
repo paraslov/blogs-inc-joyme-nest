@@ -14,12 +14,16 @@ import {
 import { BlogsService } from '../application/blogs.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
 import { UpdateBlogDto } from './models/input/update-blog.dto'
-import { StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
+import { StandardInputFilters, StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
+import { PostsQueryRepository } from '../../posts'
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(private readonly blogsService: BlogsService) {}
+  constructor(
+    private readonly blogsService: BlogsService,
+    private readonly postsQueryRepository: PostsQueryRepository,
+  ) {}
 
   @HttpCode(201)
   @Post()
@@ -30,6 +34,20 @@ export class BlogsController {
   @Get()
   findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFiltersWithSearchTerm) {
     return this.blogsService.findAll(query)
+  }
+
+  @Get(':id/posts')
+  async findAllPostsForBlog(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Query(new ValidationPipe({ transform: true })) query: StandardInputFilters,
+  ) {
+    const blog = await this.blogsService.findOne(id)
+
+    if (!blog) {
+      throw new NotFoundException(`Blog with ID ${id} not found`)
+    }
+
+    return this.postsQueryRepository.getPostsList(query, id)
   }
 
   @Get(':id')

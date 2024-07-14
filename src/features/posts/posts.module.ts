@@ -10,7 +10,7 @@ import { CommentsMappers, CommentsMongooseModule, CommentsQueryRepository } from
 
 @Module({
   imports: [PostsMongooseModule, BlogsMongooseModule, CommentsMongooseModule],
-  exports: [PostsMongooseModule],
+  exports: [PostsMongooseModule, PostsQueryRepository, PostsMappers],
   controllers: [PostsController],
   providers: [
     PostsQueryRepository,

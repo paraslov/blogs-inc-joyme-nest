@@ -18,18 +18,23 @@ export class PostsQueryRepository {
     return this.postsMappers.mapPostToOutputDto(post)
   }
 
-  async getPostsList(queryFilter: StandardInputFilters) {
+  async getPostsList(queryFilter: StandardInputFilters, blogId?: string) {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryFilter
 
+    const filter: any = {}
+    if (blogId) {
+      filter.blogId = blogId
+    }
+
     const posts = await this.postsModel
-      .find()
+      .find(filter)
       .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec()
 
     const mappedPosts = posts.map(this.postsMappers.mapPostToOutputDto)
-    const totalCount = await this.postsModel.countDocuments()
+    const totalCount = await this.postsModel.countDocuments(filter)
     const pagesCount = Math.ceil(totalCount / pageSize)
 
     return {

@@ -8,6 +8,8 @@ import { BlogsRepository } from '../infrastructure/blogs.repository'
 import { StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { BlogsMappers } from '../infrastructure/blogs.mappers'
+import { CreateBlogPostDto } from '../api/models/input/create-blog-post.dto'
+import { Post } from '../../posts'
 
 @Injectable()
 export class BlogsService {
@@ -27,6 +29,18 @@ export class BlogsService {
     const saveBlogResult = await this.blogsRepository.saveBlog(createdBlog)
 
     return this.blogsMappers.mapBlogToOutput(saveBlogResult)
+  }
+
+  async createPost(createBlogPostDto: CreateBlogPostDto, blogId: string, blogName: string) {
+    const newPost: Post = {
+      ...createBlogPostDto,
+      blogId,
+      blogName,
+      createdAt: new Date().toISOString(),
+      extendedLikeInfo: null,
+    }
+
+    return this.blogsRepository.savePost(newPost)
   }
 
   async findAll(query: StandardInputFiltersWithSearchTerm) {

@@ -93,7 +93,7 @@ export class PostsController {
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Delete(':id')
   async deleteOne(@Param('id', ObjectIdValidationPipe) id: string) {
-    const deleteResult = await this.postsService.deleteOne(id)
+    const deleteResult = await this.postsService.deletePost(id)
 
     if (!deleteResult) {
       throw new NotFoundException(`Post with ID ${id} not found`)

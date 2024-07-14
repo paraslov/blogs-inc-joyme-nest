@@ -18,16 +18,20 @@ import { StandardInputFilters, StandardInputFiltersWithSearchTerm } from '../../
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../../posts'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
+import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,
+    private readonly blogsQueryRepository: BlogsQueryRepository,
+
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
+
   @Get()
   findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFiltersWithSearchTerm) {
-    return this.blogsService.findAll(query)
+    return this.blogsQueryRepository.getAllBlogs(query)
   }
 
   @Get(':id/posts')
@@ -35,7 +39,7 @@ export class BlogsController {
     @Param('id', ObjectIdValidationPipe) id: string,
     @Query(new ValidationPipe({ transform: true })) query: StandardInputFilters,
   ) {
-    const blog = await this.blogsService.findOne(id)
+    const blog = await this.blogsQueryRepository.getBlogById(id)
 
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${id} not found`)
@@ -46,7 +50,7 @@ export class BlogsController {
 
   @Get(':id')
   async findOne(@Param('id', ObjectIdValidationPipe) id: string) {
-    const blog = await this.blogsService.findOne(id)
+    const blog = await this.blogsQueryRepository.getBlogById(id)
 
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${id} not found`)
@@ -58,7 +62,7 @@ export class BlogsController {
   @HttpCode(201)
   @Post()
   create(@Body(new ValidationPipe({ transform: true })) createBlogDto: CreateBlogDto) {
-    return this.blogsService.create(createBlogDto)
+    return this.blogsService.createBlog(createBlogDto)
   }
 
   @Post(':id/posts')
@@ -66,7 +70,7 @@ export class BlogsController {
     @Param('id', ObjectIdValidationPipe) blogId: string,
     @Body(new ValidationPipe({ transform: true })) createBlogPostDto: CreateBlogPostDto,
   ) {
-    const blog = await this.blogsService.findOne(blogId)
+    const blog = await this.blogsQueryRepository.getBlogById(blogId)
 
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${blogId} not found`)
@@ -81,7 +85,7 @@ export class BlogsController {
     @Param('id', ObjectIdValidationPipe) id: string,
     @Body(new ValidationPipe({ transform: true })) updateBlogDto: UpdateBlogDto,
   ) {
-    const updateResult = await this.blogsService.update(id, updateBlogDto)
+    const updateResult = await this.blogsService.updateBlog(id, updateBlogDto)
 
     if (!updateResult) {
       throw new NotFoundException(`Couldn't update Blog with ID ${id}`)
@@ -91,7 +95,7 @@ export class BlogsController {
   @HttpCode(204)
   @Delete(':id')
   async remove(@Param('id', ObjectIdValidationPipe) id: string) {
-    const deleteResult = await this.blogsService.remove(id)
+    const deleteResult = await this.blogsService.deleteBlog(id)
 
     if (!deleteResult) {
       throw new NotFoundException(`Couldn't delete Blog with ID ${id}`)

@@ -21,7 +21,7 @@ export class PostsService {
   async updatePost(id: string, updatePostDto: UpdatePostDto) {
     return this.postsRepository.updatePost(id, updatePostDto)
   }
-  async deleteOne(id: string) {
+  async deletePost(id: string) {
     return this.postsRepository.deletePost(id)
   }
 }

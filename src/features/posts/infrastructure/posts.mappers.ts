@@ -18,6 +18,7 @@ export class PostsMappers {
     mappedPost.blogId = post.blogId
     mappedPost.blogName = post.blogName
     mappedPost.createdAt = post.createdAt
+    mappedPost.extendedLikeInfo = {}
     mappedPost.extendedLikeInfo.likesCount = 0
     mappedPost.extendedLikeInfo.dislikesCount = 0
     mappedPost.extendedLikeInfo.myStatus = 'None'

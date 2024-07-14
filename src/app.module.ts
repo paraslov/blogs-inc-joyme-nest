@@ -6,12 +6,14 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { AppSettings } from './settings/appSettings'
 import { PostsModule } from './features/posts/posts.module'
 import { UsersModule } from './features/users/users.module'
+import { CommentsModule } from './features/comments'
 
 @Module({
   imports: [
     BlogsModule,
     PostsModule,
     UsersModule,
+    CommentsModule,
     MongooseModule.forRoot(AppSettings.MONGO_URI, {
       dbName: AppSettings.DB_NAME,
     }),

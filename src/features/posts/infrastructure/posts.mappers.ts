@@ -13,12 +13,15 @@ export class PostsMappers {
 
     mappedPost.id = post._id.toString()
     mappedPost.title = post.title
-    mappedPost.shorDescription = post.shortDescription
+    mappedPost.shortDescription = post.shortDescription
     mappedPost.content = post.content
     mappedPost.blogId = post.blogId
     mappedPost.blogName = post.blogName
     mappedPost.createdAt = post.createdAt
-    mappedPost.extendedLikeInfo = post.extendedLikeInfo
+    mappedPost.extendedLikeInfo.likesCount = 0
+    mappedPost.extendedLikeInfo.dislikesCount = 0
+    mappedPost.extendedLikeInfo.myStatus = 'None'
+    mappedPost.extendedLikeInfo.newestLikes = []
 
     return mappedPost
   }

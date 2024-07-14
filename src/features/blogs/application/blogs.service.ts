@@ -24,7 +24,7 @@ export class BlogsService {
     const createdBlog: Blog = {
       ...createBlogDto,
       createdAt: new Date().toISOString(),
-      isMembership: true,
+      isMembership: false,
     }
     const saveBlogResult = await this.blogsRepository.saveBlog(createdBlog)
 

@@ -1,10 +1,17 @@
 export class PostOutputDto {
   id: string
   title: string
-  shorDescription: string
+  shortDescription: string
   content: string
   blogId: string
   blogName: string
   createdAt: string
-  extendedLikeInfo?: null
+  extendedLikeInfo?: LikesInfoDto
+}
+
+export class LikesInfoDto {
+  likesCount?: number
+  dislikesCount?: number
+  myStatus?: string
+  newestLikes?: any[]
 }

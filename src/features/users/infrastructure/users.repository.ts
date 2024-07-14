@@ -16,4 +16,9 @@ export class UsersRepository {
 
     return this.usersMappers.mapDbToOutputDto(savedUser)
   }
+  async deleteUser(id: string) {
+    const deleteResult = await this.usersModel.deleteOne({ _id: id })
+
+    return Boolean(deleteResult.deletedCount)
+  }
 }

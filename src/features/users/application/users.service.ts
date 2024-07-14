@@ -15,4 +15,7 @@ export class UsersService {
 
     return this.usersRepository.saveUser(newUser)
   }
+  async deleteUser(id: string) {
+    return this.usersRepository.deleteUser(id)
+  }
 }

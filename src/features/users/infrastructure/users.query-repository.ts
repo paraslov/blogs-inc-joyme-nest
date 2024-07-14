@@ -47,4 +47,7 @@ export class UsersQueryRepository {
       items: mappedUsers,
     }
   }
+  async getUserById(id: string) {
+    return this.usersModel.findById(id)
+  }
 }

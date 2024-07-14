@@ -19,18 +19,36 @@ import { PostsService } from '../application/posts.service'
 import { BlogsQueryRepository } from '../../blogs'
 import { UpdatePostDto } from './models/input/update-post.dto'
 import { HttpStatusCodes } from '../../../common/models'
+import { CommentsQueryRepository } from '../../comments'
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private postsQueryRepository: PostsQueryRepository,
-    private blogsQueryRepository: BlogsQueryRepository,
     private postsService: PostsService,
+
+    private blogsQueryRepository: BlogsQueryRepository,
+
+    private commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
   @Get()
   findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFilters) {
     return this.postsQueryRepository.getPostsList(query)
+  }
+
+  @Get(':id/comments')
+  async findAllCommentsForPost(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Query(new ValidationPipe({ transform: true })) query: StandardInputFilters,
+  ) {
+    const foundPost = await this.postsQueryRepository.getPostById(id)
+
+    if (!foundPost) {
+      throw new NotFoundException(`Post with ID ${id} not found`)
+    }
+
+    return this.commentsQueryRepository.getCommentsList(query, id)
   }
 
   @Get(':id')

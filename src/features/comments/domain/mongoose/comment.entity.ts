@@ -15,6 +15,9 @@ export class CommentatorInfoSchema {
 @Schema()
 export class Comment {
   @Prop({ required: true, type: String })
+  parentId: string
+
+  @Prop({ required: true, type: String })
   content: string
 
   @Prop({ required: true, type: String })

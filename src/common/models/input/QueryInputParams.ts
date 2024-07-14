@@ -12,10 +12,6 @@ export class SortingInputModel {
   sortDirection?: 'asc' | 'desc'
 }
 
-export class SearchInputModel {
-  searchNameTerm?: string | null
-}
-
 export class StandardInputFilters implements PaginationInputModel, SortingInputModel {
   constructor() {
     this.pageSize = 10

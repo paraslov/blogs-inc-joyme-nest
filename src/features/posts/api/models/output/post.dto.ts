@@ -6,7 +6,7 @@ export class PostOutputDto {
   blogId: string
   blogName: string
   createdAt: string
-  extendedLikeInfo?: LikesInfoDto
+  extendedLikesInfo?: LikesInfoDto
 }
 
 export class LikesInfoDto {

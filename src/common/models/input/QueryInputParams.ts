@@ -3,17 +3,17 @@ import { SortDirection } from '../enums/SortDirection'
 import { Transform } from 'class-transformer'
 
 export class PaginationInputModel {
-  pageNumber: number
-  pageSize: number
+  pageNumber?: number
+  pageSize?: number
 }
 
 export class SortingInputModel {
-  sortBy: string
-  sortDirection: 'asc' | 'desc'
+  sortBy?: string
+  sortDirection?: 'asc' | 'desc'
 }
 
 export class SearchInputModel {
-  searchNameTerm: string | null
+  searchNameTerm?: string | null
 }
 
 export class StandardInputFilters implements PaginationInputModel, SortingInputModel {
@@ -27,19 +27,22 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  pageNumber: number
+  pageNumber?: number
+
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  pageSize: number
+  pageSize?: number
+
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value)
-  sortBy: string
+  sortBy?: string
+
   @IsOptional()
   @IsEnum(SortDirection)
   @Transform(({ value }) => value)
-  sortDirection: SortDirection
+  sortDirection?: SortDirection
 }
 
 export class StandardInputFiltersWithSearchTerm extends StandardInputFilters {

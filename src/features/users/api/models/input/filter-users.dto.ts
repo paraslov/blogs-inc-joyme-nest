@@ -11,9 +11,9 @@ export class FilterUsersDto extends StandardInputFilters {
 
   @IsOptional()
   @IsString()
-  searchLoginTerm: string
+  searchLoginTerm?: string
 
   @IsOptional()
   @IsString()
-  searchEmailTerm: string
+  searchEmailTerm?: string
 }

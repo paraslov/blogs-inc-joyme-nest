@@ -9,7 +9,7 @@ import { PostsMappers, PostsMongooseModule, PostsQueryRepository } from '../post
 
 @Module({
   imports: [BlogsMongooseModule, PostsMongooseModule],
-  exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers],
+  exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers, BlogsModule],
   controllers: [BlogsController],
   providers: [BlogsService, BlogsRepository, BlogsQueryRepository, BlogsMappers, PostsQueryRepository, PostsMappers],
 })

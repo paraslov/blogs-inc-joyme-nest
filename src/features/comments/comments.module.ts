@@ -6,7 +6,7 @@ import { CommentsMappers } from './infrastructure/comments.mappers'
 
 @Module({
   imports: [CommentsMongooseModule],
-  exports: [CommentsMongooseModule],
+  exports: [CommentsMongooseModule, CommentsQueryRepository],
   controllers: [CommentsController],
   providers: [CommentsQueryRepository, CommentsMappers],
 })

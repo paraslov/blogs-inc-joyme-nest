@@ -3,7 +3,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { BlogsModule } from './features/blogs/blogs.module'
 import { MongooseModule } from '@nestjs/mongoose'
-import { AppSettings } from './settings/appSettings'
+import { appSettings } from './settings/app.settings'
 import { PostsModule } from './features/posts/posts.module'
 import { UsersModule } from './features/users/users.module'
 import { CommentsModule } from './features/comments'
@@ -14,8 +14,8 @@ import { CommentsModule } from './features/comments'
     PostsModule,
     UsersModule,
     CommentsModule,
-    MongooseModule.forRoot(AppSettings.MONGO_URI, {
-      dbName: AppSettings.DB_NAME,
+    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI, {
+      dbName: appSettings.api.DB_NAME,
     }),
   ],
   controllers: [AppController],

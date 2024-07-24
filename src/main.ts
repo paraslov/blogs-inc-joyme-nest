@@ -1,10 +1,16 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
-import { AppSettings } from './settings/appSettings'
+import { appSettings } from './settings/app.settings'
+import { applyAppSettings } from './settings/apply.app.settings'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-  app.enableCors()
-  await app.listen(AppSettings.PORT)
+
+  applyAppSettings(app)
+
+  await app.listen(appSettings.api.APP_PORT, () => {
+    console.log('App starting listen port: ', appSettings.api.APP_PORT)
+    console.log('ENV: ', appSettings.env.getEnv())
+  })
 }
 bootstrap()

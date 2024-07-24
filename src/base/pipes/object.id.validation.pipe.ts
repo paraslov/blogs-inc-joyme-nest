@@ -5,9 +5,11 @@ import { Types } from 'mongoose'
 export class ObjectIdValidationPipe implements PipeTransform<string, Promise<string>> {
   async transform(value: string): Promise<string> {
     const isValidObjectId = Types.ObjectId.isValid(value)
+
     if (!isValidObjectId) {
-      throw new BadRequestException('Invalid ObjectId')
+      throw new BadRequestException([{ key: 'id', message: 'Invalid ObjectId' }])
     }
+
     return value
   }
 }

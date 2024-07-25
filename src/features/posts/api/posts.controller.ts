@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  NotFoundException,
-  Param,
-  Post,
-  Put,
-  Query,
-  ValidationPipe,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../infrastructure/posts.query-repository'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
@@ -33,15 +21,12 @@ export class PostsController {
   ) {}
 
   @Get()
-  findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFilters) {
+  findAll(@Query() query: StandardInputFilters) {
     return this.postsQueryRepository.getPostsList(query)
   }
 
   @Get(':id/comments')
-  async findAllCommentsForPost(
-    @Param('id', ObjectIdValidationPipe) id: string,
-    @Query(new ValidationPipe({ transform: true })) query: StandardInputFilters,
-  ) {
+  async findAllCommentsForPost(@Param('id', ObjectIdValidationPipe) id: string, @Query() query: StandardInputFilters) {
     const foundPost = await this.postsQueryRepository.getPostById(id)
 
     if (!foundPost) {
@@ -63,7 +48,7 @@ export class PostsController {
   }
 
   @Post()
-  async create(@Body(new ValidationPipe({ transform: true })) createPostDto: CreatePostDto) {
+  async create(@Body() createPostDto: CreatePostDto) {
     const blog = await this.blogsQueryRepository.getBlogById(createPostDto.blogId)
 
     if (!blog) {
@@ -75,10 +60,7 @@ export class PostsController {
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Put(':id')
-  async updateOne(
-    @Param('id', ObjectIdValidationPipe) id: string,
-    @Body(new ValidationPipe({ transform: true })) updatePostDto: UpdatePostDto,
-  ) {
+  async updateOne(@Param('id', ObjectIdValidationPipe) id: string, @Body() updatePostDto: UpdatePostDto) {
     const blog = await this.blogsQueryRepository.getBlogById(updatePostDto.blogId)
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${updatePostDto.blogId} not found`)

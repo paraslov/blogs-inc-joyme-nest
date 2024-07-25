@@ -9,7 +9,6 @@ import {
   Param,
   Post,
   Query,
-  ValidationPipe,
 } from '@nestjs/common'
 import { UsersService } from '../application/users.service'
 import { CreateUserDto } from './models/input/create-user.dto'
@@ -26,12 +25,12 @@ export class UsersController {
   ) {}
 
   @Get()
-  getAll(@Query(new ValidationPipe({ transform: true })) query: FilterUsersDto) {
+  getAll(@Query() query: FilterUsersDto) {
     return this.usersQueryRepository.getUsers(query)
   }
 
   @Post()
-  async create(@Body(new ValidationPipe({ transform: true })) createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
     const foundUsers = await this.usersQueryRepository.getUsers({
       searchEmailTerm: createUserDto.email,
       searchLoginTerm: createUserDto.login,

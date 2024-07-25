@@ -1,16 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  HttpCode,
-  Put,
-  Query,
-  ValidationPipe,
-  NotFoundException,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common'
 import { BlogsService } from '../application/blogs.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
 import { UpdateBlogDto } from './models/input/update-blog.dto'
@@ -30,15 +18,12 @@ export class BlogsController {
   ) {}
 
   @Get()
-  findAll(@Query(new ValidationPipe({ transform: true })) query: StandardInputFiltersWithSearchTerm) {
+  findAll(@Query() query: StandardInputFiltersWithSearchTerm) {
     return this.blogsQueryRepository.getAllBlogs(query)
   }
 
   @Get(':id/posts')
-  async findAllPostsForBlog(
-    @Param('id', ObjectIdValidationPipe) id: string,
-    @Query(new ValidationPipe({ transform: true })) query: StandardInputFilters,
-  ) {
+  async findAllPostsForBlog(@Param('id', ObjectIdValidationPipe) id: string, @Query() query: StandardInputFilters) {
     const blog = await this.blogsQueryRepository.getBlogById(id)
 
     if (!blog) {
@@ -61,14 +46,14 @@ export class BlogsController {
 
   @HttpCode(201)
   @Post()
-  create(@Body(new ValidationPipe({ transform: true })) createBlogDto: CreateBlogDto) {
+  create(@Body() createBlogDto: CreateBlogDto) {
     return this.blogsService.createBlog(createBlogDto)
   }
 
   @Post(':id/posts')
   async createPostForBlog(
     @Param('id', ObjectIdValidationPipe) blogId: string,
-    @Body(new ValidationPipe({ transform: true })) createBlogPostDto: CreateBlogPostDto,
+    @Body() createBlogPostDto: CreateBlogPostDto,
   ) {
     const blog = await this.blogsQueryRepository.getBlogById(blogId)
 
@@ -81,10 +66,7 @@ export class BlogsController {
 
   @HttpCode(204)
   @Put(':id')
-  async update(
-    @Param('id', ObjectIdValidationPipe) id: string,
-    @Body(new ValidationPipe({ transform: true })) updateBlogDto: UpdateBlogDto,
-  ) {
+  async update(@Param('id', ObjectIdValidationPipe) id: string, @Body() updateBlogDto: UpdateBlogDto) {
     const updateResult = await this.blogsService.updateBlog(id, updateBlogDto)
 
     if (!updateResult) {

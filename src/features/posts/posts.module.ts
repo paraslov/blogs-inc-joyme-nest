@@ -5,24 +5,13 @@ import { PostsQueryRepository } from './infrastructure/posts.query-repository'
 import { PostsMappers } from './infrastructure/posts.mappers'
 import { PostsService } from './application/posts.service'
 import { PostsRepository } from './infrastructure/posts.repository'
-import { BlogsMappers, BlogsMongooseModule, BlogsQueryRepository } from '../blogs'
-import { CommentsMappers, CommentsMongooseModule, CommentsQueryRepository } from '../comments'
+import { BlogsModule } from '../blogs/blogs.module'
+import { CommentsModule } from '../comments'
 
 @Module({
-  imports: [PostsMongooseModule, BlogsMongooseModule, CommentsMongooseModule],
+  imports: [PostsMongooseModule, BlogsModule, CommentsModule],
   exports: [PostsMongooseModule, PostsQueryRepository, PostsMappers],
   controllers: [PostsController],
-  providers: [
-    PostsQueryRepository,
-    PostsMappers,
-    PostsService,
-    PostsRepository,
-
-    BlogsQueryRepository,
-    BlogsMappers,
-
-    CommentsQueryRepository,
-    CommentsMappers,
-  ],
+  providers: [PostsQueryRepository, PostsMappers, PostsService, PostsRepository],
 })
 export class PostsModule {}

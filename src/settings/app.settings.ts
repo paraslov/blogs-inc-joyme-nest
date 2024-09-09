@@ -42,13 +42,6 @@ export class EnvironmentSettings {
   }
 }
 
-class AppSettings {
-  constructor(
-    public env: EnvironmentSettings,
-    public api: APISettings,
-  ) {}
-}
-
 class APISettings {
   // Application
   public readonly APP_PORT: number
@@ -75,6 +68,13 @@ class APISettings {
 
     return parsedValue
   }
+}
+
+class AppSettings {
+  constructor(
+    public env: EnvironmentSettings,
+    public api: APISettings,
+  ) {}
 }
 
 const env = new EnvironmentSettings(

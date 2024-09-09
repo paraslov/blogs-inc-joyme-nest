@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
+import { Injectable } from '@nestjs/common'
 
-class CryptService {
+@Injectable()
+export class CryptService {
   async generateHash(password: string) {
     const salt = await bcrypt.genSalt(10)
 
@@ -10,5 +12,3 @@ class CryptService {
     return bcrypt.compare(password, hash)
   }
 }
-
-export const cryptService = new CryptService()

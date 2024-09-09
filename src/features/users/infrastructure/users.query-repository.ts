@@ -47,7 +47,15 @@ export class UsersQueryRepository {
       items: mappedUsers,
     }
   }
-  async getUserById(id: string) {
-    return this.usersModel.findById(id)
+  async getUserByLoginOrEmail(loginOrEmail: string) {
+    const users = await this.usersModel.find({
+      $or: [{ 'userData.login': loginOrEmail }, { 'userData.email': loginOrEmail }],
+    })
+
+    if (users.length !== 1) {
+      return false
+    }
+
+    return this.usersMappers.mapDbToOutputDto(users[0])
   }
 }

@@ -5,9 +5,10 @@ import { UsersService } from './application/users.service'
 import { UsersRepository } from './infrastructure/users.repository'
 import { UsersQueryRepository } from './infrastructure/users.query-repository'
 import { UsersMappers } from './infrastructure/users.mappers'
+import { CryptService } from '../../common/services/CryptService'
 
 @Module({
-  imports: [UsersMongooseModule],
+  imports: [UsersMongooseModule, CryptService],
   exports: [UsersMongooseModule],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository, UsersQueryRepository, UsersMappers],

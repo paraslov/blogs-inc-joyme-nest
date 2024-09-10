@@ -56,6 +56,6 @@ export class UsersQueryRepository {
       return false
     }
 
-    return this.usersMappers.mapDbToOutputDto(users[0])
+    return users[0]
   }
 }

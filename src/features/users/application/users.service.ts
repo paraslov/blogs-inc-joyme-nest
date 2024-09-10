@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { UsersRepository } from '../infrastructure/users.repository'
 import { CreateUserDto } from '../api/models/input/create-user.dto'
 import { User } from '../domain/mongoose/users.entity'
-import { CryptService } from '../../../common/services/CryptService'
+import { CryptService } from '../../../common/services'
 
 @Injectable()
 export class UsersService {

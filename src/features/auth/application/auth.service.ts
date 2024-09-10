@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { UsersQueryRepository } from '../../users/infrastructure/users.query-repository'
-import { CryptService } from '../../../common/services'
+import { CryptService, JwtService } from '../../../common/services'
+import { v4 as uuidv4 } from 'uuid'
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersQueryRepository: UsersQueryRepository,
     private cryptService: CryptService,
+    private jwtService: JwtService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -19,6 +21,13 @@ export class AuthService {
 
     if (!isPasswordValid) {
       return null
+    }
+
+    const deviceId = uuidv4()
+    const { accessToken, refreshToken } = await this.jwtService.createTokenPair(user._id.toString(), deviceId)
+
+    if (accessToken && refreshToken) {
+      return { accessToken, refreshToken }
     }
 
     return null

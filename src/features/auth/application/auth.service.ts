@@ -12,6 +12,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
+    console.log('BOOOLT')
     const user = await this.usersQueryRepository.getUserByLoginOrEmail(username)
     if (!user) {
       return null

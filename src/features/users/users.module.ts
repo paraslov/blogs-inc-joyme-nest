@@ -9,7 +9,7 @@ import { CryptService } from '../../common/services'
 
 @Module({
   imports: [UsersMongooseModule],
-  exports: [UsersMongooseModule],
+  exports: [UsersMongooseModule, UsersQueryRepository],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository, UsersQueryRepository, UsersMappers, CryptService],
 })

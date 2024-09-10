@@ -11,7 +11,7 @@ export class LoggerMiddleware implements NestMiddleware {
   }
 }
 
-// Функциональный middleware
+// Functional middleware
 // https://docs.nestjs.com/middleware#functional-middleware
 export const LoggerMiddlewareFunc = (req: Request, res: Response, next: NextFunction) => {
   console.log('Request... LoggerMiddlewareFunc')

@@ -1,3 +1,3 @@
-import { cryptService } from './CryptService'
+import { CryptService } from './CryptService'
 
-export { cryptService }
+export { CryptService }

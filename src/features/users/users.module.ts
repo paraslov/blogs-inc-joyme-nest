@@ -5,12 +5,12 @@ import { UsersService } from './application/users.service'
 import { UsersRepository } from './infrastructure/users.repository'
 import { UsersQueryRepository } from './infrastructure/users.query-repository'
 import { UsersMappers } from './infrastructure/users.mappers'
-import { CryptService } from '../../common/services/CryptService'
+import { CryptService } from '../../common/services'
 
 @Module({
-  imports: [UsersMongooseModule, CryptService],
+  imports: [UsersMongooseModule],
   exports: [UsersMongooseModule],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository, UsersQueryRepository, UsersMappers],
+  providers: [UsersService, UsersRepository, UsersQueryRepository, UsersMappers, CryptService],
 })
 export class UsersModule {}

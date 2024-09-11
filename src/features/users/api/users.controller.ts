@@ -34,10 +34,11 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const foundUsers = await this.usersQueryRepository.getUsers({
-      searchEmailTerm: createUserDto.email,
-      searchLoginTerm: createUserDto.login,
-    })
+    const query = new FilterUsersDto()
+    query.searchLoginTerm = createUserDto.login
+    query.searchEmailTerm = createUserDto.email
+
+    const foundUsers = await this.usersQueryRepository.getUsers(query)
 
     if (foundUsers.totalCount) {
       throw new BadRequestException('User with this login or email is already exists')

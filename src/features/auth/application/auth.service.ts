@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { UsersQueryRepository } from '../../users/infrastructure/users.query-repository'
-import { CryptService, JwtService } from '../../../common/services'
-import { v4 as uuidv4 } from 'uuid'
+import { CryptService } from '../../../common/services'
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
@@ -12,7 +12,6 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    console.log('BOOOLT')
     const user = await this.usersQueryRepository.getUserByLoginOrEmail(username)
     if (!user) {
       return null
@@ -24,13 +23,14 @@ export class AuthService {
       return null
     }
 
-    const deviceId = uuidv4()
-    const { accessToken, refreshToken } = await this.jwtService.createTokenPair(user._id.toString(), deviceId)
+    return { username: user.userData.login, sub: user._id.toString() }
+  }
 
-    if (accessToken && refreshToken) {
-      return { accessToken, refreshToken }
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId }
+
+    return {
+      access_token: this.jwtService.sign(payload),
     }
-
-    return null
   }
 }

@@ -21,6 +21,6 @@ import { strategies } from './application/strategies'
   ],
   exports: [],
   controllers: [AuthController],
-  providers: [AuthService, CryptService, JwtService, ...strategies],
+  providers: [AuthService, CryptService, ...strategies],
 })
 export class AuthModule {}

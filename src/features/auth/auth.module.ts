@@ -4,11 +4,10 @@ import { AuthService } from './application/auth.service'
 import { CryptService } from '../../common/services'
 import { AuthController } from './api/auth.controller'
 import { PassportModule } from '@nestjs/passport'
-import { LocalStrategy } from './application/strategies/local.strategy'
-import { LocalAuthGuard } from '../../base/guards/LocalAuth.guard'
 import { UsersModule } from '../users/users.module'
 import { JwtModule, JwtService } from '@nestjs/jwt'
 import { appSettings } from '../../settings/app.settings'
+import { strategies } from './application/strategies'
 
 @Module({
   imports: [
@@ -20,8 +19,8 @@ import { appSettings } from '../../settings/app.settings'
       signOptions: { expiresIn: appSettings.api.ACCESS_JWT_EXPIRES },
     }),
   ],
-  exports: [AuthService, LocalStrategy],
+  exports: [],
   controllers: [AuthController],
-  providers: [AuthService, CryptService, JwtService, LocalStrategy, LocalAuthGuard],
+  providers: [AuthService, CryptService, JwtService, ...strategies],
 })
 export class AuthModule {}

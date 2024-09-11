@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common'
 import { UsersService } from '../application/users.service'
 import { CreateUserDto } from './models/input/create-user.dto'
@@ -16,6 +17,7 @@ import { FilterUsersDto } from './models/input/filter-users.dto'
 import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { HttpStatusCodes } from '../../../common/models'
+import { JwtAuthGuard } from '../../auth/application/guards/jwt-auth.guard'
 
 @Controller('users')
 export class UsersController {
@@ -29,6 +31,7 @@ export class UsersController {
     return this.usersQueryRepository.getUsers(query)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const foundUsers = await this.usersQueryRepository.getUsers({

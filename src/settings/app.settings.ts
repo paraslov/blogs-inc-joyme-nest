@@ -53,6 +53,8 @@ class APISettings {
   public readonly ACCESS_JWT_EXPIRES: string
   public readonly REFRESH_JWT_SECRET: string
   public readonly REFRESH_JWT_EXPIRES: string
+  public readonly SA_USER_USERNAME: string
+  public readonly SA_USER_PASSWORD: string
 
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application
@@ -65,6 +67,8 @@ class APISettings {
     this.ACCESS_JWT_EXPIRES = '5m'
     this.REFRESH_JWT_SECRET = envVariables.REFRESH_JWT_SECRET
     this.REFRESH_JWT_EXPIRES = '10m'
+    this.SA_USER_USERNAME = envVariables.SA_USER_USERNAME
+    this.SA_USER_PASSWORD = envVariables.SA_USER_PASSWORD
   }
 
   private getNumberOrDefault(value: string, defaultValue: number): number {

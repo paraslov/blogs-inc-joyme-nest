@@ -6,12 +6,10 @@ import { appSettings } from '../../../../settings/app.settings'
 @Injectable()
 export class SaStrategy extends PassportStrategy(Strategy) {
   constructor() {
-    super({
-      passReqToCallback: true,
-    })
+    super()
   }
 
-  public validate = async (req: any, username: string, password: string): Promise<boolean> => {
+  public validate = async (username: string, password: string): Promise<boolean> => {
     if (appSettings.api.SA_USER_USERNAME === username && appSettings.api.SA_USER_PASSWORD === password) {
       return true
     }

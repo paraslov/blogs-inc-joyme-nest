@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { UsersQueryRepository } from '../../users/infrastructure/users.query-repository'
 import { CryptService } from '../../../common/services'
 import { JwtService } from '@nestjs/jwt'
+import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
 
 @Injectable()
 export class AuthService {
@@ -11,7 +12,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<AuthStrategiesDto | null> {
     const user = await this.usersQueryRepository.getUserByLoginOrEmail(username)
     if (!user) {
       return null
@@ -26,7 +27,7 @@ export class AuthService {
     return { username: user.userData.login, sub: user._id.toString() }
   }
 
-  async login(payload: { username: string, sub: string }) {
+  async login(payload: AuthStrategiesDto) {
     return {
       access_token: this.jwtService.sign(payload),
     }

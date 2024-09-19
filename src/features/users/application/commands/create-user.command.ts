@@ -32,7 +32,6 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         isConfirmed: true,
       },
     }
-    console.log('@> new user', newUser)
 
     return this.usersRepository.saveUser(newUser)
   }

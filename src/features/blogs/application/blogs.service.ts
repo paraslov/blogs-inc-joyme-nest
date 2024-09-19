@@ -1,28 +1,23 @@
 import { Injectable } from '@nestjs/common'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { UpdateBlogDto } from '../api/models/input/update-blog.dto'
-import { Blog } from '../domain/mongoose/blogs.entity'
 import { BlogsRepository } from '../infrastructure/blogs.repository'
-import { BlogsMappers } from '../infrastructure/blogs.mappers'
 import { CreateBlogPostDto } from '../api/models/input/create-blog-post.dto'
 import { Post } from '../../posts'
+import { CommandBus } from '@nestjs/cqrs'
+import { CreateBlogCommand } from './commands/create-blog.command'
 
 @Injectable()
 export class BlogsService {
   constructor(
     private blogsRepository: BlogsRepository,
-    private blogsMappers: BlogsMappers,
+    private commandBus: CommandBus,
   ) {}
 
-  async createBlog(createBlogDto: CreateBlogDto) {
-    const createdBlog: Blog = {
-      ...createBlogDto,
-      createdAt: new Date().toISOString(),
-      isMembership: false,
-    }
-    const saveBlogResult = await this.blogsRepository.saveBlog(createdBlog)
+  createBlog(createBlogDto: CreateBlogDto) {
+    const command = new CreateBlogCommand(createBlogDto)
 
-    return this.blogsMappers.mapBlogToOutput(saveBlogResult)
+    return this.commandBus.execute(command)
   }
 
   async createPost(createBlogPostDto: CreateBlogPostDto, blogId: string, blogName: string) {

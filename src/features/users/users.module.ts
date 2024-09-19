@@ -5,7 +5,7 @@ import { UsersRepository } from './infrastructure/users.repository'
 import { UsersQueryRepository } from './infrastructure/users.query-repository'
 import { UsersMappers } from './infrastructure/users.mappers'
 import { CryptService } from '../../common/services'
-import { commandHandlers } from './application/commands'
+import { usersCommandHandlers } from './application/commands'
 import { UsersCommandService } from './application/users.command.service'
 import { CqrsModule } from '@nestjs/cqrs'
 
@@ -19,7 +19,7 @@ import { CqrsModule } from '@nestjs/cqrs'
     UsersQueryRepository,
     UsersMappers,
     CryptService,
-    ...commandHandlers,
+    ...usersCommandHandlers,
   ],
 })
 export class UsersModule {}

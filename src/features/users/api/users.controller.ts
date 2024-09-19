@@ -11,18 +11,18 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { UsersService } from '../application/users.service'
 import { CreateUserDto } from './models/input/create-user.dto'
 import { FilterUsersDto } from './models/input/filter-users.dto'
 import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { HttpStatusCodes } from '../../../common/models'
 import { JwtAuthGuard } from '../../auth/application/guards/jwt-auth.guard'
+import { UsersCommandService } from '../application/users.command.service'
 
 @Controller('users')
 export class UsersController {
   constructor(
-    private usersService: UsersService,
+    private usersCommandService: UsersCommandService,
     private usersQueryRepository: UsersQueryRepository,
   ) {}
 
@@ -44,13 +44,13 @@ export class UsersController {
       throw new BadRequestException('User with this login or email is already exists')
     }
 
-    return this.usersService.createUser(createUserDto)
+    return this.usersCommandService.createUser(createUserDto)
   }
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Delete(':id')
   async deleteOne(@Param('id', ObjectIdValidationPipe) id: string) {
-    const deleteResult = await this.usersService.deleteUser(id)
+    const deleteResult = await this.usersCommandService.deleteUser(id)
     if (!deleteResult) {
       throw new NotFoundException(`User with ID ${id} not found`)
     }

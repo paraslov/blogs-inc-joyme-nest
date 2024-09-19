@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { BlogsService } from './application/blogs.service'
+import { BlogsCommandService } from './application/blogs.command.service'
 import { BlogsController } from './api/blogs.controller'
 import { BlogsMongooseModule } from './domain/mongoose/blogs.entity'
 import { BlogsRepository } from './infrastructure/blogs.repository'
@@ -14,7 +14,7 @@ import { CqrsModule } from '@nestjs/cqrs'
   exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers, BlogsModule],
   controllers: [BlogsController],
   providers: [
-    BlogsService,
+    BlogsCommandService,
     BlogsRepository,
     BlogsQueryRepository,
     BlogsMappers,

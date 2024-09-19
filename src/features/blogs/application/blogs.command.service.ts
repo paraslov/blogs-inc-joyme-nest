@@ -7,9 +7,10 @@ import { CommandBus } from '@nestjs/cqrs'
 import { CreateBlogCommand } from './commands/create-blog.command'
 import { CreatePostForBlogCommand } from './commands/create-post-for-blog.command'
 import { UpdateBlogCommand } from './commands/update-blog.command'
+import { DeleteBlogCommand } from './commands/delete-blog.command'
 
 @Injectable()
-export class BlogsService {
+export class BlogsCommandService {
   constructor(
     private blogsRepository: BlogsRepository,
     private commandBus: CommandBus,
@@ -27,13 +28,15 @@ export class BlogsService {
     return this.commandBus.execute(command)
   }
 
-  async updateBlog(userId: string, updateBlogDto: UpdateBlogDto) {
-    const command = new UpdateBlogCommand(userId, updateBlogDto)
+  async updateBlog(blogId: string, updateBlogDto: UpdateBlogDto) {
+    const command = new UpdateBlogCommand(blogId, updateBlogDto)
 
     return this.commandBus.execute(command)
   }
 
-  async deleteBlog(id: string) {
-    return this.blogsRepository.deleteBlog(id)
+  async deleteBlog(blogId: string) {
+    const command = new DeleteBlogCommand(blogId)
+
+    return this.commandBus.execute(command)
   }
 }

@@ -4,7 +4,7 @@ import { BlogsRepository } from '../../infrastructure/blogs.repository'
 
 export class UpdateBlogCommand {
   constructor(
-    public readonly userId: string,
+    public readonly blogId: string,
     public readonly updateBlogDto: UpdateBlogDto,
   ) {}
 }
@@ -13,9 +13,9 @@ export class UpdateBlogCommand {
 export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
   constructor(private readonly blogsRepository: BlogsRepository) {}
 
-  async execute(command: UpdateBlogCommand) {
-    const { userId, updateBlogDto } = command
+  execute(command: UpdateBlogCommand) {
+    const { blogId, updateBlogDto } = command
 
-    return this.blogsRepository.updateBlog(userId, updateBlogDto)
+    return this.blogsRepository.updateBlog(blogId, updateBlogDto)
   }
 }

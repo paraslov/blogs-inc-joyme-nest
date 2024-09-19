@@ -3,9 +3,9 @@ import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { UpdateBlogDto } from '../api/models/input/update-blog.dto'
 import { BlogsRepository } from '../infrastructure/blogs.repository'
 import { CreateBlogPostDto } from '../api/models/input/create-blog-post.dto'
-import { Post } from '../../posts'
 import { CommandBus } from '@nestjs/cqrs'
 import { CreateBlogCommand } from './commands/create-blog.command'
+import { CreatePostForBlogCommand } from './commands/create-post-for-blog.command'
 
 @Injectable()
 export class BlogsService {
@@ -21,15 +21,9 @@ export class BlogsService {
   }
 
   async createPost(createBlogPostDto: CreateBlogPostDto, blogId: string, blogName: string) {
-    const newPost: Post = {
-      ...createBlogPostDto,
-      blogId,
-      blogName,
-      createdAt: new Date().toISOString(),
-      extendedLikeInfo: null,
-    }
+    const command = new CreatePostForBlogCommand(createBlogPostDto, blogId, blogName)
 
-    return this.blogsRepository.savePost(newPost)
+    return this.commandBus.execute(command)
   }
 
   async updateBlog(id: string, updateBlog: UpdateBlogDto) {

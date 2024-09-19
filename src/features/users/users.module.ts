@@ -1,16 +1,25 @@
 import { Module } from '@nestjs/common'
 import { UsersMongooseModule } from './domain/mongoose/users.entity'
 import { UsersController } from './api/users.controller'
-import { UsersService } from './application/users.service'
 import { UsersRepository } from './infrastructure/users.repository'
 import { UsersQueryRepository } from './infrastructure/users.query-repository'
 import { UsersMappers } from './infrastructure/users.mappers'
 import { CryptService } from '../../common/services'
+import { commandHandlers } from './application/commands'
+import { UsersCommandService } from './application/users.command.service'
+import { CqrsModule } from '@nestjs/cqrs'
 
 @Module({
-  imports: [UsersMongooseModule],
+  imports: [UsersMongooseModule, CqrsModule],
   exports: [UsersMongooseModule, UsersQueryRepository],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository, UsersQueryRepository, UsersMappers, CryptService],
+  providers: [
+    UsersCommandService,
+    UsersRepository,
+    UsersQueryRepository,
+    UsersMappers,
+    CryptService,
+    ...commandHandlers,
+  ],
 })
 export class UsersModule {}

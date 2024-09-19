@@ -8,13 +8,13 @@ import { DeleteUserCommand } from './commands/delete-user.command'
 export class UsersCommandService {
   constructor(private readonly commandBus: CommandBus) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  createUser(createUserDto: CreateUserDto) {
     const command = new CreateUserCommand(createUserDto)
 
     return this.commandBus.execute(command)
   }
 
-  async deleteUser(userId: string) {
+  deleteUser(userId: string) {
     const command = new DeleteUserCommand(userId)
 
     return this.commandBus.execute(command)

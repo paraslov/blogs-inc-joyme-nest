@@ -9,7 +9,7 @@ export class DeleteUserCommand {
 export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async execute(command: DeleteUserCommand) {
+  execute(command: DeleteUserCommand) {
     const { userId } = command
 
     return this.usersRepository.deleteUser(userId)

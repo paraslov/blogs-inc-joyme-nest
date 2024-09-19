@@ -6,6 +6,7 @@ import { CreateBlogPostDto } from '../api/models/input/create-blog-post.dto'
 import { CommandBus } from '@nestjs/cqrs'
 import { CreateBlogCommand } from './commands/create-blog.command'
 import { CreatePostForBlogCommand } from './commands/create-post-for-blog.command'
+import { UpdateBlogCommand } from './commands/update-blog.command'
 
 @Injectable()
 export class BlogsService {
@@ -26,8 +27,10 @@ export class BlogsService {
     return this.commandBus.execute(command)
   }
 
-  async updateBlog(id: string, updateBlog: UpdateBlogDto) {
-    return this.blogsRepository.updateBlog(id, updateBlog)
+  async updateBlog(userId: string, updateBlogDto: UpdateBlogDto) {
+    const command = new UpdateBlogCommand(userId, updateBlogDto)
+
+    return this.commandBus.execute(command)
   }
 
   async deleteBlog(id: string) {

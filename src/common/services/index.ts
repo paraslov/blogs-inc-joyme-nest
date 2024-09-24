@@ -1,3 +1,4 @@
-import { CryptService } from './CryptService'
+import { CryptService } from './crypt.service'
+import { MailerService } from './mailer.service'
 
-export { CryptService }
+export { CryptService, MailerService }

@@ -5,9 +5,11 @@ import { CryptService } from '../../common/services'
 import { AuthController } from './api/auth.controller'
 import { PassportModule } from '@nestjs/passport'
 import { UsersModule } from '../users/users.module'
-import { JwtModule, JwtService } from '@nestjs/jwt'
+import { JwtModule } from '@nestjs/jwt'
 import { appSettings } from '../../settings/app.settings'
 import { strategies } from './application/strategies'
+import { AuthCommandService } from './application/auth.command.service'
+import { authCommandHandlers } from './application/commands'
 
 @Module({
   imports: [
@@ -21,6 +23,6 @@ import { strategies } from './application/strategies'
   ],
   exports: [],
   controllers: [AuthController],
-  providers: [AuthService, CryptService, ...strategies],
+  providers: [AuthService, AuthCommandService, CryptService, ...strategies, ...authCommandHandlers],
 })
 export class AuthModule {}

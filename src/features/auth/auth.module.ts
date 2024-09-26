@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
-import { UsersMongooseModule } from '../users/domain/mongoose/users.entity'
 import { AuthService } from './application/auth.service'
-import { CryptService } from '../../common/services'
+import { CryptService, MailerService } from '../../common/services'
 import { AuthController } from './api/auth.controller'
 import { PassportModule } from '@nestjs/passport'
 import { UsersModule } from '../users/users.module'
@@ -10,12 +9,15 @@ import { appSettings } from '../../settings/app.settings'
 import { strategies } from './application/strategies'
 import { AuthCommandService } from './application/auth.command.service'
 import { authCommandHandlers } from './application/commands'
+import { CqrsModule } from '@nestjs/cqrs'
+import { EmailSendManager } from '../../common/manager/email-send.manager'
+import { EmailTemplatesManager } from '../../common/manager'
 
 @Module({
   imports: [
-    UsersMongooseModule,
     PassportModule,
     UsersModule,
+    CqrsModule,
     JwtModule.register({
       secret: appSettings.api.ACCESS_JWT_SECRET,
       signOptions: { expiresIn: appSettings.api.ACCESS_JWT_EXPIRES },
@@ -23,6 +25,15 @@ import { authCommandHandlers } from './application/commands'
   ],
   exports: [],
   controllers: [AuthController],
-  providers: [AuthService, AuthCommandService, CryptService, ...strategies, ...authCommandHandlers],
+  providers: [
+    AuthService,
+    AuthCommandService,
+    CryptService,
+    EmailSendManager,
+    MailerService,
+    EmailTemplatesManager,
+    ...strategies,
+    ...authCommandHandlers,
+  ],
 })
 export class AuthModule {}

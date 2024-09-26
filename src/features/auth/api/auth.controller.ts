@@ -6,6 +6,7 @@ import { CurrentUserId } from '../../../base/decorators/current-user-id.decorato
 import { SaAuthGuard } from '../application/guards/sa-auth.guard'
 import { CreateUserDto } from '../../users'
 import { AuthCommandService } from '../application/auth.command.service'
+import { ConfirmUserDto } from './models/input/confirm-user.dto'
 
 @Controller('auth')
 export class AuthController {
@@ -35,5 +36,10 @@ export class AuthController {
   @Post('/registration')
   registration(@Body() createUserDto: CreateUserDto) {
     return this.authCommandService.registerUser(createUserDto)
+  }
+
+  @Post('/registration-confirmation')
+  registrationConfirm(@Body() confirmUserDto: ConfirmUserDto) {
+    return this.authCommandService.confirmUser(confirmUserDto.code)
   }
 }

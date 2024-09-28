@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Post, Body } from '@nestjs/common'
+import { Controller, Get, UseGuards, Request, Post, Body, BadRequestException, HttpCode } from '@nestjs/common'
 import { LocalAuthGuard } from '../application/guards/local-auth.guard'
 import { AuthService } from '../application/auth.service'
 import { JwtAuthGuard } from '../application/guards/jwt-auth.guard'
@@ -7,6 +7,7 @@ import { SaAuthGuard } from '../application/guards/sa-auth.guard'
 import { CreateUserDto } from '../../users'
 import { AuthCommandService } from '../application/auth.command.service'
 import { ConfirmUserDto } from './models/input/confirm-user.dto'
+import { HttpStatusCodes } from '../../../common/models'
 
 @Controller('auth')
 export class AuthController {
@@ -38,8 +39,13 @@ export class AuthController {
     return this.authCommandService.registerUser(createUserDto)
   }
 
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Post('/registration-confirmation')
-  registrationConfirm(@Body() confirmUserDto: ConfirmUserDto) {
-    return this.authCommandService.confirmUser(confirmUserDto.code)
+  async registrationConfirm(@Body() confirmUserDto: ConfirmUserDto) {
+    const confirmResult = await this.authCommandService.confirmUser(confirmUserDto.code)
+
+    if (confirmResult.hasError()) {
+      throw new BadRequestException(confirmResult.extensions)
+    }
   }
 }

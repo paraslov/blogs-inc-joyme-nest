@@ -8,6 +8,7 @@ import { PostsModule } from './features/posts/posts.module'
 import { UsersModule } from './features/users/users.module'
 import { CommentsModule } from './features/comments'
 import { AuthModule } from './features/auth/auth.module'
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthModule } from './features/auth/auth.module'
     MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI, {
       dbName: appSettings.api.DB_NAME,
     }),
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

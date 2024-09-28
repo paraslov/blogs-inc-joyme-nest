@@ -1,4 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
+import { UsersQueryRepository, UsersRepository } from '../../../users'
+import { InterlayerDataManager } from '../../../../common/manager'
+import { HttpStatusCodes } from '../../../../common/models'
 
 export class ConfirmUserCommand {
   constructor(public readonly confirmationCode: string) {}
@@ -6,9 +9,36 @@ export class ConfirmUserCommand {
 
 @CommandHandler(ConfirmUserCommand)
 export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
+  constructor(
+    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersRepository: UsersRepository,
+  ) {}
   async execute(command: ConfirmUserCommand) {
     const { confirmationCode } = command
+    const notice = new InterlayerDataManager()
+    const userToConfirm = await this.usersQueryRepository.getUserByConfirmationCode(confirmationCode)
 
-    return confirmationCode
+    if (!userToConfirm) {
+      notice.addError('Incorrect verification code', 'code', HttpStatusCodes.BAD_REQUEST_400)
+
+      return notice
+    }
+    if (userToConfirm.userConfirmationData.isConfirmed) {
+      notice.addError('Registration was already confirmed', 'code', HttpStatusCodes.BAD_REQUEST_400)
+
+      return notice
+    }
+    if (userToConfirm.userConfirmationData.confirmationCodeExpirationDate < new Date()) {
+      notice.addError('Confirmation code expired', 'code', HttpStatusCodes.BAD_REQUEST_400)
+
+      return notice
+    }
+
+    const confirmationResult = await this.usersRepository.confirmUser(confirmationCode)
+    if (!confirmationResult) {
+      notice.addError('Ups! Something goes wrong...', 'code', HttpStatusCodes.BAD_REQUEST_400)
+    }
+
+    return notice
   }
 }

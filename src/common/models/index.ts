@@ -1,3 +1,3 @@
-import { HttpStatusCodes } from './enums/HttpStatusCodes'
+import { HttpStatusCodes } from './enums/http-status-codes'
 
 export { HttpStatusCodes }

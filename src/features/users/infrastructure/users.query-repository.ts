@@ -58,4 +58,7 @@ export class UsersQueryRepository {
 
     return users[0]
   }
+  async getUserByConfirmationCode(confirmationCode: string) {
+    return this.usersModel.findOne({ 'userConfirmationData.confirmationCode': confirmationCode })
+  }
 }

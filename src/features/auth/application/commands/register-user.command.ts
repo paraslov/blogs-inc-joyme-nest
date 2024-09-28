@@ -3,8 +3,8 @@ import { CreateUserDto, User } from '../../../users'
 import { CryptService } from '../../../../common/services'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
-import { UsersRepository } from '../../../users/infrastructure/users.repository'
-import { EmailSendManager } from '../../../../common/manager/email-send.manager'
+import { UsersRepository } from '../../../users'
+import { EmailSendManager } from '../../../../common/manager'
 
 export class RegisterUserCommand {
   constructor(public readonly createUserDto: CreateUserDto) {}

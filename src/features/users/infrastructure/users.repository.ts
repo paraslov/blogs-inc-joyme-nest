@@ -21,4 +21,11 @@ export class UsersRepository {
 
     return Boolean(deleteResult.deletedCount)
   }
+  async confirmUser(confirmationCode: string) {
+    const updateResult = await this.usersModel.updateOne(
+      { 'userConfirmationData.confirmationCode': confirmationCode },
+      { 'userConfirmationData.isConfirmed': true },
+    )
+    return updateResult.modifiedCount === 1;
+  }
 }

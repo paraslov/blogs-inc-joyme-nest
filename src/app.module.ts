@@ -3,12 +3,13 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { BlogsModule } from './features/blogs/blogs.module'
 import { MongooseModule } from '@nestjs/mongoose'
-import { appSettings } from './settings/app.settings'
 import { PostsModule } from './features/posts/posts.module'
 import { UsersModule } from './features/users/users.module'
 import { CommentsModule } from './features/comments'
 import { AuthModule } from './features/auth/auth.module'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import configuration, { ConfigurationType, validate } from './settings/configuration'
+import { Environments } from './settings/env.settings'
 
 @Module({
   imports: [
@@ -17,10 +18,34 @@ import { ConfigModule } from '@nestjs/config'
     PostsModule,
     UsersModule,
     CommentsModule,
-    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI, {
-      dbName: appSettings.api.DB_NAME,
+    // MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI, {
+    //   dbName: appSettings.api.DB_NAME,
+    // }),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigService<ConfigurationType>) => {
+        const databaseSettings = configService.get('databaseSettings', {
+          infer: true,
+        })!
+
+        const uri = databaseSettings.MONGO_CONNECTION_URI
+        const dbName = databaseSettings.DB_NAME
+        console.log(uri)
+        console.log(dbName)
+
+        return {
+          uri,
+          dbName,
+        }
+      },
+      inject: [ConfigService],
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      validate: validate,
+      ignoreEnvFile: process.env.ENV !== Environments.DEVELOPMENT && process.env.ENV !== Environments.TEST,
+      envFilePath: ['.env.development.local', '.env.development', '.env'],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

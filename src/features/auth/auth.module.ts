@@ -10,17 +10,22 @@ import { strategies } from './application/strategies'
 import { AuthCommandService } from './application/auth.command.service'
 import { authCommandHandlers } from './application/commands'
 import { CqrsModule } from '@nestjs/cqrs'
-import { EmailSendManager } from '../../common/manager/email-send.manager'
+import { EmailSendManager } from '../../common/manager'
 import { EmailTemplatesManager } from '../../common/manager'
+import { ConfigService } from '@nestjs/config'
+import { ConfigurationType } from '../../settings/configuration'
 
 @Module({
   imports: [
     PassportModule,
     UsersModule,
     CqrsModule,
-    JwtModule.register({
-      secret: appSettings.api.ACCESS_JWT_SECRET,
-      signOptions: { expiresIn: appSettings.api.ACCESS_JWT_EXPIRES },
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService<ConfigurationType>) => ({
+        secret: configService.get('jwtSettings').ACCESS_JWT_SECRET,
+        signOptions: { expiresIn: configService.get('jwtSettings').ACCESS_JWT_EXPIRES },
+      }),
+      inject: [ConfigService],
     }),
   ],
   exports: [],

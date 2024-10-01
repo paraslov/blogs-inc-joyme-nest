@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Post, Body, BadRequestException, HttpCode } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common'
 import { LocalAuthGuard } from '../application/guards/local-auth.guard'
 import { AuthService } from '../application/auth.service'
 import { JwtAuthGuard } from '../application/guards/jwt-auth.guard'
@@ -8,7 +8,9 @@ import { CreateUserDto } from '../../users'
 import { AuthCommandService } from '../application/auth.command.service'
 import { ConfirmUserDto } from './models/input/confirm-user.dto'
 import { HttpStatusCodes } from '../../../common/models'
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler'
 
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -16,6 +18,7 @@ export class AuthController {
     private readonly authCommandService: AuthCommandService,
   ) {}
 
+  @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   meData(@CurrentUserId() currentUserId: string) {

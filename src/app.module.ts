@@ -10,6 +10,7 @@ import { AuthModule } from './features/auth/auth.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import configuration, { ConfigurationType, validate } from './settings/configuration'
 import { Environments } from './settings/env.settings'
+import { ThrottlerModule } from '@nestjs/throttler'
 
 @Module({
   imports: [
@@ -18,9 +19,13 @@ import { Environments } from './settings/env.settings'
     PostsModule,
     UsersModule,
     CommentsModule,
-    // MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI, {
-    //   dbName: appSettings.api.DB_NAME,
-    // }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 10000,
+        limit: 5,
+      },
+    ]),
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService<ConfigurationType>) => {
         const databaseSettings = configService.get('databaseSettings', {

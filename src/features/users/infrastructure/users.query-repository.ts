@@ -47,18 +47,4 @@ export class UsersQueryRepository {
       items: mappedUsers,
     }
   }
-  async getUserByLoginOrEmail(loginOrEmail: string) {
-    const users = await this.usersModel.find({
-      $or: [{ 'userData.login': loginOrEmail }, { 'userData.email': loginOrEmail }],
-    })
-
-    if (users.length !== 1) {
-      return false
-    }
-
-    return users[0]
-  }
-  async getUserByConfirmationCode(confirmationCode: string) {
-    return this.usersModel.findOne({ 'userConfirmationData.confirmationCode': confirmationCode })
-  }
 }

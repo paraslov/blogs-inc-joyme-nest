@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common'
-import { UsersQueryRepository } from '../../users/infrastructure/users.query-repository'
 import { CryptService } from '../../../common/services'
 import { JwtService } from '@nestjs/jwt'
 import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
+import { AuthRepository } from '../infrastructure/auth.repository'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersQueryRepository: UsersQueryRepository,
+    private authRepository: AuthRepository,
     private cryptService: CryptService,
     private jwtService: JwtService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<AuthStrategiesDto | null> {
-    const user = await this.usersQueryRepository.getUserByLoginOrEmail(username)
+    const user = await this.authRepository.getUserByLoginOrEmail(username)
     if (!user) {
       return null
     }

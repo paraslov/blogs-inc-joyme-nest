@@ -26,6 +26,7 @@ export class UsersRepository {
       { 'userConfirmationData.confirmationCode': confirmationCode },
       { 'userConfirmationData.isConfirmed': true },
     )
-    return updateResult.modifiedCount === 1;
+
+    return updateResult.modifiedCount === 1
   }
 }

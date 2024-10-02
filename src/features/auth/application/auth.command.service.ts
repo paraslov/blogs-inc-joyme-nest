@@ -12,7 +12,7 @@ export class AuthCommandService {
   registerUser(createUserDto: CreateUserDto) {
     const command = new RegisterUserCommand(createUserDto)
 
-    return this.commandBus.execute(command)
+    return this.commandBus.execute<RegisterUserCommand, InterlayerDataManager>(command)
   }
 
   confirmUser(confirmationCode: string) {

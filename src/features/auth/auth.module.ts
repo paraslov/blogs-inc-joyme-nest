@@ -13,6 +13,7 @@ import { EmailSendManager } from '../../common/manager'
 import { EmailTemplatesManager } from '../../common/manager'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../settings/configuration'
+import { AuthRepository } from './infrastructure/auth.repository'
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ConfigurationType } from '../../settings/configuration'
     EmailSendManager,
     MailerService,
     EmailTemplatesManager,
+    AuthRepository,
     ...strategies,
     ...authCommandHandlers,
   ],

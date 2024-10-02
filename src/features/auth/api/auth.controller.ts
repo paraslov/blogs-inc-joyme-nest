@@ -37,9 +37,14 @@ export class AuthController {
     return this.authService.login(req.user)
   }
 
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Post('/registration')
-  registration(@Body() createUserDto: CreateUserDto) {
-    return this.authCommandService.registerUser(createUserDto)
+  async registration(@Body() createUserDto: CreateUserDto) {
+    const result = await this.authCommandService.registerUser(createUserDto)
+
+    if (result.hasError()) {
+      throw new BadRequestException(result.extensions)
+    }
   }
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)

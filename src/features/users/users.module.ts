@@ -11,7 +11,7 @@ import { CqrsModule } from '@nestjs/cqrs'
 
 @Module({
   imports: [UsersMongooseModule, CqrsModule],
-  exports: [UsersMongooseModule, UsersQueryRepository, UsersRepository],
+  exports: [UsersMongooseModule, UsersRepository],
   controllers: [UsersController],
   providers: [
     UsersCommandService,

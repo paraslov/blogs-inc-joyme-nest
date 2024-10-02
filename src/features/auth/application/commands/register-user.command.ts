@@ -4,7 +4,9 @@ import { CryptService } from '../../../../common/services'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { UsersRepository } from '../../../users'
-import { EmailSendManager } from '../../../../common/manager'
+import { EmailSendManager, InterlayerDataManager } from '../../../../common/manager'
+import { AuthRepository } from '../../infrastructure/auth.repository'
+import { HttpStatusCodes } from '../../../../common/models'
 
 export class RegisterUserCommand {
   constructor(public readonly createUserDto: CreateUserDto) {}
@@ -13,14 +15,21 @@ export class RegisterUserCommand {
 @CommandHandler(RegisterUserCommand)
 export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand> {
   constructor(
-    private readonly cryptService: CryptService,
+    private readonly authRepository: AuthRepository,
     private readonly usersRepository: UsersRepository,
+    private readonly cryptService: CryptService,
     private readonly emailSendManager: EmailSendManager,
   ) {}
 
   async execute(command: RegisterUserCommand) {
     const { createUserDto } = command
     const { login, email, password } = createUserDto
+
+    const resultNotice = await this.isUserUnique(login, email)
+    if (resultNotice.hasError()) {
+      return resultNotice
+    }
+
     const passwordHash = await this.cryptService.generateHash(password)
     const confirmationCode = uuidv4()
 
@@ -50,6 +59,21 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand>
       console.error('@> Error::emailManager: ', err)
     }
 
-    return true
+    return resultNotice
+  }
+  async isUserUnique(login: string, email: string) {
+    const notice = new InterlayerDataManager()
+
+    const userByLogin = await this.authRepository.getUserByLoginOrEmail(login)
+    if (userByLogin) {
+      notice.addError('This login is already used', 'login', HttpStatusCodes.BAD_REQUEST_400)
+    }
+
+    const userByEmail = await this.authRepository.getUserByLoginOrEmail(email)
+    if (userByEmail) {
+      notice.addError('This email is already used', 'email', HttpStatusCodes.BAD_REQUEST_400)
+    }
+
+    return notice
   }
 }

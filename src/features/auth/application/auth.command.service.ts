@@ -4,6 +4,7 @@ import { CommandBus } from '@nestjs/cqrs'
 import { CreateUserDto } from '../../users'
 import { ConfirmUserCommand } from './commands/confirm-user.command'
 import { InterlayerDataManager } from '../../../common/manager'
+import { RegistrationEmailResendingCommand } from './commands/registration-email-resending.command'
 
 @Injectable()
 export class AuthCommandService {
@@ -19,5 +20,11 @@ export class AuthCommandService {
     const command = new ConfirmUserCommand(confirmationCode)
 
     return this.commandBus.execute<ConfirmUserCommand, InterlayerDataManager>(command)
+  }
+
+  registrationEmailResending(email: string) {
+    const command = new RegistrationEmailResendingCommand(email)
+
+    return this.commandBus.execute<RegistrationEmailResendingCommand, InterlayerDataManager>(command)
   }
 }

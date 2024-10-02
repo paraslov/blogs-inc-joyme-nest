@@ -9,6 +9,7 @@ import { AuthCommandService } from '../application/auth.command.service'
 import { ConfirmUserDto } from './models/input/confirm-user.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler'
+import { ResendRegistrationEmailDto } from './models/input/resend-registration-email.dto'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -54,6 +55,16 @@ export class AuthController {
 
     if (confirmResult.hasError()) {
       throw new BadRequestException(confirmResult.extensions)
+    }
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @Post('/registration-email-resending')
+  async registrationEmailResending(@Body() resendRegistrationEmailDto: ResendRegistrationEmailDto) {
+    const result = await this.authCommandService.registrationEmailResending(resendRegistrationEmailDto.email)
+
+    if (result.hasError()) {
+      throw new BadRequestException(result.extensions)
     }
   }
 }

@@ -1,4 +1,14 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common'
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common'
 import { LocalAuthGuard } from '../application/guards/local-auth.guard'
 import { AuthService } from '../application/auth.service'
 import { JwtAuthGuard } from '../application/guards/jwt-auth.guard'
@@ -9,7 +19,7 @@ import { AuthCommandService } from '../application/auth.command.service'
 import { ConfirmUserDto } from './models/input/confirm-user.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler'
-import { ResendRegistrationEmailDto } from './models/input/resend-registration-email.dto'
+import { EmailDto } from './models/input/email.dto'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -60,11 +70,21 @@ export class AuthController {
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Post('/registration-email-resending')
-  async registrationEmailResending(@Body() resendRegistrationEmailDto: ResendRegistrationEmailDto) {
-    const result = await this.authCommandService.registrationEmailResending(resendRegistrationEmailDto.email)
+  async registrationEmailResending(@Body() emailDto: EmailDto) {
+    const result = await this.authCommandService.registrationEmailResending(emailDto.email)
 
     if (result.hasError()) {
       throw new BadRequestException(result.extensions)
+    }
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @Post('/password-recovery')
+  async passwordRecovery(@Body() emailDto: EmailDto) {
+    const result = await this.authCommandService.passwordRecovery(emailDto.email)
+
+    if (result.hasError()) {
+      throw new HttpException(result.extensions, result.code)
     }
   }
 }

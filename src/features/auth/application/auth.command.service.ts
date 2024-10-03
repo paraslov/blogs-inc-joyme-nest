@@ -5,6 +5,7 @@ import { CreateUserDto } from '../../users'
 import { ConfirmUserCommand } from './commands/confirm-user.command'
 import { InterlayerDataManager } from '../../../common/manager'
 import { RegistrationEmailResendingCommand } from './commands/registration-email-resending.command'
+import { PasswordRecoveryCommand } from './commands/password-recovery.command'
 
 @Injectable()
 export class AuthCommandService {
@@ -26,5 +27,11 @@ export class AuthCommandService {
     const command = new RegistrationEmailResendingCommand(email)
 
     return this.commandBus.execute<RegistrationEmailResendingCommand, InterlayerDataManager>(command)
+  }
+
+  passwordRecovery(email: string) {
+    const command = new PasswordRecoveryCommand(email)
+
+    return this.commandBus.execute<PasswordRecoveryCommand, InterlayerDataManager>(command)
   }
 }

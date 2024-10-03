@@ -17,16 +17,15 @@ export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPass
     private readonly cryptService: CryptService,
     private readonly usersRepository: UsersRepository,
   ) {}
-  notice = new InterlayerDataManager()
 
   async execute(command: ConfirmNewPasswordCommand) {
     const { passwordRecoveryDto } = command
 
     const user = await this.authRepository.getUserByRecoveryCode(passwordRecoveryDto.recoveryCode)
-    this.validateUser(user)
+    const resultNotice = this.validateUser(user)
 
-    if (this.notice.hasError()) {
-      return this.notice
+    if (resultNotice.hasError()) {
+      return resultNotice
     }
 
     const newPasswordHash = await this.cryptService.generateHash(passwordRecoveryDto.newPassword)
@@ -35,22 +34,24 @@ export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPass
 
     await this.usersRepository.saveUser(user)
 
-    return this.notice
+    return resultNotice
   }
 
   validateUser(user?: User) {
+    const notice = new InterlayerDataManager()
+
     if (!user) {
-      this.notice.addError('Incorrect verification code', 'recoveryCode', HttpStatusCodes.BAD_REQUEST_400)
+      notice.addError('Incorrect verification code', 'recoveryCode', HttpStatusCodes.BAD_REQUEST_400)
 
-      return
+      return notice
     }
-
     if (user.userConfirmationData.isPasswordRecoveryConfirmed) {
-      this.notice.addError('Recovery was already confirmed', 'recoveryCode', HttpStatusCodes.BAD_REQUEST_400)
+      notice.addError('Recovery was already confirmed', 'recoveryCode', HttpStatusCodes.BAD_REQUEST_400)
+    }
+    if (user.userConfirmationData.passwordRecoveryCodeExpirationDate < new Date()) {
+      notice.addError('Recovery code expired', 'recoveryCode', HttpStatusCodes.BAD_REQUEST_400)
     }
 
-    if (user.userConfirmationData.passwordRecoveryCodeExpirationDate < new Date()) {
-      this.notice.addError('Recovery code expired', 'recoveryCode', HttpStatusCodes.BAD_REQUEST_400)
-    }
+    return notice
   }
 }

@@ -20,6 +20,7 @@ import { ConfirmUserDto } from './models/input/confirm-user.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler'
 import { EmailDto } from './models/input/email.dto'
+import { PasswordRecoveryDto } from './models/input/password-recovery.dto'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -85,6 +86,16 @@ export class AuthController {
 
     if (result.hasError()) {
       throw new HttpException(result.extensions, result.code)
+    }
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @Post('/new-password')
+  async confirmNewPassword(@Body() passwordRecoveryDto: PasswordRecoveryDto) {
+    const result = await this.authCommandService.confirmNewPassword(passwordRecoveryDto)
+
+    if (result.hasError()) {
+      throw new BadRequestException(result.extensions)
     }
   }
 }

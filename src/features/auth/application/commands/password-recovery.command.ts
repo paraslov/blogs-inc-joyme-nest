@@ -4,6 +4,7 @@ import { AuthRepository } from '../../infrastructure/auth.repository'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { HttpStatusCodes } from '../../../../common/models'
+import { UsersRepository } from '../../../users'
 
 export class PasswordRecoveryCommand {
   constructor(public readonly email: string) {}
@@ -14,6 +15,7 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
   constructor(
     private readonly emailSendManager: EmailSendManager,
     private readonly authRepository: AuthRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
   notice = new InterlayerDataManager()
 
@@ -40,6 +42,8 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
       console.error('@> Error::emailManager: ', err)
       this.notice.addError('Cannot send email. Try again later', 'email', HttpStatusCodes.FAILED_DEPENDENCY_424)
     }
+
+    await this.usersRepository.saveUser(user)
 
     return this.notice
   }

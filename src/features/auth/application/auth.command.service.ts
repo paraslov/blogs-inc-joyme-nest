@@ -6,6 +6,8 @@ import { ConfirmUserCommand } from './commands/confirm-user.command'
 import { InterlayerDataManager } from '../../../common/manager'
 import { RegistrationEmailResendingCommand } from './commands/registration-email-resending.command'
 import { PasswordRecoveryCommand } from './commands/password-recovery.command'
+import { PasswordRecoveryDto } from '../api/models/input/password-recovery.dto'
+import { ConfirmNewPasswordCommand } from './commands/confirm-new-password.command'
 
 @Injectable()
 export class AuthCommandService {
@@ -33,5 +35,11 @@ export class AuthCommandService {
     const command = new PasswordRecoveryCommand(email)
 
     return this.commandBus.execute<PasswordRecoveryCommand, InterlayerDataManager>(command)
+  }
+
+  confirmNewPassword(passwordRecoveryDto: PasswordRecoveryDto) {
+    const command = new ConfirmNewPasswordCommand(passwordRecoveryDto)
+
+    return this.commandBus.execute<ConfirmNewPasswordCommand, InterlayerDataManager>(command)
   }
 }

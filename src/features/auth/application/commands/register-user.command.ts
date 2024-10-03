@@ -20,14 +20,15 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand>
     private readonly cryptService: CryptService,
     private readonly emailSendManager: EmailSendManager,
   ) {}
+  notice = new InterlayerDataManager()
 
   async execute(command: RegisterUserCommand) {
     const { createUserDto } = command
     const { login, email, password } = createUserDto
 
-    const resultNotice = await this.isUserUnique(login, email)
-    if (resultNotice.hasError()) {
-      return resultNotice
+    await this.isUserUnique(login, email)
+    if (this.notice.hasError()) {
+      return this.notice
     }
 
     const passwordHash = await this.cryptService.generateHash(password)
@@ -59,21 +60,17 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand>
       console.error('@> Error::emailManager: ', err)
     }
 
-    return resultNotice
+    return this.notice
   }
   async isUserUnique(login: string, email: string) {
-    const notice = new InterlayerDataManager()
-
     const userByLogin = await this.authRepository.getUserByLoginOrEmail(login)
     if (userByLogin) {
-      notice.addError('This login is already used', 'login', HttpStatusCodes.BAD_REQUEST_400)
+      this.notice.addError('This login is already used', 'login', HttpStatusCodes.BAD_REQUEST_400)
     }
 
     const userByEmail = await this.authRepository.getUserByLoginOrEmail(email)
     if (userByEmail) {
-      notice.addError('This email is already used', 'email', HttpStatusCodes.BAD_REQUEST_400)
+      this.notice.addError('This email is already used', 'email', HttpStatusCodes.BAD_REQUEST_400)
     }
-
-    return notice
   }
 }

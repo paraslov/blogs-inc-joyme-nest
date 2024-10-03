@@ -31,6 +31,7 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
       hours: 1,
       minutes: 1,
     })
+    user.userConfirmationData.isPasswordRecoveryConfirmed = false
 
     try {
       const mailInfo = await this.emailSendManager.sendPasswordRecoveryEmail(email, recoveryCode)

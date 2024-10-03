@@ -21,4 +21,7 @@ export class AuthRepository {
   async getUserByConfirmationCode(confirmationCode: string) {
     return this.usersModel.findOne({ 'userConfirmationData.confirmationCode': confirmationCode })
   }
+  async getUserByRecoveryCode(recoveryCode: string) {
+    return this.usersModel.findOne({ 'userConfirmationData.passwordRecoveryCode': recoveryCode })
+  }
 }

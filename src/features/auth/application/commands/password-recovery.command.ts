@@ -17,14 +17,14 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
     private readonly authRepository: AuthRepository,
     private readonly usersRepository: UsersRepository,
   ) {}
-  notice = new InterlayerDataManager()
 
   async execute(command: PasswordRecoveryCommand) {
     const { email } = command
+    const notice = new InterlayerDataManager()
     const user = await this.authRepository.getUserByLoginOrEmail(email)
 
     if (!user) {
-      return this.notice
+      return notice
     }
 
     const recoveryCode = uuidv4()
@@ -40,11 +40,11 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
       console.log('@> Information::mailInfo: ', mailInfo)
     } catch (err) {
       console.error('@> Error::emailManager: ', err)
-      this.notice.addError('Cannot send email. Try again later', 'email', HttpStatusCodes.FAILED_DEPENDENCY_424)
+      notice.addError('Cannot send email. Try again later', 'email', HttpStatusCodes.FAILED_DEPENDENCY_424)
     }
 
     await this.usersRepository.saveUser(user)
 
-    return this.notice
+    return notice
   }
 }

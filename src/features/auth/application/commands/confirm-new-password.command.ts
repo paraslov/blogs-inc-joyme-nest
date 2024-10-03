@@ -20,10 +20,9 @@ export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPass
 
   async execute(command: ConfirmNewPasswordCommand) {
     const { passwordRecoveryDto } = command
-
     const user = await this.authRepository.getUserByRecoveryCode(passwordRecoveryDto.recoveryCode)
-    const resultNotice = this.validateUser(user)
 
+    const resultNotice = this.validateUser(user)
     if (resultNotice.hasError()) {
       return resultNotice
     }

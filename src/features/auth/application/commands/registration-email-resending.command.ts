@@ -4,7 +4,7 @@ import { EmailSendManager, InterlayerDataManager } from '../../../../common/mana
 import { HttpStatusCodes } from '../../../../common/models'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
-import { UsersRepository } from '../../../users'
+import { User, UsersRepository } from '../../../users'
 
 export class RegistrationEmailResendingCommand {
   constructor(public readonly email: string) {}
@@ -20,19 +20,11 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
 
   async execute(command: RegistrationEmailResendingCommand) {
     const { email } = command
-    const notice = new InterlayerDataManager()
-
     const user = await this.authRepository.getUserByLoginOrEmail(email)
 
-    if (!user) {
-      notice.addError(`No user registrations with email: ${email}`, 'email', HttpStatusCodes.BAD_REQUEST_400)
-
-      return notice
-    }
-    if (user.userConfirmationData.isConfirmed) {
-      notice.addError(`Registration was already confirmed`, 'email', HttpStatusCodes.BAD_REQUEST_400)
-
-      return notice
+    const resultNotice = this.checkUser(email, user)
+    if (resultNotice.hasError() || !user) {
+      return resultNotice
     }
 
     const confirmationCode = uuidv4()
@@ -51,6 +43,21 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
       console.error('@> Error::emailManager: ', err)
     }
 
-    return notice
+    return resultNotice
+  }
+
+  checkUser(email: string, user: User | false) {
+    const notice = new InterlayerDataManager()
+
+    if (!user) {
+      notice.addError(`No user registrations with email: ${email}`, 'email', HttpStatusCodes.BAD_REQUEST_400)
+
+      return notice
+    }
+    if (user.userConfirmationData.isConfirmed) {
+      notice.addError(`Registration was already confirmed`, 'email', HttpStatusCodes.BAD_REQUEST_400)
+
+      return notice
+    }
   }
 }

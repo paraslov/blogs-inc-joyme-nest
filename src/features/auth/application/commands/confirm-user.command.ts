@@ -49,5 +49,7 @@ export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
 
       return notice
     }
+
+    return notice
   }
 }

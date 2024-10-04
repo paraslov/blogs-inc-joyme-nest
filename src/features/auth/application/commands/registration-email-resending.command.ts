@@ -59,5 +59,7 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
 
       return notice
     }
+
+    return notice
   }
 }

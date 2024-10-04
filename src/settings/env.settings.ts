@@ -2,10 +2,10 @@ import { EnvironmentVariable } from './configuration'
 import { IsEnum } from 'class-validator'
 
 export enum Environments {
-  DEVELOPMENT = 'DEVELOPMENT',
-  STAGING = 'STAGING',
-  PRODUCTION = 'PRODUCTION',
-  TEST = 'TEST',
+  DEVELOPMENT = 'development',
+  STAGING = 'staging',
+  PRODUCTION = 'production',
+  TEST = 'test',
 }
 
 export class EnvironmentSettings {

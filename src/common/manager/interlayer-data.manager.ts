@@ -11,9 +11,9 @@ export class InterlayerDataManager<D = null> {
   public addData(data: D): void {
     this.data = data
   }
-  public addError(message: string, field: string | null = null, code: number | null = null): void {
+  public addError(message: string, key: string | null = null, code: number | null = null): void {
     this.code = code ?? 1
-    this.extensions.push(new InterlayerDataManagerExtension(message, field))
+    this.extensions.push(new InterlayerDataManagerExtension(message, key))
   }
   public hasError(): boolean {
     return this.code !== 0
@@ -22,10 +22,10 @@ export class InterlayerDataManager<D = null> {
 
 class InterlayerDataManagerExtension {
   public readonly message: string
-  public readonly field: string | null
+  public readonly key: string | null
 
-  constructor(message: string, field: string | null = null) {
+  constructor(message: string, key: string | null = null) {
     this.message = message
-    this.field = field
+    this.key = key
   }
 }

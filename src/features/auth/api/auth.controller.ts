@@ -13,7 +13,6 @@ import { LocalAuthGuard } from '../application/guards/local-auth.guard'
 import { AuthService } from '../application/auth.service'
 import { JwtAuthGuard } from '../application/guards/jwt-auth.guard'
 import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
-import { SaAuthGuard } from '../application/guards/sa-auth.guard'
 import { CreateUserDto } from '../../users'
 import { AuthCommandService } from '../application/auth.command.service'
 import { ConfirmUserDto } from './models/input/confirm-user.dto'
@@ -37,12 +36,6 @@ export class AuthController {
   @Get('me')
   meData(@CurrentUserId() currentUserId: string) {
     return this.authQueryRepository.getMeInformation(currentUserId)
-  }
-
-  @UseGuards(SaAuthGuard)
-  @Get('sa')
-  saData() {
-    return { secretInfo: 'very big secret' }
   }
 
   @UseGuards(LocalAuthGuard)

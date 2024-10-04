@@ -16,9 +16,10 @@ import { FilterUsersDto } from './models/input/filter-users.dto'
 import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { HttpStatusCodes } from '../../../common/models'
-import { JwtAuthGuard } from '../../auth/application/guards/jwt-auth.guard'
 import { UsersCommandService } from '../application/users.command.service'
+import { SaAuthGuard } from '../../auth/application/guards/sa-auth.guard'
 
+@UseGuards(SaAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -31,7 +32,6 @@ export class UsersController {
     return this.usersQueryRepository.getUsers(query)
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const query = new FilterUsersDto()

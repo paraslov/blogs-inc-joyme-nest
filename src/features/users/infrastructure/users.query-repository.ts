@@ -21,10 +21,10 @@ export class UsersQueryRepository {
       filter.$or = []
 
       if (searchLoginTerm) {
-        filter.$or.push({ login: { $regex: searchLoginTerm, $options: 'i' } })
+        filter.$or.push({ 'userData.login': { $regex: searchLoginTerm, $options: 'i' } })
       }
       if (searchEmailTerm) {
-        filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' } })
+        filter.$or.push({ 'userData.login': { $regex: searchEmailTerm, $options: 'i' } })
       }
     }
 
@@ -46,8 +46,5 @@ export class UsersQueryRepository {
       page: pageNumber,
       items: mappedUsers,
     }
-  }
-  async getUserById(id: string) {
-    return this.usersModel.findById(id)
   }
 }

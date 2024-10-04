@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlogsController } from './blogs.controller'
-import { BlogsService } from '../application/blogs.service'
+import { BlogsCommandService } from '../application/blogs.command.service'
 
 describe('BlogsController', () => {
   let controller: BlogsController
@@ -8,7 +8,7 @@ describe('BlogsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BlogsController],
-      providers: [BlogsService],
+      providers: [BlogsCommandService],
     }).compile()
 
     controller = module.get<BlogsController>(BlogsController)

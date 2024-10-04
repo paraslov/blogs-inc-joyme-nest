@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common'
-import { BlogsService } from '../application/blogs.service'
+import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
 import { UpdateBlogDto } from './models/input/update-blog.dto'
 import { StandardInputFilters, StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
@@ -11,7 +11,7 @@ import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    private readonly blogsService: BlogsService,
+    private readonly blogsService: BlogsCommandService,
     private readonly blogsQueryRepository: BlogsQueryRepository,
 
     private readonly postsQueryRepository: PostsQueryRepository,

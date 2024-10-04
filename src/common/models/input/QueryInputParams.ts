@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
-import { SortDirection } from '../enums/SortDirection'
+import { SortDirection } from '../enums/sort-direction'
 import { Transform } from 'class-transformer'
 
 export class PaginationInputModel {

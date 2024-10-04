@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose'
 export type UserDocument = HydratedDocument<User>
 
 @Schema()
-export class User {
+class UserData {
   @Prop({ required: true, type: String })
   login: string
 
@@ -12,7 +12,40 @@ export class User {
   email: string
 
   @Prop({ required: true, type: String })
+  passwordHash: string
+
+  @Prop({ required: true, type: String })
   createdAt: string
+}
+
+@Schema()
+class UserConfirmationData {
+  @Prop({ required: true, type: String })
+  confirmationCode: string
+
+  @Prop({ required: true, type: Date })
+  confirmationCodeExpirationDate: Date
+
+  @Prop({ required: true, type: Boolean })
+  isConfirmed: boolean
+
+  @Prop({ required: false, type: String })
+  passwordRecoveryCode?: string
+
+  @Prop({ required: false, type: Date })
+  passwordRecoveryCodeExpirationDate?: Date
+
+  @Prop({ required: false, type: Boolean })
+  isPasswordRecoveryConfirmed?: boolean
+}
+
+@Schema()
+export class User {
+  @Prop({ required: true, type: UserData })
+  userData: UserData
+
+  @Prop({ required: true, type: UserConfirmationData })
+  userConfirmationData: UserConfirmationData
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

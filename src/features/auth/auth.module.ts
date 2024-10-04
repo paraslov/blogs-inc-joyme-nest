@@ -9,11 +9,12 @@ import { strategies } from './application/strategies'
 import { AuthCommandService } from './application/auth.command.service'
 import { authCommandHandlers } from './application/commands'
 import { CqrsModule } from '@nestjs/cqrs'
-import { EmailSendManager } from '../../common/manager'
-import { EmailTemplatesManager } from '../../common/manager'
+import { EmailSendManager, EmailTemplatesManager } from '../../common/manager'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../settings/configuration'
 import { AuthRepository } from './infrastructure/auth.repository'
+import { AuthQueryRepository } from './infrastructure/auth.query-repository'
+import { AuthMappers } from './infrastructure/auth.mappers'
 
 @Module({
   imports: [
@@ -38,6 +39,8 @@ import { AuthRepository } from './infrastructure/auth.repository'
     MailerService,
     EmailTemplatesManager,
     AuthRepository,
+    AuthQueryRepository,
+    AuthMappers,
     ...strategies,
     ...authCommandHandlers,
   ],

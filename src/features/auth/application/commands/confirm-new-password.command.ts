@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthRepository } from '../../infrastructure/auth.repository'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { User, UsersRepository } from '../../../users'
+import { UserDocument, UsersRepository } from '../../../users'
 import { CryptService } from '../../../../common/services'
 
 export class ConfirmNewPasswordCommand {
@@ -36,7 +36,7 @@ export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPass
     return resultNotice
   }
 
-  validateUser(user?: User) {
+  validateUser(user?: UserDocument) {
     const notice = new InterlayerDataManager()
 
     if (!user) {

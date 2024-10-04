@@ -21,6 +21,7 @@ import { HttpStatusCodes } from '../../../common/models'
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler'
 import { EmailDto } from './models/input/email.dto'
 import { PasswordRecoveryDto } from './models/input/password-recovery.dto'
+import { AuthQueryRepository } from '../infrastructure/auth.query-repository'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -28,13 +29,14 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly authCommandService: AuthCommandService,
+    private readonly authQueryRepository: AuthQueryRepository,
   ) {}
 
   @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   meData(@CurrentUserId() currentUserId: string) {
-    return currentUserId
+    return this.authQueryRepository.getMeInformation(currentUserId)
   }
 
   @UseGuards(SaAuthGuard)

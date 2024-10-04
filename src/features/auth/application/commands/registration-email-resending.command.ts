@@ -4,7 +4,7 @@ import { EmailSendManager, InterlayerDataManager } from '../../../../common/mana
 import { HttpStatusCodes } from '../../../../common/models'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
-import { User, UsersRepository } from '../../../users'
+import { UserDocument, UsersRepository } from '../../../users'
 
 export class RegistrationEmailResendingCommand {
   constructor(public readonly email: string) {}
@@ -46,7 +46,7 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
     return resultNotice
   }
 
-  checkUser(email: string, user: User | false) {
+  checkUser(email: string, user: UserDocument | false) {
     const notice = new InterlayerDataManager()
 
     if (!user) {

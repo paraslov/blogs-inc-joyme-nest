@@ -24,9 +24,7 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
   @IsNumber()
   @Transform(({ value }) => {
     const numberValue = Number(value)
-    if (!numberValue) {
-      return 1
-    }
+    return !numberValue ? 1 : numberValue
   })
   pageNumber?: number
 
@@ -34,9 +32,7 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
   @IsNumber()
   @Transform(({ value }) => {
     const numberValue = Number(value)
-    if (!numberValue) {
-      return 10
-    }
+    return !numberValue ? 10 : numberValue
   })
   pageSize?: number
 

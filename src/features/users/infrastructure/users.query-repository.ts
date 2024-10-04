@@ -30,7 +30,7 @@ export class UsersQueryRepository {
 
     const users = await this.usersModel
       .find(filter)
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+      .sort({ [`userData.${sortBy}`]: sortDirection === 'asc' ? 1 : -1 })
       .skip(pageSize * (pageNumber - 1))
       .limit(pageSize)
       .exec()

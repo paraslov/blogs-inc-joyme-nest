@@ -24,7 +24,7 @@ export class UsersQueryRepository {
         filter.$or.push({ 'userData.login': { $regex: searchLoginTerm, $options: 'i' } })
       }
       if (searchEmailTerm) {
-        filter.$or.push({ 'userData.login': { $regex: searchEmailTerm, $options: 'i' } })
+        filter.$or.push({ 'userData.email': { $regex: searchEmailTerm, $options: 'i' } })
       }
     }
 

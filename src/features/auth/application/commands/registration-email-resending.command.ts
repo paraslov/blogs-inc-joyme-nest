@@ -54,11 +54,11 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
 
       return notice
     }
-    // if (user.userConfirmationData.isConfirmed) {
-    //   notice.addError(`Registration was already confirmed`, 'email', HttpStatusCodes.BAD_REQUEST_400)
-    //
-    //   return notice
-    // }
+    if (user.userConfirmationData.isConfirmed) {
+      notice.addError(`Registration was already confirmed`, 'email', HttpStatusCodes.BAD_REQUEST_400)
+
+      return notice
+    }
 
     return notice
   }

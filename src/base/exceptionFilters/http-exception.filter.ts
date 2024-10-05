@@ -16,7 +16,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       }
 
       const responseBody: any = exception.getResponse()
-      console.log('@> res body: ', responseBody)
 
       if (Array.isArray(responseBody.message)) {
         responseBody.message.forEach((error: any) =>
@@ -25,6 +24,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       } else {
         errorsResponse.errorsMessages.push(responseBody.message)
       }
+      console.log('@> errorsResponse: ', errorsResponse)
 
       response.status(status).json(errorsResponse)
     } else {

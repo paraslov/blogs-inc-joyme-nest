@@ -20,7 +20,7 @@ export class EmailTemplatesManager {
       subject: 'We resend your registration email for "Blogs inc. JoyMe"',
       html: `<h1>We resend your email confirmation on "Blogs inc. JoyMe"</h1>
              <p>To finish registration please follow the link:
-                 <a href='https://google.com?code=${confirmationCode}'>complete registration</a>
+                 <a href='https://google.com/confirm-registration?code=${confirmationCode}'>complete registration</a>
              </p>`,
     }
   }

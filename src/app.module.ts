@@ -34,8 +34,6 @@ import { ThrottlerModule } from '@nestjs/throttler'
 
         const uri = databaseSettings.MONGO_CONNECTION_URI
         const dbName = databaseSettings.DB_NAME
-        console.log(uri)
-        console.log(dbName)
 
         return {
           uri,
@@ -49,7 +47,7 @@ import { ThrottlerModule } from '@nestjs/throttler'
       load: [configuration],
       validate: validate,
       ignoreEnvFile: process.env.ENV !== Environments.DEVELOPMENT && process.env.ENV !== Environments.TEST,
-      envFilePath: ['.env.development.local', '.env.development', '.env'],
+      envFilePath: ['.env.local', '.env.development', '.env'],
     }),
   ],
   controllers: [AppController],

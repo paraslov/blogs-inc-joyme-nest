@@ -1,4 +1,4 @@
-export class UserDto {
+export class UserViewDto {
   id: string
   login: string
   email: string

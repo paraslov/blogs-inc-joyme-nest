@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { UserDocument } from '../domain/mongoose/users.entity'
-import { UserDto } from '../api/models/output/user.dto'
+import { UserViewDto } from '../api/models/output/userViewDto'
 
 @Injectable()
 export class UsersMappers {
@@ -9,7 +9,7 @@ export class UsersMappers {
       return null
     }
 
-    const mappedUser = new UserDto()
+    const mappedUser = new UserViewDto()
 
     mappedUser.id = user._id.toString()
     mappedUser.email = user.userData.email

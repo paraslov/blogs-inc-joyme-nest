@@ -31,7 +31,9 @@ export class EmailTemplatesManager {
       subject: 'Password recovery for "Blogs inc. JoyMe"',
       html: `<h1>Recovery your password on "Blogs inc. JoyMe"</h1>
              <p>To finish password recovery please follow the link:
-                 <a href='https://google.com/password-recovery?recoveryCode=${confirmationCode}'>complete registration</a>
+                 <a href='https://google.com/password-recovery?recoveryCode=${confirmationCode}'>
+                    complete registration
+                 </a>
              </p>
              <p>
                 If you have not registreted at "Blogs inc. JoyMe" just ignore this message

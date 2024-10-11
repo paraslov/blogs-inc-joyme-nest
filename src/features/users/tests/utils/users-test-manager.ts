@@ -13,11 +13,22 @@ export class UsersTestManager {
   ) {}
   username = this.configService.get('jwtSettings').SA_USER_USERNAME
   password = this.configService.get('jwtSettings').SA_USER_PASSWORD
+  userIndex = 0
 
   get saCredits() {
     return {
       username: this.username,
       password: this.password,
+    }
+  }
+
+  private get getUserModel(): CreateUserDto {
+    this.userIndex++
+
+    return {
+      login: `login${this.userIndex}`,
+      email: `email${this.userIndex}@service.oom`,
+      password: `passworD#$${this.userIndex}`,
     }
   }
 
@@ -28,30 +39,33 @@ export class UsersTestManager {
     expect(responseModel.id).toStrictEqual(expect.any(String))
   }
 
-  async createUser(createModel: CreateUserDto, username?: string, password?: string) {
+  async createUser(createUserDto?: CreateUserDto, username?: string, password?: string) {
     const saUsername = username ?? this.username
     const saPassword = password ?? this.password
 
-    return request(this.app.getHttpServer())
+    const requestBody = createUserDto ?? this.getUserModel
+    const response = await request(this.app.getHttpServer())
       .post('/api/users')
       .auth(saUsername, saPassword, {
         type: 'basic',
       })
-      .send(createModel)
+      .send(requestBody)
       .expect(HttpStatusCodes.CREATED_201)
+
+    return {
+      userRequestBody: requestBody,
+      userResponseBody: response.body,
+    }
   }
 
-  async updateUser(updateModel: any, username?: string, password?: string) {
-    const saUsername = username ?? this.username
-    const saPassword = password ?? this.password
-
-    return request(this.app.getHttpServer())
-      .put('/api/users')
-      .auth(saUsername, saPassword, {
+  async getUser(userId: string) {
+    const response = await request(this.app.getHttpServer())
+      .get(`/api/users/${userId}`)
+      .auth(this.username, this.password, {
         type: 'basic',
       })
-      .send(updateModel)
-      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    return response.body
   }
 
   static async login(app: INestApplication, loginOrEmail: string, password: string): Promise<{ accessToken: string }> {

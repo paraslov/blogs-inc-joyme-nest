@@ -12,6 +12,12 @@ export class UsersQueryRepository {
     private usersMappers: UsersMappers,
   ) {}
 
+  async getUser(userId: string) {
+    const userDocument = await this.usersModel.findById(userId)
+
+    return this.usersMappers.mapDbToOutputDto(userDocument)
+  }
+
   async getUsers(query: FilterUsersDto) {
     const { pageNumber, pageSize, sortDirection, sortBy, searchLoginTerm, searchEmailTerm } = query
 

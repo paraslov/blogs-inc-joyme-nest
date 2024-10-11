@@ -32,6 +32,17 @@ export class UsersController {
     return this.usersQueryRepository.getUsers(query)
   }
 
+  @Get(':userId')
+  async getUser(@Param('userId', ObjectIdValidationPipe) userId: string) {
+    const user = await this.usersQueryRepository.getUser(userId)
+
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
+  }
+
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const query = new FilterUsersDto()

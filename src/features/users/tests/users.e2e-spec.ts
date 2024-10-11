@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { UsersTestManager } from './utils/users-test-manager'
 import { initTestsSettings } from '../../../common/tests'
+import { HttpStatusCodes } from '../../../common/models'
 
 describe('users', () => {
   let app: INestApplication
@@ -22,26 +23,31 @@ describe('users', () => {
   })
 
   it('should create user', async () => {
-    const body = { login: 'name111', password: 'pass12#', email: 'email@email.em' }
+    const { userResponseBody, userRequestBody } = await userTestManger.createUser()
 
-    const response = await userTestManger.createUser(body)
-
-    userTestManger.expectCorrectModel(body, response.body)
+    userTestManger.expectCorrectModel(userRequestBody, userResponseBody)
   })
 
   it('should get user', async () => {
-    const body = { login: 'name112', password: 'pass13#', email: 'email1@email.em' }
+    const { userResponseBody } = await userTestManger.createUser()
+    const userById = await userTestManger.getUser(userResponseBody.id)
 
-    const createUserResponse = await userTestManger.createUser(body)
+    expect(userResponseBody).toEqual(userById)
+  })
+
+  it('should delete user', async () => {
+    const { userResponseBody } = await userTestManger.createUser()
     const { username, password } = userTestManger.saCredits
 
-    const getUserResponse = await request(app.getHttpServer())
-      .get(`/api/users?searchEmailTerm=${body.email}`)
+    await request(app.getHttpServer())
+      .delete(`/api/users/${userResponseBody.id}`)
       .auth(username, password, {
         type: 'basic',
       })
-      .expect(200)
+      .expect(HttpStatusCodes.NO_CONTENT_204)
 
-    expect(createUserResponse.body).toEqual(getUserResponse.body.items[0])
+    const userById = await userTestManger.getUser(userResponseBody.id)
+
+    expect(userById.statusCode).toBe(HttpStatusCodes.NOT_FOUND_404)
   })
 })

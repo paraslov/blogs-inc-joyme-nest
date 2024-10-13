@@ -30,6 +30,7 @@ export class AuthService {
   async login(payload: AuthStrategiesDto) {
     return {
       accessToken: this.jwtService.sign(payload),
+      refreshToken: 'refresh_token',
     }
   }
 }

@@ -43,7 +43,7 @@ export class AuthController {
   @Post('/login')
   async login(@Request() req: any, @Response() res: any) {
     const loginResult = await this.authService.login(req.user)
-    res.cookie('refreshToken', loginResult.refreshToken, { httpOnly: true,secure: true })
+    res.cookie('refreshToken', loginResult.refreshToken, { httpOnly: true, secure: true })
 
     return res.status(HttpStatusCodes.OK_200).send({ accessToken: loginResult.accessToken })
   }

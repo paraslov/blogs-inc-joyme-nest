@@ -6,4 +6,12 @@ import { CommentsMappers } from './infrastructure/comments.mappers'
 import { CreateUpdateCommentDto } from './api/models/input/create-update-comment.dto'
 import { CommentsCommandService } from './application/comments.command.service'
 
-export { CommentsModule, Comment, CommentsQueryRepository, CommentsMongooseModule, CommentsMappers, CreateUpdateCommentDto, CommentsCommandService }
+export {
+  CommentsModule,
+  Comment,
+  CommentsQueryRepository,
+  CommentsMongooseModule,
+  CommentsMappers,
+  CreateUpdateCommentDto,
+  CommentsCommandService,
+}

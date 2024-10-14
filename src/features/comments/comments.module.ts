@@ -12,6 +12,12 @@ import { CqrsModule } from '@nestjs/cqrs'
   imports: [CommentsMongooseModule, CqrsModule],
   exports: [CommentsMongooseModule, CommentsQueryRepository, CommentsCommandService],
   controllers: [CommentsController],
-  providers: [CommentsQueryRepository, CommentsMappers, CommentsRepository, CommentsCommandService, ...CommentsCommandHandlers],
+  providers: [
+    CommentsQueryRepository,
+    CommentsMappers,
+    CommentsRepository,
+    CommentsCommandService,
+    ...CommentsCommandHandlers,
+  ],
 })
 export class CommentsModule {}

@@ -10,9 +10,7 @@ import { DeleteBlogCommand } from './commands/delete-blog.command'
 
 @Injectable()
 export class BlogsCommandService {
-  constructor(
-    private commandBus: CommandBus,
-  ) {}
+  constructor(private commandBus: CommandBus) {}
 
   createBlog(createBlogDto: CreateBlogDto) {
     const command = new CreateBlogCommand(createBlogDto)

@@ -7,9 +7,10 @@ import { PostsService } from './application/posts.service'
 import { PostsRepository } from './infrastructure/posts.repository'
 import { BlogsModule } from '../blogs/blogs.module'
 import { CommentsModule } from '../comments'
+import { UsersModule } from '../users/users.module'
 
 @Module({
-  imports: [PostsMongooseModule, BlogsModule, CommentsModule],
+  imports: [PostsMongooseModule, BlogsModule, CommentsModule, UsersModule],
   exports: [PostsMongooseModule, PostsQueryRepository, PostsMappers],
   controllers: [PostsController],
   providers: [PostsQueryRepository, PostsMappers, PostsService, PostsRepository],

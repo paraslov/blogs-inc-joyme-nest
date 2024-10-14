@@ -19,18 +19,21 @@ import { PostsService } from '../application/posts.service'
 import { BlogsQueryRepository } from '../../blogs'
 import { UpdatePostDto } from './models/input/update-post.dto'
 import { HttpStatusCodes } from '../../../common/models'
-import { CommentsQueryRepository } from '../../comments'
+import { CommentsCommandService, CommentsQueryRepository, CreateUpdateCommentDto } from '../../comments'
 import { SaAuthGuard } from '../../auth/application/guards/sa-auth.guard'
+import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
+import { UsersQueryRepository } from '../../users'
+import { JwtAuthGuard } from '../../auth/application/guards/jwt-auth.guard'
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    private postsQueryRepository: PostsQueryRepository,
     private postsService: PostsService,
-
+    private postsQueryRepository: PostsQueryRepository,
     private blogsQueryRepository: BlogsQueryRepository,
-
     private commentsQueryRepository: CommentsQueryRepository,
+    private commentsCommandService: CommentsCommandService,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @Get()
@@ -58,6 +61,26 @@ export class PostsController {
     }
 
     return foundPost
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':postId/comments')
+  async addCommentToPost(
+    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @Body() createCommentDto: CreateUpdateCommentDto,
+    @CurrentUserId() currentUserId: string,
+  ) {
+    const post = await this.postsQueryRepository.getPostById(postId)
+    const user = await this.usersQueryRepository.getUser(currentUserId)
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`)
+    }
+    if (!user) {
+      throw new NotFoundException(`User with ID ${currentUserId} not found`)
+    }
+
+    return this.commentsCommandService.createComment(createCommentDto, postId, user.id, user.login)
   }
 
   @UseGuards(SaAuthGuard)

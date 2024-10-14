@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../infrastructure/posts.query-repository'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
@@ -8,6 +20,7 @@ import { BlogsQueryRepository } from '../../blogs'
 import { UpdatePostDto } from './models/input/update-post.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { CommentsQueryRepository } from '../../comments'
+import { SaAuthGuard } from '../../auth/application/guards/sa-auth.guard'
 
 @Controller('posts')
 export class PostsController {
@@ -47,6 +60,7 @@ export class PostsController {
     return foundPost
   }
 
+  @UseGuards(SaAuthGuard)
   @Post()
   async create(@Body() createPostDto: CreatePostDto) {
     const blog = await this.blogsQueryRepository.getBlogById(createPostDto.blogId)
@@ -58,6 +72,7 @@ export class PostsController {
     return this.postsService.createPost(createPostDto, blog.name)
   }
 
+  @UseGuards(SaAuthGuard)
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Put(':id')
   async updateOne(@Param('id', ObjectIdValidationPipe) id: string, @Body() updatePostDto: UpdatePostDto) {
@@ -72,6 +87,7 @@ export class PostsController {
     }
   }
 
+  @UseGuards(SaAuthGuard)
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Delete(':id')
   async deleteOne(@Param('id', ObjectIdValidationPipe) id: string) {

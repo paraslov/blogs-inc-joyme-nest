@@ -14,7 +14,12 @@ export class CommentsMappers {
     mappedComment.id = comment._id.toString()
     mappedComment.content = comment.content
     mappedComment.createdAt = comment.createdAt
-    mappedComment.commentatorInfo = comment.commentatorInfo
+
+    mappedComment.commentatorInfo = { userId: null, userLogin: null }
+    mappedComment.commentatorInfo.userId = comment.commentatorInfo.userId
+    mappedComment.commentatorInfo.userLogin = comment.commentatorInfo.userLogin
+
+    mappedComment.likesInfo = {}
     mappedComment.likesInfo.likesCount = comment.likesCount
     mappedComment.likesInfo.dislikesCount = comment.dislikesCount
     mappedComment.likesInfo.myStatus = undefined

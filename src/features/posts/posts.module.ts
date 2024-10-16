@@ -9,11 +9,21 @@ import { BlogsModule } from '../blogs/blogs.module'
 import { CommentsModule } from '../comments'
 import { UsersModule } from '../users/users.module'
 import { LikesModule } from '../likes/likes.module'
+import { CqrsModule } from '@nestjs/cqrs'
+import { postsCommandHandlers } from './application/commands'
+import { PostsCommandService } from './application/posts.command.service'
 
 @Module({
-  imports: [PostsMongooseModule, BlogsModule, CommentsModule, UsersModule, LikesModule],
+  imports: [PostsMongooseModule, BlogsModule, CommentsModule, UsersModule, LikesModule, CqrsModule],
   exports: [PostsMongooseModule, PostsQueryRepository, PostsMappers],
   controllers: [PostsController],
-  providers: [PostsQueryRepository, PostsMappers, PostsService, PostsRepository],
+  providers: [
+    PostsQueryRepository,
+    PostsMappers,
+    PostsService,
+    PostsCommandService,
+    PostsRepository,
+    ...postsCommandHandlers,
+  ],
 })
 export class PostsModule {}

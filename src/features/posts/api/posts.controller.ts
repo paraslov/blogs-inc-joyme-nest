@@ -24,18 +24,19 @@ import { SaAuthGuard } from '../../auth/application/guards/sa-auth.guard'
 import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
 import { UsersQueryRepository } from '../../users'
 import { JwtAuthGuard } from '../../auth/application/guards/jwt-auth.guard'
-import { LikesCommandService, UpdateLikeStatusDto } from '../../likes'
+import { UpdateLikeStatusDto } from '../../likes'
+import { PostsCommandService } from '../application/posts.command.service'
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private postsService: PostsService,
+    private postsCommandService: PostsCommandService,
     private postsQueryRepository: PostsQueryRepository,
     private blogsQueryRepository: BlogsQueryRepository,
     private usersQueryRepository: UsersQueryRepository,
     private commentsQueryRepository: CommentsQueryRepository,
     private commentsCommandService: CommentsCommandService,
-    private likesCommandService: LikesCommandService,
   ) {}
 
   @Get()
@@ -103,29 +104,15 @@ export class PostsController {
       throw new NotFoundException(`User with ID ${currentUserId} not found`)
     }
 
-    const likesChangeData = await this.likesCommandService.updateLikeStatus(
+    const updateNotice = await this.postsCommandService.updatePostLikeStatus(
+      post,
       updateLikeStatusDto,
-      postId,
       user.id,
       user.login,
     )
-    const { likesCountChange, dislikesCountChange } = likesChangeData.data
 
-    const likesCount = (post.extendedLikesInfo?.likesCount ?? 0) + likesCountChange
-    const dislikesCount = (post.extendedLikesInfo?.dislikesCount ?? 0) + dislikesCountChange
-
-    const updatePostData: UpdatePostDto = {
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      likesCount: likesCount >= 0 ? likesCount : 0,
-      dislikesCount: dislikesCount >= 0 ? dislikesCount : 0,
-    }
-
-    const updateResult = await this.postsService.updatePost(postId, updatePostData)
-    if (!updateResult) {
-      throw new NotFoundException(`Post with ID ${postId} not found`)
+    if (updateNotice.hasError()) {
+      throw new NotFoundException(updateNotice.extensions)
     }
   }
 

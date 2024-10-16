@@ -12,7 +12,7 @@ export class Like {
   @Prop({ required: true, type: String })
   userLogin: string
 
-  @Prop({ required: true, type: LikeStatus })
+  @Prop({ required: true, type: String, enum: LikeStatus })
   status: LikeStatus
 
   @Prop({ required: true, type: String })

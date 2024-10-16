@@ -8,9 +8,10 @@ import { PostsRepository } from './infrastructure/posts.repository'
 import { BlogsModule } from '../blogs/blogs.module'
 import { CommentsModule } from '../comments'
 import { UsersModule } from '../users/users.module'
+import { LikesModule } from '../likes/likes.module'
 
 @Module({
-  imports: [PostsMongooseModule, BlogsModule, CommentsModule, UsersModule],
+  imports: [PostsMongooseModule, BlogsModule, CommentsModule, UsersModule, LikesModule],
   exports: [PostsMongooseModule, PostsQueryRepository, PostsMappers],
   controllers: [PostsController],
   providers: [PostsQueryRepository, PostsMappers, PostsService, PostsRepository],

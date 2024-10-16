@@ -24,6 +24,7 @@ import { SaAuthGuard } from '../../auth/application/guards/sa-auth.guard'
 import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
 import { UsersQueryRepository } from '../../users'
 import { JwtAuthGuard } from '../../auth/application/guards/jwt-auth.guard'
+import { LikesCommandService, UpdateLikeStatusDto } from '../../likes'
 
 @Controller('posts')
 export class PostsController {
@@ -31,9 +32,10 @@ export class PostsController {
     private postsService: PostsService,
     private postsQueryRepository: PostsQueryRepository,
     private blogsQueryRepository: BlogsQueryRepository,
+    private usersQueryRepository: UsersQueryRepository,
     private commentsQueryRepository: CommentsQueryRepository,
     private commentsCommandService: CommentsCommandService,
-    private usersQueryRepository: UsersQueryRepository,
+    private likesCommandService: LikesCommandService,
   ) {}
 
   @Get()
@@ -81,6 +83,50 @@ export class PostsController {
     }
 
     return this.commentsCommandService.createComment(createCommentDto, postId, user.id, user.login)
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @UseGuards(JwtAuthGuard)
+  @Put(':postId/like-status')
+  async updateCommentLikeStatus(
+    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @Body() updateLikeStatusDto: UpdateLikeStatusDto,
+    @CurrentUserId() currentUserId: string,
+  ) {
+    const post = await this.postsQueryRepository.getPostById(postId)
+    const user = await this.usersQueryRepository.getUser(currentUserId)
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`)
+    }
+    if (!user) {
+      throw new NotFoundException(`User with ID ${currentUserId} not found`)
+    }
+
+    const likesChangeData = await this.likesCommandService.updateLikeStatus(
+      updateLikeStatusDto,
+      postId,
+      user.id,
+      user.login,
+    )
+    const { likesCountChange, dislikesCountChange } = likesChangeData.data
+
+    const likesCount = (post.extendedLikesInfo?.likesCount ?? 0) + likesCountChange
+    const dislikesCount = (post.extendedLikesInfo?.dislikesCount ?? 0) + dislikesCountChange
+
+    const updatePostData: UpdatePostDto = {
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      likesCount: likesCount >= 0 ? likesCount : 0,
+      dislikesCount: dislikesCount >= 0 ? dislikesCount : 0,
+    }
+
+    const updateResult = await this.postsService.updatePost(postId, updatePostData)
+    if (!updateResult) {
+      throw new NotFoundException(`Post with ID ${postId} not found`)
+    }
   }
 
   @UseGuards(SaAuthGuard)

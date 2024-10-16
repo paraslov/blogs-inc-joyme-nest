@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Blog } from './features/blogs'
 import { Model } from 'mongoose'
-import { Post } from './features/posts'
+import { PostEntity } from './features/posts'
 import { User } from './features/users'
 import { Comment } from './features/comments'
 import { Like } from './features/likes'
@@ -11,7 +11,7 @@ import { Like } from './features/likes'
 export class AppService {
   constructor(
     @InjectModel(Blog.name) private blogModel: Model<Blog>,
-    @InjectModel(Post.name) private postModel: Model<Post>,
+    @InjectModel(PostEntity.name) private postModel: Model<PostEntity>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     @InjectModel(Like.name) private likeModel: Model<Like>,

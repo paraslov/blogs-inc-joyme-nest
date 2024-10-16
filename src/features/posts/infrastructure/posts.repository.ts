@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Post } from '../domain/mongoose/posts.entity'
+import { PostEntity } from '../domain/mongoose/posts.entity'
 import { Model } from 'mongoose'
 import { PostsMappers } from './posts.mappers'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
@@ -8,11 +8,11 @@ import { UpdatePostDto } from '../api/models/input/update-post.dto'
 @Injectable()
 export class PostsRepository {
   constructor(
-    @InjectModel(Post.name) private postsModel: Model<Post>,
+    @InjectModel(PostEntity.name) private postsModel: Model<PostEntity>,
     private postsMappers: PostsMappers,
   ) {}
 
-  async savePost(post: Post) {
+  async savePost(post: PostEntity) {
     const savedPost = await new this.postsModel(post).save()
 
     return this.postsMappers.mapPostToOutputDto(savedPost)

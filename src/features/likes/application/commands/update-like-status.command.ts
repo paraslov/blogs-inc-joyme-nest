@@ -5,7 +5,7 @@ import { LikeStatus } from '../../api/models/enums/like-status'
 import { Like } from '../../domain/mongoose/likes.entity'
 import { InterlayerDataManager } from '../../../../common/manager'
 
-class LikesInfoChangeDto {
+export class LikesInfoChangeDto {
   likesCountChange: number
   dislikesCountChange: number
 }
@@ -60,7 +60,8 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
       dislikesCountChange = newLikeStatus === LikeStatus.DISLIKE ? 1 : 0
     }
 
-    return notice.addData({ likesCountChange, dislikesCountChange })
+    notice.addData({ likesCountChange, dislikesCountChange })
+    return notice
   }
 
   calculateChanges(currentStatus: LikeStatus, changedStatus: LikeStatus) {

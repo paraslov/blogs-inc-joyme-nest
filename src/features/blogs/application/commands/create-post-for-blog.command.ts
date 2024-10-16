@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CreateBlogPostDto } from '../../api/models/input/create-blog-post.dto'
-import { Post } from '../../../posts'
+import { PostEntity } from '../../../posts'
 import { BlogsRepository } from '../../infrastructure/blogs.repository'
 
 export class CreatePostForBlogCommand {
@@ -18,12 +18,13 @@ export class CreatePostForBlogHandler implements ICommandHandler<CreatePostForBl
   async execute(command: CreatePostForBlogCommand) {
     const { createBlogPostDto, blogId, blogName } = command
 
-    const newPost: Post = {
+    const newPost: PostEntity = {
       ...createBlogPostDto,
       blogId,
       blogName,
       createdAt: new Date().toISOString(),
-      extendedLikeInfo: null,
+      likesCount: 0,
+      dislikesCount: 0,
     }
 
     return this.blogsRepository.savePost(newPost)

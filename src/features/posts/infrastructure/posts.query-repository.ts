@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Post } from '../domain/mongoose/posts.entity'
+import { PostEntity } from '../domain/mongoose/posts.entity'
 import { Model } from 'mongoose'
 import { PostsMappers } from './posts.mappers'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
@@ -8,7 +8,7 @@ import { StandardInputFilters } from '../../../common/models/input/QueryInputPar
 @Injectable()
 export class PostsQueryRepository {
   constructor(
-    @InjectModel(Post.name) private postsModel: Model<Post>,
+    @InjectModel(PostEntity.name) private postsModel: Model<PostEntity>,
     private postsMappers: PostsMappers,
   ) {}
 

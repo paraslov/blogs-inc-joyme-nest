@@ -5,6 +5,7 @@ import { Model } from 'mongoose'
 import { Post } from './features/posts'
 import { User } from './features/users'
 import { Comment } from './features/comments'
+import { Like } from './features/likes'
 
 @Injectable()
 export class AppService {
@@ -13,6 +14,7 @@ export class AppService {
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
+    @InjectModel(Like.name) private likeModel: Model<Like>,
   ) {}
 
   getHello(): string {
@@ -27,6 +29,7 @@ export class AppService {
       await this.postModel.deleteMany({})
       await this.userModel.deleteMany({})
       await this.commentModel.deleteMany({})
+      await this.likeModel.deleteMany({})
     } catch (err) {
       throw new NotFoundException(`Failed to clear data: ${err.message}`)
     }

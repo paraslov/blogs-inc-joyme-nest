@@ -11,6 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import configuration, { ConfigurationType, validate } from './settings/configuration'
 import { Environments } from './settings/env.settings'
 import { ThrottlerModule } from '@nestjs/throttler'
+import { LikesModule } from './features/likes/likes.module'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ThrottlerModule } from '@nestjs/throttler'
     PostsModule,
     UsersModule,
     CommentsModule,
+    LikesModule,
     ThrottlerModule.forRoot([
       {
         name: 'default',

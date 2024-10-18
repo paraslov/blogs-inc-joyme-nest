@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   ForbiddenException,
   Get,
@@ -40,7 +41,7 @@ export class CommentsController {
   async updateComment(
     @Param('commentId', ObjectIdValidationPipe) commentId: string,
     @CurrentUserId() currentUserId: string,
-    updateCommentDto: CreateUpdateCommentDto,
+    @Body() updateCommentDto: CreateUpdateCommentDto,
   ) {
     const foundComment = await this.commentsQueryRepository.getCommentById(commentId)
 

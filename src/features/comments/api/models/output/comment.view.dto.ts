@@ -1,4 +1,4 @@
-export class CommentDto {
+export class CommentViewDto {
   id: string
   content: string
   createdAt: string

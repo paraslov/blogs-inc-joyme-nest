@@ -1,6 +1,6 @@
 import { CreateUpdateCommentDto } from '../../api/models/input/create-update-comment.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { Comment } from '../../domain/mongoose/comment.entity'
+import { CommentDto } from '../../domain/mongoose/comment.entity'
 import { CommentsRepository } from '../../infrastructure/comments.repository'
 
 export class CreateCommentCommand {
@@ -19,7 +19,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
   execute(command: CreateCommentCommand) {
     const { createCommentDto, parentId, userLogin, userId } = command
 
-    const newComment: Comment = {
+    const newComment: CommentDto = {
       parentId,
       content: createCommentDto.content,
       commentatorInfo: {

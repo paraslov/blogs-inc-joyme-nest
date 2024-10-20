@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Comment } from '../domain/mongoose/comment.entity'
+import { CommentDto } from '../domain/mongoose/comment.entity'
 import { Model } from 'mongoose'
 import { CommentsMappers } from './comments.mappers'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
@@ -8,7 +8,7 @@ import { StandardInputFilters } from '../../../common/models/input/QueryInputPar
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    @InjectModel(Comment.name) private commentsModel: Model<Comment>,
+    @InjectModel(CommentDto.name) private commentsModel: Model<CommentDto>,
     private commentsMappers: CommentsMappers,
   ) {}
 

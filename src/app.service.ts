@@ -4,7 +4,7 @@ import { Blog } from './features/blogs'
 import { Model } from 'mongoose'
 import { PostEntity } from './features/posts'
 import { User } from './features/users'
-import { Comment } from './features/comments'
+import { CommentDto } from './features/comments'
 import { Like } from './features/likes'
 
 @Injectable()
@@ -13,7 +13,7 @@ export class AppService {
     @InjectModel(Blog.name) private blogModel: Model<Blog>,
     @InjectModel(PostEntity.name) private postModel: Model<PostEntity>,
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Comment.name) private commentModel: Model<Comment>,
+    @InjectModel(CommentDto.name) private commentModel: Model<CommentDto>,
     @InjectModel(Like.name) private likeModel: Model<Like>,
   ) {}
 

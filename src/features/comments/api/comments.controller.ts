@@ -17,12 +17,15 @@ import { CreateUpdateCommentDto } from './models/input/create-update-comment.dto
 import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
 import { CommentsCommandService } from '../application/comments.command.service'
 import { HttpStatusCodes } from '../../../common/models'
+import { UsersQueryRepository } from '../../users'
+import { UpdateLikeStatusDto } from '../../likes'
 
 @Controller('comments')
 export class CommentsController {
   constructor(
     private commentsQueryRepository: CommentsQueryRepository,
     private commentsCommandService: CommentsCommandService,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @Get(':id')
@@ -55,6 +58,36 @@ export class CommentsController {
     const resultNotice = await this.commentsCommandService.updateComment(updateCommentDto, commentId)
     if (resultNotice.hasError()) {
       throw new HttpException(resultNotice.extensions, resultNotice.code)
+    }
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @UseGuards(JwtAuthGuard)
+  @Put(':commentId/like-status')
+  async updateLikeStatus(
+    @CurrentUserId() currentUserId: string,
+    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Body() updateLikeStatus: UpdateLikeStatusDto,
+  ) {
+    const foundComment = await this.commentsQueryRepository.getCommentById(commentId)
+    const user = await this.usersQueryRepository.getUser(currentUserId)
+
+    if (!user) {
+      throw new NotFoundException(`User with ${currentUserId} not found`)
+    }
+    if (!foundComment) {
+      throw new NotFoundException(`Comment with ID ${commentId} not found`)
+    }
+
+    const updateNotice = await this.commentsCommandService.updateCommentLikeStatus(
+      updateLikeStatus,
+      commentId,
+      user.id,
+      user.login,
+    )
+
+    if (updateNotice.hasError()) {
+      throw new NotFoundException(updateNotice.extensions)
     }
   }
 }

@@ -7,9 +7,11 @@ import { CommentsRepository } from './infrastructure/comments.repository'
 import { CommentsCommandService } from './application/comments.command.service'
 import { CommentsCommandHandlers } from './application/commands'
 import { CqrsModule } from '@nestjs/cqrs'
+import { LikesModule } from '../likes/likes.module'
+import { UsersModule } from '../users/users.module'
 
 @Module({
-  imports: [CommentsMongooseModule, CqrsModule],
+  imports: [CommentsMongooseModule, CqrsModule, LikesModule, UsersModule],
   exports: [CommentsMongooseModule, CommentsQueryRepository, CommentsCommandService],
   controllers: [CommentsController],
   providers: [

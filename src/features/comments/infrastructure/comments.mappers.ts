@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { CommentDocument } from '../domain/mongoose/comment.entity'
-import { CommentDto } from '../api/models/output/comment.dto'
+import { CommentViewDto } from '../api/models/output/comment.view.dto'
 
 @Injectable()
 export class CommentsMappers {
@@ -9,7 +9,7 @@ export class CommentsMappers {
       return null
     }
 
-    const mappedComment = new CommentDto()
+    const mappedComment = new CommentViewDto()
 
     mappedComment.id = comment._id.toString()
     mappedComment.content = comment.content

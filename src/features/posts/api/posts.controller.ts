@@ -20,8 +20,8 @@ import { BlogsQueryRepository } from '../../blogs'
 import { UpdatePostDto } from './models/input/update-post.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { CommentsCommandService, CommentsQueryRepository, CreateUpdateCommentDto } from '../../comments'
-import { SaAuthGuard, JwtAuthGuard } from '../../auth'
-import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
+import { JwtAuthGuard, SaAuthGuard } from '../../auth'
+import { CurrentUserId, PossibleUserId } from '../../../base/decorators'
 import { UsersQueryRepository } from '../../users'
 import { UpdateLikeStatusDto } from '../../likes'
 import { PostsCommandService } from '../application/posts.command.service'
@@ -55,14 +55,18 @@ export class PostsController {
   }
 
   @Get(':id/comments')
-  async findAllCommentsForPost(@Param('id', ObjectIdValidationPipe) id: string, @Query() query: StandardInputFilters) {
+  async findAllCommentsForPost(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Query() query: StandardInputFilters,
+    @PossibleUserId() currentUserId: string | null,
+  ) {
     const foundPost = await this.postsQueryRepository.getPostById(id)
 
     if (!foundPost) {
       throw new NotFoundException(`Post with ID ${id} not found`)
     }
 
-    return this.commentsQueryRepository.getCommentsList(query, id)
+    return this.commentsQueryRepository.getCommentsList(query, id, currentUserId)
   }
 
   @UseGuards(JwtAuthGuard)

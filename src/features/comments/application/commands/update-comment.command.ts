@@ -19,7 +19,7 @@ export class UpdateCommentHandler implements ICommandHandler<UpdateCommentComman
     const notice = new InterlayerDataManager()
     const { updateCommentDto, commentId } = command
 
-    const updateResult = await this.commentsRepository.updateComment(commentId, updateCommentDto)
+    const updateResult = await this.commentsRepository.updateCommentContent(commentId, updateCommentDto)
 
     if (!updateResult) {
       notice.addError('Comment update failed', null, HttpStatusCodes.EXPECTATION_FAILED_417)

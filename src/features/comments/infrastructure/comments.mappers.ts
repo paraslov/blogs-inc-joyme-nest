@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { CommentDocument } from '../domain/mongoose/comment.entity'
 import { CommentViewDto } from '../api/models/output/comment.view.dto'
+import { LikeStatus } from '../../likes'
 
 @Injectable()
 export class CommentsMappers {
-  mapEntityToOutputDto(comment: CommentDocument) {
+  mapEntityToOutputDto(comment: CommentDocument, likeStatus?: LikeStatus) {
     if (!comment) {
       return null
     }
@@ -22,7 +23,7 @@ export class CommentsMappers {
     mappedComment.likesInfo = {}
     mappedComment.likesInfo.likesCount = comment.likesCount
     mappedComment.likesInfo.dislikesCount = comment.dislikesCount
-    mappedComment.likesInfo.myStatus = undefined
+    mappedComment.likesInfo.myStatus = likeStatus ?? LikeStatus.NONE
 
     return mappedComment
   }

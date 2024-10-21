@@ -17,8 +17,13 @@ export class CommentsRepository {
 
     return this.commentsMappers.mapEntityToOutputDto(savedComment)
   }
-  async updateComment(commentId: string, updateCommentDto: CreateUpdateCommentDto) {
+  async updateCommentContent(commentId: string, updateCommentDto: CreateUpdateCommentDto) {
     const updateResult = await this.commentModel.updateOne({ _id: commentId }, { content: updateCommentDto.content })
+
+    return Boolean(updateResult.matchedCount)
+  }
+  async updateComment(commentId: string, commentDto: CommentDto) {
+    const updateResult = await this.commentModel.updateOne({ _id: commentId }, commentDto)
 
     return Boolean(updateResult.matchedCount)
   }

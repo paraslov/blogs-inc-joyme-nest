@@ -29,9 +29,11 @@ export class CommentsController {
   ) {}
 
   @Get(':commentId')
-  async getOne(@Param('commentId', ObjectIdValidationPipe) commentId: string, @PossibleUserId() currentUserId: string) {
-    console.log('@> currentUserId: ', currentUserId)
-    const foundComment = await this.commentsQueryRepository.getCommentById(commentId)
+  async getOne(
+    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @PossibleUserId() currentUserId: string | null,
+  ) {
+    const foundComment = await this.commentsQueryRepository.getCommentById(commentId, currentUserId)
 
     if (!foundComment) {
       throw new NotFoundException(`Comment with ID ${commentId} not found`)

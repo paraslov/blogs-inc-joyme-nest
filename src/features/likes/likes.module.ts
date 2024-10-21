@@ -7,7 +7,7 @@ import { LikesCommandService } from './application/likes.command.service'
 
 @Module({
   imports: [CqrsModule, LikesMongooseModule],
-  exports: [LikesMongooseModule, LikesCommandService],
+  exports: [LikesMongooseModule, LikesCommandService, LikesRepository],
   providers: [LikesCommandService, LikesRepository, ...likesCommandHandlers],
 })
 export class LikesModule {}

@@ -20,4 +20,12 @@ export class LikesRepository {
 
     return savedLikeStatus._id.toString()
   }
+  async getUserLikeStatus(parentId: string, userId?: string) {
+    if (!userId) {
+      return
+    }
+    const userLikeData = await this.likesModel.findOne({ userId, parentId })
+
+    return userLikeData?.status
+  }
 }

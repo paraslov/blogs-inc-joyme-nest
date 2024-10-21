@@ -4,19 +4,19 @@ import { CommentDto } from '../domain/mongoose/comment.entity'
 import { Model } from 'mongoose'
 import { CommentsMappers } from './comments.mappers'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
-import { Like } from '../../likes'
+import { LikesRepository } from '../../likes'
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
     @InjectModel(CommentDto.name) private commentsModel: Model<CommentDto>,
-    @InjectModel(Like.name) private readonly likesModel: Model<Like>,
+    private likesRepository: LikesRepository,
     private commentsMappers: CommentsMappers,
   ) {}
 
   async getCommentById(commentId: string, userId?: string) {
     const foundComment = await this.commentsModel.findById(commentId)
-    const likeStatus = await this.getUserLikeStatus(commentId, userId)
+    const likeStatus = await this.likesRepository.getUserLikeStatus(commentId, userId)
 
     return this.commentsMappers.mapEntityToOutputDto(foundComment, likeStatus)
   }
@@ -36,7 +36,7 @@ export class CommentsQueryRepository {
       .exec()
 
     const mappedCommentsPromises = comments.map(async (comment) => {
-      const likeStatus = await this.getUserLikeStatus(comment.parentId, userId)
+      const likeStatus = await this.likesRepository.getUserLikeStatus(comment.parentId, userId)
 
       return this.commentsMappers.mapEntityToOutputDto(comment, likeStatus)
     })
@@ -52,13 +52,5 @@ export class CommentsQueryRepository {
       page: pageNumber,
       items: mappedComments,
     }
-  }
-  async getUserLikeStatus(parentId: string, userId?: string) {
-    if (!userId) {
-      return
-    }
-    const userLikeData = await this.likesModel.findOne({ userId, parentId })
-
-    return userLikeData?.status
   }
 }

@@ -14,7 +14,7 @@ import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation
 import { CommentsQueryRepository } from '../infrastructure/comments.query-repository'
 import { JwtAuthGuard } from '../../auth'
 import { CreateUpdateCommentDto } from './models/input/create-update-comment.dto'
-import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
+import { CurrentUserId, PossibleUserId } from '../../../base/decorators'
 import { CommentsCommandService } from '../application/comments.command.service'
 import { HttpStatusCodes } from '../../../common/models'
 import { UsersQueryRepository } from '../../users'
@@ -28,12 +28,13 @@ export class CommentsController {
     private usersQueryRepository: UsersQueryRepository,
   ) {}
 
-  @Get(':id')
-  async getOne(@Param('id', ObjectIdValidationPipe) id: string) {
-    const foundComment = await this.commentsQueryRepository.getCommentById(id)
+  @Get(':commentId')
+  async getOne(@Param('commentId', ObjectIdValidationPipe) commentId: string, @PossibleUserId() currentUserId: string) {
+    console.log('@> currentUserId: ', currentUserId)
+    const foundComment = await this.commentsQueryRepository.getCommentById(commentId)
 
     if (!foundComment) {
-      throw new NotFoundException(`Comment with ID ${id} not found`)
+      throw new NotFoundException(`Comment with ID ${commentId} not found`)
     }
     return foundComment
   }

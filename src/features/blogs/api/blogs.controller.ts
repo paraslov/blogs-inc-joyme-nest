@@ -19,7 +19,8 @@ import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation
 import { PostsQueryRepository } from '../../posts'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
-import { SaAuthGuard } from '../../auth/application/guards/sa-auth.guard'
+import { SaAuthGuard } from '../../auth'
+import { PossibleUserId } from '../../../base/decorators'
 
 @Controller('blogs')
 export class BlogsController {
@@ -36,14 +37,18 @@ export class BlogsController {
   }
 
   @Get(':id/posts')
-  async findAllPostsForBlog(@Param('id', ObjectIdValidationPipe) id: string, @Query() query: StandardInputFilters) {
+  async findAllPostsForBlog(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Query() query: StandardInputFilters,
+    @PossibleUserId() currentUserId?: string,
+  ) {
     const blog = await this.blogsQueryRepository.getBlogById(id)
 
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${id} not found`)
     }
 
-    return this.postsQueryRepository.getPostsList(query, id)
+    return this.postsQueryRepository.getPostsList(query, { blogId: id, userId: currentUserId })
   }
 
   @Get(':id')

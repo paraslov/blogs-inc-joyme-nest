@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { PostDocument } from '../domain/mongoose/posts.entity'
 import { PostOutputDto } from '../api/models/output/post.dto'
-import { LikeStatus } from '../../likes'
+import { LikeDetailsViewDto, LikeStatus } from '../../likes'
 
 @Injectable()
 export class PostsMappers {
-  mapPostToOutputDto(post: PostDocument, likeStatus?: LikeStatus) {
+  mapPostToOutputDto(post: PostDocument, threeLatestLikes: LikeDetailsViewDto[], likeStatus?: LikeStatus) {
     if (!post) {
       return null
     }
@@ -23,7 +23,7 @@ export class PostsMappers {
     mappedPost.extendedLikesInfo.likesCount = post.likesCount
     mappedPost.extendedLikesInfo.dislikesCount = post.dislikesCount
     mappedPost.extendedLikesInfo.myStatus = likeStatus ?? LikeStatus.NONE
-    mappedPost.extendedLikesInfo.newestLikes = []
+    mappedPost.extendedLikesInfo.newestLikes = threeLatestLikes
 
     return mappedPost
   }

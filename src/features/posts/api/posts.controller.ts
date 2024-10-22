@@ -39,8 +39,8 @@ export class PostsController {
   ) {}
 
   @Get()
-  findAll(@Query() query: StandardInputFilters) {
-    return this.postsQueryRepository.getPostsList(query)
+  findAll(@Query() query: StandardInputFilters, @PossibleUserId() currentUserId?: string) {
+    return this.postsQueryRepository.getPostsList(query, { userId: currentUserId })
   }
 
   @Get(':postId')
@@ -54,19 +54,19 @@ export class PostsController {
     return foundPost
   }
 
-  @Get(':id/comments')
+  @Get(':postId/comments')
   async findAllCommentsForPost(
-    @Param('id', ObjectIdValidationPipe) id: string,
+    @Param('postId', ObjectIdValidationPipe) postId: string,
     @Query() query: StandardInputFilters,
     @PossibleUserId() currentUserId: string | null,
   ) {
-    const foundPost = await this.postsQueryRepository.getPostById(id)
+    const foundPost = await this.postsQueryRepository.getPostById(postId)
 
     if (!foundPost) {
-      throw new NotFoundException(`Post with ID ${id} not found`)
+      throw new NotFoundException(`Post with ID ${postId} not found`)
     }
 
-    return this.commentsQueryRepository.getCommentsList(query, id, currentUserId)
+    return this.commentsQueryRepository.getCommentsList(query, postId, currentUserId)
   }
 
   @UseGuards(JwtAuthGuard)

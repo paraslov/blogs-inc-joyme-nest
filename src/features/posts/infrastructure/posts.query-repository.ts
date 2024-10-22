@@ -16,13 +16,15 @@ export class PostsQueryRepository {
 
   async getPostById(postId: string, userId?: string) {
     const likeStatus = await this.likesRepository.getUserLikeStatus(postId, userId)
+    const threeLatestLikes = await this.likesRepository.getLatestLikes(postId)
     const post = await this.postsModel.findById(postId)
 
-    return this.postsMappers.mapPostToOutputDto(post, likeStatus)
+    return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes, likeStatus)
   }
 
-  async getPostsList(queryFilter: StandardInputFilters, blogId?: string, userId?: string) {
+  async getPostsList(queryFilter: StandardInputFilters, options: { blogId?: string; userId?: string }) {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryFilter
+    const { blogId, userId } = options
 
     const filter: any = {}
     if (blogId) {
@@ -38,8 +40,9 @@ export class PostsQueryRepository {
 
     const mappedPostsPromises = posts.map(async (post) => {
       const likeStatus = await this.likesRepository.getUserLikeStatus(post.id, userId)
+      const threeLatestLikes = await this.likesRepository.getLatestLikes(post.id)
 
-      return this.postsMappers.mapPostToOutputDto(post, likeStatus)
+      return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes, likeStatus)
     })
     const mappedPosts = await Promise.all(mappedPostsPromises)
 

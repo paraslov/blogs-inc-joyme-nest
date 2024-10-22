@@ -43,12 +43,12 @@ export class PostsController {
     return this.postsQueryRepository.getPostsList(query)
   }
 
-  @Get(':id')
-  async findById(@Param('id', ObjectIdValidationPipe) id: string) {
-    const foundPost = await this.postsQueryRepository.getPostById(id)
+  @Get(':postId')
+  async findById(@Param('postId', ObjectIdValidationPipe) postId: string, @PossibleUserId() currentUserId?: string) {
+    const foundPost = await this.postsQueryRepository.getPostById(postId, currentUserId)
 
     if (!foundPost) {
-      throw new NotFoundException(`Post with ID ${id} not found`)
+      throw new NotFoundException(`Post with ID ${postId} not found`)
     }
 
     return foundPost

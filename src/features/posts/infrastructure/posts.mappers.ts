@@ -5,7 +5,7 @@ import { LikeDetailsViewDto, LikeStatus } from '../../likes'
 
 @Injectable()
 export class PostsMappers {
-  mapPostToOutputDto(post: PostDocument, threeLatestLikes: LikeDetailsViewDto[], likeStatus?: LikeStatus) {
+  mapPostToOutputDto(post: PostDocument, threeLatestLikes: LikeDetailsViewDto[] = [], likeStatus?: LikeStatus) {
     if (!post) {
       return null
     }

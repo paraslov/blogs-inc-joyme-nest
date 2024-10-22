@@ -29,9 +29,9 @@ export class UpdatePostLikeStatusHandler implements ICommandHandler<UpdatePostLi
 
     const likesChangeData = await this.likesCommandService.updateLikeStatus(
       updateLikeStatusDto,
+      post.id,
       userId,
       userLogin,
-      post.id,
     )
     const { likesCountChange, dislikesCountChange } = likesChangeData.data
 

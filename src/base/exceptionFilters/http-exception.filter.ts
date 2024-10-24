@@ -14,13 +14,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
       const errorsResponse = {
         errorsMessages: [],
       }
+      const addedFields = []
 
       const responseBody: any = exception.getResponse()
 
       if (Array.isArray(responseBody.message)) {
-        responseBody.message.forEach((error: any) =>
-          errorsResponse.errorsMessages.push({ field: error.key, message: error.message }),
-        )
+        responseBody.message.forEach((error: any) => {
+          if (!addedFields.includes(error.key)) {
+            errorsResponse.errorsMessages.push({ field: error.key, message: error.message })
+          }
+
+          addedFields.push(error.key)
+        })
       } else {
         errorsResponse.errorsMessages.push(responseBody.message)
       }

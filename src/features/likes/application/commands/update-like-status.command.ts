@@ -33,20 +33,20 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
     let dislikesCountChange: number
 
     if (currentLikeStatus) {
-      const updatedLikeStatusDto: Like = {
+      const updatedLikeStatusEntityDto: Like = {
         userId: currentLikeStatus.userId,
         userLogin: currentLikeStatus.userLogin,
         parentId: currentLikeStatus.parentId,
         status: newLikeStatus,
         createdAt: currentLikeStatus.status === newLikeStatus ? currentLikeStatus.createdAt : new Date(),
       }
-      await this.likesRepository.updateLikeStatus(updatedLikeStatusDto, parentId)
+      await this.likesRepository.updateLikeStatus(updatedLikeStatusEntityDto, parentId)
 
       const { dislikesCount, likesCount } = this.calculateChanges(currentLikeStatus.status, newLikeStatus)
       likesCountChange = likesCount
       dislikesCountChange = dislikesCount
     } else {
-      const createLikeStatusDto: Like = {
+      const createLikeStatusEntityDto: Like = {
         userId,
         userLogin,
         parentId,
@@ -54,7 +54,7 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
         createdAt: new Date(),
       }
 
-      await this.likesRepository.saveLikeStatus(createLikeStatusDto)
+      await this.likesRepository.saveLikeStatus(createLikeStatusEntityDto)
 
       likesCountChange = newLikeStatus === LikeStatus.LIKE ? 1 : 0
       dislikesCountChange = newLikeStatus === LikeStatus.DISLIKE ? 1 : 0
@@ -95,7 +95,7 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
 
     if (currentStatus === LikeStatus.NONE && changedStatus === LikeStatus.DISLIKE) {
       likesCount = 0
-      dislikesCount = -1
+      dislikesCount = 1
     }
 
     return { likesCount, dislikesCount }

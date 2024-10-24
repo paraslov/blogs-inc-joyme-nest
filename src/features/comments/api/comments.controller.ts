@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   HttpCode,
@@ -92,5 +93,30 @@ export class CommentsController {
     if (updateNotice.hasError()) {
       throw new NotFoundException(updateNotice.extensions)
     }
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':commentId')
+  async deleteComment(
+    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @CurrentUserId() currentUserId: string,
+  ) {
+    const foundComment = await this.commentsQueryRepository.getCommentById(commentId, currentUserId)
+
+    if (!foundComment) {
+      throw new NotFoundException(`Comment with ID ${commentId} not found`)
+    }
+    if (foundComment.commentatorInfo.userId !== currentUserId) {
+      throw new ForbiddenException('Trying to delete other user comment')
+    }
+
+    const resultNotice = await this.commentsCommandService.deleteComment(commentId)
+
+    if (resultNotice.hasError()) {
+      throw new HttpException(resultNotice.extensions, resultNotice.code)
+    }
+
+    return foundComment
   }
 }

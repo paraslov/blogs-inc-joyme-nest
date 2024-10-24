@@ -6,6 +6,7 @@ import { UpdateCommentCommand } from './commands/update-comment.command'
 import { InterlayerDataManager } from '../../../common/manager'
 import { UpdateCommentLikeStatusCommand } from './commands/update-like-status.command'
 import { UpdateLikeStatusDto } from '../../likes'
+import { DeleteCommentCommand } from './commands/delete-comment.command'
 
 @Injectable()
 export class CommentsCommandService {
@@ -31,5 +32,10 @@ export class CommentsCommandService {
     const command = new UpdateCommentLikeStatusCommand(updateLikeStatusDto, commentId, userId, userLogin)
 
     return this.commandBus.execute<UpdateCommentLikeStatusCommand, InterlayerDataManager>(command)
+  }
+  deleteComment(commentId: string) {
+    const command = new DeleteCommentCommand(commentId)
+
+    return this.commandBus.execute<DeleteCommentCommand, InterlayerDataManager>(command)
   }
 }

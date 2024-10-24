@@ -30,4 +30,9 @@ export class CommentsRepository {
   async getCommentDBModelById(commentId: string) {
     return this.commentModel.findById(commentId)
   }
+  async deleteComment(commentId: string) {
+    const result = await this.commentModel.deleteOne({ _id: commentId })
+
+    return Boolean(result.deletedCount)
+  }
 }

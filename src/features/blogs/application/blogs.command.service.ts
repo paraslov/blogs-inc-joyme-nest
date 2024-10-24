@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { UpdateBlogDto } from '../api/models/input/update-blog.dto'
-import { BlogsRepository } from '../infrastructure/blogs.repository'
 import { CreateBlogPostDto } from '../api/models/input/create-blog-post.dto'
 import { CommandBus } from '@nestjs/cqrs'
 import { CreateBlogCommand } from './commands/create-blog.command'
@@ -11,10 +10,7 @@ import { DeleteBlogCommand } from './commands/delete-blog.command'
 
 @Injectable()
 export class BlogsCommandService {
-  constructor(
-    private blogsRepository: BlogsRepository,
-    private commandBus: CommandBus,
-  ) {}
+  constructor(private commandBus: CommandBus) {}
 
   createBlog(createBlogDto: CreateBlogDto) {
     const command = new CreateBlogCommand(createBlogDto)

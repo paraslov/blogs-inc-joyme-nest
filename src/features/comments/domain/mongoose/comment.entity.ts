@@ -1,7 +1,7 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
 
-export type CommentDocument = HydratedDocument<Comment>
+export type CommentDocument = HydratedDocument<CommentDto>
 
 @Schema()
 export class CommentatorInfoSchema {
@@ -13,7 +13,7 @@ export class CommentatorInfoSchema {
 }
 
 @Schema()
-export class Comment {
+export class CommentDto {
   @Prop({ required: true, type: String })
   parentId: string
 
@@ -33,5 +33,5 @@ export class Comment {
   dislikesCount: number
 }
 
-export const CommentSchema = SchemaFactory.createForClass(Comment)
-export const CommentsMongooseModule = MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }])
+export const CommentSchema = SchemaFactory.createForClass(CommentDto)
+export const CommentsMongooseModule = MongooseModule.forFeature([{ name: CommentDto.name, schema: CommentSchema }])

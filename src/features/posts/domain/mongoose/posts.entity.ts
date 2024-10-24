@@ -1,10 +1,10 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
 
-export type PostDocument = HydratedDocument<Post>
+export type PostDocument = HydratedDocument<PostEntity>
 
 @Schema()
-export class Post {
+export class PostEntity {
   @Prop({ required: true, type: String })
   title: string
 
@@ -23,10 +23,13 @@ export class Post {
   @Prop({ type: String })
   createdAt: string
 
-  @Prop({ type: String })
-  extendedLikeInfo: null
+  @Prop({ type: Number })
+  likesCount?: number
+
+  @Prop({ type: Number })
+  dislikesCount?: number
 }
 
-export const PostSchema = SchemaFactory.createForClass(Post)
+export const PostSchema = SchemaFactory.createForClass(PostEntity)
 
-export const PostsMongooseModule = MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }])
+export const PostsMongooseModule = MongooseModule.forFeature([{ name: PostEntity.name, schema: PostSchema }])

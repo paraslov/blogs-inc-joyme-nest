@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
 import { UpdateBlogDto } from './models/input/update-blog.dto'
@@ -7,6 +19,8 @@ import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation
 import { PostsQueryRepository } from '../../posts'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
+import { SaAuthGuard } from '../../auth'
+import { PossibleUserId } from '../../../base/decorators'
 
 @Controller('blogs')
 export class BlogsController {
@@ -23,14 +37,18 @@ export class BlogsController {
   }
 
   @Get(':id/posts')
-  async findAllPostsForBlog(@Param('id', ObjectIdValidationPipe) id: string, @Query() query: StandardInputFilters) {
+  async findAllPostsForBlog(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Query() query: StandardInputFilters,
+    @PossibleUserId() currentUserId?: string,
+  ) {
     const blog = await this.blogsQueryRepository.getBlogById(id)
 
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${id} not found`)
     }
 
-    return this.postsQueryRepository.getPostsList(query, id)
+    return this.postsQueryRepository.getPostsList(query, { blogId: id, userId: currentUserId })
   }
 
   @Get(':id')
@@ -44,12 +62,14 @@ export class BlogsController {
     return blog
   }
 
+  @UseGuards(SaAuthGuard)
   @HttpCode(201)
   @Post()
   create(@Body() createBlogDto: CreateBlogDto) {
     return this.blogsService.createBlog(createBlogDto)
   }
 
+  @UseGuards(SaAuthGuard)
   @Post(':id/posts')
   async createPostForBlog(
     @Param('id', ObjectIdValidationPipe) blogId: string,
@@ -64,6 +84,7 @@ export class BlogsController {
     return this.blogsService.createPost(createBlogPostDto, blogId, blog.name)
   }
 
+  @UseGuards(SaAuthGuard)
   @HttpCode(204)
   @Put(':id')
   async update(@Param('id', ObjectIdValidationPipe) id: string, @Body() updateBlogDto: UpdateBlogDto) {
@@ -74,6 +95,7 @@ export class BlogsController {
     }
   }
 
+  @UseGuards(SaAuthGuard)
   @HttpCode(204)
   @Delete(':id')
   async remove(@Param('id', ObjectIdValidationPipe) id: string) {

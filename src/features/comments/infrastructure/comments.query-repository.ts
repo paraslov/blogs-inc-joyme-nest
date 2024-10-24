@@ -1,23 +1,26 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Comment } from '../domain/mongoose/comment.entity'
+import { CommentDto } from '../domain/mongoose/comment.entity'
 import { Model } from 'mongoose'
 import { CommentsMappers } from './comments.mappers'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
+import { LikesRepository } from '../../likes'
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    @InjectModel(Comment.name) private commentsModel: Model<Comment>,
+    @InjectModel(CommentDto.name) private commentsModel: Model<CommentDto>,
+    private likesRepository: LikesRepository,
     private commentsMappers: CommentsMappers,
   ) {}
 
-  async getCommentById(id: string) {
-    const foundComment = await this.commentsModel.findById(id)
+  async getCommentById(commentId: string, userId?: string) {
+    const foundComment = await this.commentsModel.findById(commentId)
+    const likeStatus = await this.likesRepository.getUserLikeStatus(commentId, userId)
 
-    return this.commentsMappers.mapEntityToOutputDto(foundComment)
+    return this.commentsMappers.mapEntityToOutputDto(foundComment, likeStatus)
   }
-  async getCommentsList(query: StandardInputFilters, parentId?: string) {
+  async getCommentsList(query: StandardInputFilters, parentId?: string, userId?: string) {
     const { pageNumber, pageSize, sortBy, sortDirection } = query
 
     let filter = {}
@@ -31,7 +34,13 @@ export class CommentsQueryRepository {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec()
-    const mappedComments = comments.map(this.commentsMappers.mapEntityToOutputDto)
+
+    const mappedCommentsPromises = comments.map(async (comment) => {
+      const likeStatus = await this.likesRepository.getUserLikeStatus(comment.parentId, userId)
+
+      return this.commentsMappers.mapEntityToOutputDto(comment, likeStatus)
+    })
+    const mappedComments = await Promise.all(mappedCommentsPromises)
 
     const totalCount = await this.commentsModel.countDocuments(filter)
     const pagesCount = Math.ceil(totalCount / pageSize)

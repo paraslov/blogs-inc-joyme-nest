@@ -7,6 +7,7 @@ import {
   HttpException,
   Post,
   Request,
+  Response,
   UseGuards,
 } from '@nestjs/common'
 import { LocalAuthGuard } from '../application/guards/local-auth.guard'
@@ -39,10 +40,12 @@ export class AuthController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @HttpCode(HttpStatusCodes.OK_200)
   @Post('/login')
-  login(@Request() req: any) {
-    return this.authService.login(req.user)
+  async login(@Request() req: any, @Response() res: any) {
+    const loginResult = await this.authService.login(req.user)
+    res.cookie('refreshToken', loginResult.refreshToken, { httpOnly: true, secure: true })
+
+    return res.status(HttpStatusCodes.OK_200).send({ accessToken: loginResult.accessToken })
   }
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)

@@ -8,9 +8,10 @@ import { BlogsMappers } from './infrastructure/blogs.mappers'
 import { PostsMappers, PostsMongooseModule, PostsQueryRepository } from '../posts'
 import { blogsCommandHandlers } from './application/commands'
 import { CqrsModule } from '@nestjs/cqrs'
+import { LikesModule } from '../likes/likes.module'
 
 @Module({
-  imports: [BlogsMongooseModule, PostsMongooseModule, CqrsModule],
+  imports: [BlogsMongooseModule, PostsMongooseModule, LikesModule, CqrsModule],
   exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers, BlogsModule],
   controllers: [BlogsController],
   providers: [

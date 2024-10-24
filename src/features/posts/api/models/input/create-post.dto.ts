@@ -1,4 +1,4 @@
-import { IsString, MaxLength } from 'class-validator'
+import { IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { toMongoObjectId } from '../../../../../base/transformers/toMongoObjectId'
 
@@ -18,4 +18,14 @@ export class CreatePostDto {
   @IsString()
   @Transform(toMongoObjectId)
   blogId: string
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  likesCount?: number
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  dislikesCount?: number
 }

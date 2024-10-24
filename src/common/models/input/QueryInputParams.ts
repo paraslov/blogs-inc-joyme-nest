@@ -13,20 +13,13 @@ export class SortingInputModel {
 }
 
 export class StandardInputFilters implements PaginationInputModel, SortingInputModel {
-  constructor() {
-    this.pageSize = 10
-    this.pageNumber = 1
-    this.sortBy = 'createdAt'
-    this.sortDirection = SortDirection.DESC
-  }
-
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => {
     const numberValue = Number(value)
     return !numberValue ? 1 : numberValue
   })
-  pageNumber?: number
+  pageNumber: number = 1
 
   @IsOptional()
   @IsNumber()
@@ -34,27 +27,21 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
     const numberValue = Number(value)
     return !numberValue ? 10 : numberValue
   })
-  pageSize?: number
+  pageSize: number = 10
 
   @IsOptional()
   @IsString()
   @Transform(({ value }) => (!value ? 'createdAt' : value))
-  sortBy?: string
+  sortBy: string = 'createdAt'
 
   @IsOptional()
   @Transform(({ value }) => (!value ? 'desc' : value))
-  sortDirection?: SortDirection
+  sortDirection: SortDirection = SortDirection.DESC
 }
 
 export class StandardInputFiltersWithSearchTerm extends StandardInputFilters {
-  constructor() {
-    super()
-
-    this.searchNameTerm = ''
-  }
-
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value)
-  searchNameTerm: string
+  searchNameTerm: string = ''
 }

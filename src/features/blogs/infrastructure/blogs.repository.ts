@@ -3,20 +3,20 @@ import { Blog } from '../domain/mongoose/blogs.entity'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { UpdateBlogDto } from '../api/models/input/update-blog.dto'
-import { Post, PostsMappers } from '../../posts'
+import { PostEntity, PostsMappers } from '../../posts'
 
 @Injectable()
 export class BlogsRepository {
   constructor(
     @InjectModel(Blog.name) private blogsModel: Model<Blog>,
-    @InjectModel(Post.name) private postsModel: Model<Post>,
+    @InjectModel(PostEntity.name) private postsModel: Model<PostEntity>,
     private postsMappers: PostsMappers,
   ) {}
 
   async saveBlog(blog: Blog) {
     return new this.blogsModel(blog).save()
   }
-  async savePost(post: Post) {
+  async savePost(post: PostEntity) {
     const newPost = await new this.postsModel(post).save()
 
     return this.postsMappers.mapPostToOutputDto(newPost)

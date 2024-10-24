@@ -1,25 +1,30 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Post } from '../domain/mongoose/posts.entity'
+import { PostEntity } from '../domain/mongoose/posts.entity'
 import { Model } from 'mongoose'
 import { PostsMappers } from './posts.mappers'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
+import { LikesRepository } from '../../likes'
 
 @Injectable()
 export class PostsQueryRepository {
   constructor(
-    @InjectModel(Post.name) private postsModel: Model<Post>,
+    @InjectModel(PostEntity.name) private postsModel: Model<PostEntity>,
+    private likesRepository: LikesRepository,
     private postsMappers: PostsMappers,
   ) {}
 
-  async getPostById(id: string) {
-    const post = await this.postsModel.findById(id)
+  async getPostById(postId: string, userId?: string) {
+    const likeStatus = await this.likesRepository.getUserLikeStatus(postId, userId)
+    const threeLatestLikes = await this.likesRepository.getLatestLikes(postId)
+    const post = await this.postsModel.findById(postId)
 
-    return this.postsMappers.mapPostToOutputDto(post)
+    return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes, likeStatus)
   }
 
-  async getPostsList(queryFilter: StandardInputFilters, blogId?: string) {
+  async getPostsList(queryFilter: StandardInputFilters, options: { blogId?: string; userId?: string }) {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryFilter
+    const { blogId, userId } = options
 
     const filter: any = {}
     if (blogId) {
@@ -33,7 +38,14 @@ export class PostsQueryRepository {
       .limit(pageSize)
       .exec()
 
-    const mappedPosts = posts.map(this.postsMappers.mapPostToOutputDto)
+    const mappedPostsPromises = posts.map(async (post) => {
+      const likeStatus = await this.likesRepository.getUserLikeStatus(post.id, userId)
+      const threeLatestLikes = await this.likesRepository.getLatestLikes(post.id)
+
+      return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes, likeStatus)
+    })
+    const mappedPosts = await Promise.all(mappedPostsPromises)
+
     const totalCount = await this.postsModel.countDocuments(filter)
     const pagesCount = Math.ceil(totalCount / pageSize)
 

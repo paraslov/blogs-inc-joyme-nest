@@ -1,3 +1,5 @@
+import { LikeDetailsViewDto } from '../../../../likes'
+
 export class PostOutputDto {
   id: string
   title: string
@@ -13,5 +15,5 @@ export class LikesInfoDto {
   likesCount?: number
   dislikesCount?: number
   myStatus?: string
-  newestLikes?: any[]
+  newestLikes?: LikeDetailsViewDto[]
 }

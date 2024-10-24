@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { BlogsModule } from './features/blogs/blogs.module'
@@ -11,6 +11,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import configuration, { ConfigurationType, validate } from './settings/configuration'
 import { Environments } from './settings/env.settings'
 import { ThrottlerModule } from '@nestjs/throttler'
+import { LikesModule } from './features/likes/likes.module'
+import { JwtMiddleware } from './base/middlewares'
+import { JwtService } from '@nestjs/jwt'
 
 @Module({
   imports: [
@@ -19,6 +22,7 @@ import { ThrottlerModule } from '@nestjs/throttler'
     PostsModule,
     UsersModule,
     CommentsModule,
+    LikesModule,
     ThrottlerModule.forRoot([
       {
         name: 'default',
@@ -51,6 +55,10 @@ import { ThrottlerModule } from '@nestjs/throttler'
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtMiddleware, JwtService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).forRoutes({ path: '*', method: RequestMethod.GET })
+  }
+}

@@ -50,7 +50,7 @@ const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      stopAtFirstError: true,
+      stopAtFirstError: false,
       exceptionFactory: (errors) => {
         const customErrors = []
 

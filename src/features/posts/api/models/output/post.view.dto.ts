@@ -1,6 +1,6 @@
 import { LikeDetailsViewDto } from '../../../../likes'
 
-export class PostOutputDto {
+export class PostViewDto {
   id: string
   title: string
   shortDescription: string

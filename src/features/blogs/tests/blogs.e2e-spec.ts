@@ -3,7 +3,7 @@ import { UsersTestManager } from '../../users'
 import { initTestsSettings } from '../../../common/tests'
 import { BlogsTestManager } from './utils/blogs-test.manager'
 
-describe('users', () => {
+describe('blogs', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager

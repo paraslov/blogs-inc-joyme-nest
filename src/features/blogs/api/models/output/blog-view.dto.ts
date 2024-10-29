@@ -1,4 +1,4 @@
-export class BlogOutputModel {
+export class BlogViewDto {
   id: string
   name: string
   description: string

@@ -15,7 +15,7 @@ export class UsersTestManager {
   password = this.configService.get('jwtSettings').SA_USER_PASSWORD
   userIndex = 0
 
-  get saCredits() {
+  get getSaCredits() {
     return {
       username: this.username,
       password: this.password,
@@ -69,8 +69,11 @@ export class UsersTestManager {
   }
 
   static async login(app: INestApplication, loginOrEmail: string, password: string): Promise<{ accessToken: string }> {
-    await request(app.getHttpServer()).post('/login').send({ loginOrEmail, password }).expect(200)
+    const loginResult = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ loginOrEmail, password })
+      .expect(200)
 
-    return { accessToken: 'qwerty.access.token' }
+    return { accessToken: loginResult.body.accessToken }
   }
 }

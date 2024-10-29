@@ -1,18 +1,20 @@
 import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
-import { UsersTestManager } from './utils/users-test-manager'
+import { UsersTestManager } from './utils/users-test.manager'
 import { initTestsSettings } from '../../../common/tests'
 import { HttpStatusCodes } from '../../../common/models'
 
 describe('users', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
+  let httpServer: any
 
   beforeAll(async () => {
     try {
       const result = await initTestsSettings()
       app = result.app
       userTestManger = result.userTestManger
+      httpServer = result.httpServer
     } catch (err) {
       console.log('@> users tests error: ', err)
     }
@@ -37,9 +39,9 @@ describe('users', () => {
 
   it('should delete user', async () => {
     const { userResponseBody } = await userTestManger.createUser()
-    const { username, password } = userTestManger.saCredits
+    const { username, password } = userTestManger.getSaCredits
 
-    await request(app.getHttpServer())
+    await request(httpServer)
       .delete(`/api/users/${userResponseBody.id}`)
       .auth(username, password, {
         type: 'basic',

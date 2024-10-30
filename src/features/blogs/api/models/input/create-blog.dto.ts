@@ -2,15 +2,15 @@ import { IsUrl, MaxLength } from 'class-validator'
 import { TrimmedString } from '../../../../../base/decorators'
 
 export class CreateBlogDto {
-  @TrimmedString()
+  @TrimmedString({ required: true })
   @MaxLength(15)
   name: string
 
-  @TrimmedString()
+  @TrimmedString({ required: true })
   @MaxLength(500)
   description: string
 
-  @TrimmedString()
+  @TrimmedString({ required: true })
   @MaxLength(100)
   @IsUrl()
   websiteUrl: string

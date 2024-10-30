@@ -4,19 +4,19 @@ import { toMongoObjectId } from '../../../../../base/transformers/toMongoObjectI
 import { TrimmedString } from '../../../../../base/decorators'
 
 export class CreatePostDto {
-  @TrimmedString()
+  @TrimmedString({ required: true })
   @MaxLength(30)
   title: string
 
-  @TrimmedString()
+  @TrimmedString({ required: true })
   @MaxLength(100)
   shortDescription: string
 
-  @TrimmedString()
+  @TrimmedString({ required: true })
   @MaxLength(1000)
   content: string
 
-  @TrimmedString()
+  @TrimmedString({ required: true })
   @Transform(toMongoObjectId)
   blogId: string
 

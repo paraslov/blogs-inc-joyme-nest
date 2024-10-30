@@ -9,12 +9,7 @@ import { UpdatePostLikeStatusCommand } from './commands/update-post-like-status.
 export class PostsCommandService {
   constructor(private readonly commandBus: CommandBus) {}
 
-  updatePostLikeStatus(
-    post: PostViewDto,
-    updateLikeStatusDto: UpdateLikeStatusDto,
-    userId: string,
-    userLogin: string,
-  ) {
+  updatePostLikeStatus(post: PostViewDto, updateLikeStatusDto: UpdateLikeStatusDto, userId: string, userLogin: string) {
     const command = new UpdatePostLikeStatusCommand(post, updateLikeStatusDto, userId, userLogin)
 
     return this.commandBus.execute<UpdatePostLikeStatusCommand, InterlayerDataManager>(command)

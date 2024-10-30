@@ -39,7 +39,11 @@ export class UsersTestManager {
     expect(responseModel.id).toStrictEqual(expect.any(String))
   }
 
-  async createUser(createUserDto?: CreateUserDto, username?: string, password?: string) {
+  async createUser(
+    createUserDto?: CreateUserDto,
+    username?: string,
+    password?: string,
+  ): Promise<{ userRequestBody: CreateUserDto; userResponseBody: UserViewDto }> {
     const saUsername = username ?? this.username
     const saPassword = password ?? this.password
 

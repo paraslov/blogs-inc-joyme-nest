@@ -16,7 +16,7 @@ describe('blogs', () => {
 
       blogsTestManager = new BlogsTestManager(app)
     } catch (err) {
-      console.log('@> users tests error: ', err)
+      console.log('@> blogs tests error: ', err)
     }
   })
 

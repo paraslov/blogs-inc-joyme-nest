@@ -2,6 +2,8 @@ import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
 import { initTestsSettings } from '../../../common/tests'
 import { BlogsTestManager } from './utils/blogs-test.manager'
+import { CreateBlogDto } from '../api/models/input/create-blog.dto'
+import { HttpStatusCodes } from '../../../common/models'
 
 describe('blogs', () => {
   let app: INestApplication
@@ -29,5 +31,22 @@ describe('blogs', () => {
     const { blogRequest, blogResponse } = await blogsTestManager.createBlog({ username, password })
 
     blogsTestManager.expectCorrectModel(blogRequest, blogResponse)
+  })
+
+  it('should return 400 with name with only spaces', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const createBlogDto: CreateBlogDto = {
+      name: `     `,
+      description: `New Blog Description`,
+      websiteUrl: `https://blog-site.bold`,
+    }
+    const { blogResponse } = await blogsTestManager.createBlog<any>(
+      { username, password },
+      createBlogDto,
+      HttpStatusCodes.BAD_REQUEST_400,
+    )
+
+    expect(blogResponse.errorsMessages[0].field).toBe('name')
+    expect(blogResponse.errorsMessages[0].message).toStrictEqual(expect.any(String))
   })
 })

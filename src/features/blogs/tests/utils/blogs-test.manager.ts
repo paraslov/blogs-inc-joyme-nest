@@ -26,10 +26,11 @@ export class BlogsTestManager {
     expect(blogResponse.id).toStrictEqual(expect.any(String))
   }
 
-  async createBlog(
+  async createBlog<T = BlogViewDto>(
     auth: { username: string; password: string },
     blogCreateDto?: CreateBlogDto,
-  ): Promise<{ blogRequest: CreateBlogDto; blogResponse: BlogViewDto }> {
+    expectedStatus: HttpStatusCodes = HttpStatusCodes.CREATED_201,
+  ): Promise<{ blogRequest: CreateBlogDto; blogResponse: T }> {
     const createBlogDto = blogCreateDto ?? this.getBlogCreateDto
 
     const response = await request(this.httpSever)
@@ -38,7 +39,7 @@ export class BlogsTestManager {
         type: 'basic',
       })
       .send(createBlogDto)
-      .expect(HttpStatusCodes.CREATED_201)
+      .expect(expectedStatus)
 
     return { blogRequest: createBlogDto, blogResponse: response.body }
   }

@@ -1,11 +1,11 @@
 import { EnvironmentVariable } from './configuration'
-import { IsString } from 'class-validator'
+import { TrimmedString } from '../base/decorators'
 
 export class MailerSettings {
   constructor(private environmentVariables: EnvironmentVariable) {}
 
-  @IsString()
+  @TrimmedString()
   public readonly SEND_MAIL_SERVICE_EMAIL = this.environmentVariables.SEND_MAIL_SERVICE_EMAIL
-  @IsString()
+  @TrimmedString()
   public readonly SEND_MAIL_SERVICE_PASSWORD = this.environmentVariables.SEND_MAIL_SERVICE_PASSWORD
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PostDocument } from '../domain/mongoose/posts.entity'
-import { PostOutputDto } from '../api/models/output/post.dto'
+import { PostViewDto } from '../api/models/output/post.view.dto'
 import { LikeDetailsViewDto, LikeStatus } from '../../likes'
 
 @Injectable()
@@ -10,7 +10,7 @@ export class PostsMappers {
       return null
     }
 
-    const mappedPost = new PostOutputDto()
+    const mappedPost = new PostViewDto()
 
     mappedPost.id = post._id.toString()
     mappedPost.title = post.title

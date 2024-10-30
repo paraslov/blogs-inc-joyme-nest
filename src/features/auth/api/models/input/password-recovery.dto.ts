@@ -1,11 +1,12 @@
-import { IsString, MaxLength, MinLength } from 'class-validator'
+import { MaxLength, MinLength } from 'class-validator'
+import { TrimmedString } from '../../../../../base/decorators'
 
 export class PasswordRecoveryDto {
-  @IsString()
+  @TrimmedString()
   @MinLength(6)
   @MaxLength(20)
   newPassword: string
 
-  @IsString()
+  @TrimmedString()
   recoveryCode: string
 }

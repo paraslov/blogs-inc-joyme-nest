@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UpdatePostDto } from '../../api/models/input/update-post.dto'
-import { PostOutputDto } from '../../api/models/output/post.dto'
+import { PostViewDto } from '../../api/models/output/post.view.dto'
 import { LikesCommandService, UpdateLikeStatusDto } from '../../../likes'
 import { PostsService } from '../posts.service'
 import { InterlayerDataManager } from '../../../../common/manager'
@@ -8,7 +8,7 @@ import { HttpStatusCodes } from '../../../../common/models'
 
 export class UpdatePostLikeStatusCommand {
   constructor(
-    public readonly post: PostOutputDto,
+    public readonly post: PostViewDto,
     public readonly updateLikeStatusDto: UpdateLikeStatusDto,
     public readonly userId: string,
     public readonly userLogin: string,

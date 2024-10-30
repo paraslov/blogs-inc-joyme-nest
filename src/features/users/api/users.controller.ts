@@ -17,7 +17,7 @@ import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { HttpStatusCodes } from '../../../common/models'
 import { UsersCommandService } from '../application/users.command.service'
-import { SaAuthGuard } from '../../auth/application/guards/sa-auth.guard'
+import { SaAuthGuard } from '../../auth'
 
 @UseGuards(SaAuthGuard)
 @Controller('users')

@@ -1,6 +1,7 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { IsNumber, IsOptional } from 'class-validator'
 import { SortDirection } from '../enums/sort-direction'
 import { Transform } from 'class-transformer'
+import { TrimmedString } from '../../../base/decorators'
 
 export class PaginationInputModel {
   pageNumber?: number
@@ -30,7 +31,7 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
   pageSize: number = 10
 
   @IsOptional()
-  @IsString()
+  @TrimmedString()
   @Transform(({ value }) => (!value ? 'createdAt' : value))
   sortBy: string = 'createdAt'
 
@@ -41,7 +42,7 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
 
 export class StandardInputFiltersWithSearchTerm extends StandardInputFilters {
   @IsOptional()
-  @IsString()
+  @TrimmedString()
   @Transform(({ value }) => value)
   searchNameTerm: string = ''
 }

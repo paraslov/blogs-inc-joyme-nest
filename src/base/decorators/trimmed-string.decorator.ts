@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common'
-import { IsString } from 'class-validator'
+import { IsNotEmpty, IsString } from 'class-validator'
 import { Trim } from './trim.decorator'
 
 export function TrimmedString() {
-  return applyDecorators(IsString(), Trim())
+  return applyDecorators(Trim(), IsString(), IsNotEmpty())
 }

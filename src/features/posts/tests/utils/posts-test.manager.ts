@@ -3,6 +3,7 @@ import { HttpStatusCodes } from '../../../../common/models'
 import { INestApplication } from '@nestjs/common'
 import { CreatePostDto } from '../../api/models/input/create-post.dto'
 import { PostViewDto } from '../../api/models/output/post.view.dto'
+import { CommentViewDto } from '../../../comments/api/models/output/comment.view.dto'
 
 export class PostsTestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -38,7 +39,7 @@ export class PostsTestManager {
       blogId: string
       createPostModel?: CreatePostDto
     },
-  ): Promise<{ requestBody: CreatePostDto; responseBody: PostViewDto }> {
+  ): Promise<{ postRequestBody: CreatePostDto; postResponseBody: PostViewDto }> {
     const createPostDto = createData.createPostModel ?? { ...this.getPostDto, blogId: createData.blogId }
 
     const response = await request(this.httpSever)
@@ -49,6 +50,21 @@ export class PostsTestManager {
       .send(createPostDto)
       .expect(HttpStatusCodes.CREATED_201)
 
-    return { requestBody: createPostDto, responseBody: response.body }
+    return { postRequestBody: createPostDto, postResponseBody: response.body }
+  }
+
+  async addCommentToPost(
+    accessToken: string,
+    createData: { postId: string; content: string },
+  ): Promise<CommentViewDto> {
+    const response = await request(this.httpSever)
+      .post(`/api/posts/${createData.postId}/comments`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({ content: createData.content })
+      .expect(HttpStatusCodes.CREATED_201)
+
+    return response.body
   }
 }

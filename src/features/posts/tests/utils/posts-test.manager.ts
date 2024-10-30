@@ -33,6 +33,17 @@ export class PostsTestManager {
     expect(responseBody.blogName).toStrictEqual(expect.any(String))
   }
 
+  async getPostById(accessToken: string, postId: string): Promise<PostViewDto> {
+    const response = await request(this.httpSever)
+      .get(`/api/posts/${postId}`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .expect(HttpStatusCodes.OK_200)
+
+    return response.body
+  }
+
   async createPost(
     auth: { username: string; password: string },
     createData: {

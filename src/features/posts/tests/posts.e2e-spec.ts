@@ -5,6 +5,7 @@ import { BlogsTestManager } from '../../blogs'
 import { PostsTestManager } from './utils/posts-test.manager'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
+import { LikeStatus } from '../../likes'
 
 describe('posts like-statuses', () => {
   let app: INestApplication
@@ -49,21 +50,41 @@ describe('posts like-statuses', () => {
     const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })
 
-    const { postResponseBody } = await postsTestManager.createPost(
-      { username, password },
-      { blogId: blogResponse.id },
-    )
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
 
     const comment = `Added comment to post ${postResponseBody.title}`
 
-    const response = await postsTestManager.addCommentToPost(accessToken, {
+    const commentResponse = await postsTestManager.addCommentToPost(accessToken, {
       postId: postResponseBody.id,
-      content: `Added comment to post ${postResponseBody.title}`,
+      content: comment,
     })
 
-    expect(response.content).toBe(comment)
-    expect(response.commentatorInfo.userId).toBe(userResponseBody.id)
-    expect(response.likesInfo.likesCount).toBe(0)
-    expect(response.likesInfo.dislikesCount).toBe(0)
+    expect(commentResponse.content).toBe(comment)
+    expect(commentResponse.commentatorInfo.userId).toBe(userResponseBody.id)
+    expect(commentResponse.likesInfo.likesCount).toBe(0)
+    expect(commentResponse.likesInfo.dislikesCount).toBe(0)
+  })
+
+  it('should add like to post', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    await request(httpSever)
+      .put(`/api/posts/${postResponseBody.id}/like-status`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({ likeStatus: LikeStatus.LIKE })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const updatedPost = await postsTestManager.getPostById(accessToken, postResponseBody.id)
+
+    expect(postResponseBody.extendedLikesInfo.likesCount).toBe(0)
+    expect(updatedPost.extendedLikesInfo.likesCount).toBe(1)
+    expect(updatedPost.extendedLikesInfo.myStatus).toBe(LikeStatus.LIKE)
   })
 })

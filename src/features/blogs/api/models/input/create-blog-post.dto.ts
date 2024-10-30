@@ -1,15 +1,16 @@
-import { IsString, MaxLength } from 'class-validator'
+import { MaxLength } from 'class-validator'
+import { TrimmedString } from '../../../../../base/decorators'
 
 export class CreateBlogPostDto {
-  @IsString()
+  @TrimmedString()
   @MaxLength(30)
   title: string
 
-  @IsString()
+  @TrimmedString()
   @MaxLength(100)
   shortDescription: string
 
-  @IsString()
+  @TrimmedString()
   @MaxLength(1000)
   content: string
 }

@@ -1,12 +1,13 @@
 import { StandardInputFilters } from '../../../../../common/models/input/QueryInputParams'
-import { IsOptional, IsString } from 'class-validator'
+import { IsOptional } from 'class-validator'
+import { TrimmedString } from '../../../../../base/decorators'
 
 export class FilterUsersDto extends StandardInputFilters {
   @IsOptional()
-  @IsString()
+  @TrimmedString()
   searchLoginTerm: string = ''
 
   @IsOptional()
-  @IsString()
+  @TrimmedString()
   searchEmailTerm: string = ''
 }

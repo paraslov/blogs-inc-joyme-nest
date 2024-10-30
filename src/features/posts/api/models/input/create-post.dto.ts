@@ -1,21 +1,22 @@
-import { IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator'
+import { IsNumber, IsOptional, MaxLength, Min } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { toMongoObjectId } from '../../../../../base/transformers/toMongoObjectId'
+import { TrimmedString } from '../../../../../base/decorators'
 
 export class CreatePostDto {
-  @IsString()
+  @TrimmedString()
   @MaxLength(30)
   title: string
 
-  @IsString()
+  @TrimmedString()
   @MaxLength(100)
   shortDescription: string
 
-  @IsString()
+  @TrimmedString()
   @MaxLength(1000)
   content: string
 
-  @IsString()
+  @TrimmedString()
   @Transform(toMongoObjectId)
   blogId: string
 

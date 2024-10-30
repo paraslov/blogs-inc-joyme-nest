@@ -1,7 +1,8 @@
-import { IsEmail, IsString, Matches, MaxLength, MinLength } from 'class-validator'
+import { IsEmail, Matches, MaxLength, MinLength } from 'class-validator'
+import { TrimmedString } from '../../../../../base/decorators'
 
 export class CreateUserDto {
-  @IsString()
+  @TrimmedString()
   @MinLength(3)
   @MaxLength(10)
   @Matches(/^[a-zA-Z0-9_-]*$/, {
@@ -9,12 +10,12 @@ export class CreateUserDto {
   })
   login: string
 
-  @IsString()
+  @TrimmedString()
   @MinLength(6)
   @MaxLength(20)
   password: string
 
-  @IsString()
+  @TrimmedString()
   @IsEmail({}, { message: 'Invalid value. Should be a valid email like "example@example.com"' })
   email: string
 }

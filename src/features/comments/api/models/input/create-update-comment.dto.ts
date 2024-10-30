@@ -1,7 +1,8 @@
-import { IsString, MaxLength, MinLength } from 'class-validator'
+import { MaxLength, MinLength } from 'class-validator'
+import { TrimmedString } from '../../../../../base/decorators'
 
 export class CreateUpdateCommentDto {
-  @IsString()
+  @TrimmedString()
   @MinLength(20)
   @MaxLength(300)
   content: string

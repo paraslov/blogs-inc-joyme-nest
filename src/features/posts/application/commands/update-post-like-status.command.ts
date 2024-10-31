@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { UpdatePostDto } from '../../api/models/input/update-post.dto'
 import { PostViewDto } from '../../api/models/output/post.view.dto'
 import { LikesCommandService, UpdateLikeStatusDto } from '../../../likes'
 import { PostsService } from '../posts.service'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
+import { CreatePostDto } from '../../api/models/input/create-post.dto'
 
 export class UpdatePostLikeStatusCommand {
   constructor(
@@ -38,7 +38,7 @@ export class UpdatePostLikeStatusHandler implements ICommandHandler<UpdatePostLi
     const likesCount = (post.extendedLikesInfo?.likesCount ?? 0) + likesCountChange
     const dislikesCount = (post.extendedLikesInfo?.dislikesCount ?? 0) + dislikesCountChange
 
-    const updatePostData: UpdatePostDto = {
+    const updatePostData: CreatePostDto = {
       title: post.title,
       shortDescription: post.shortDescription,
       content: post.content,

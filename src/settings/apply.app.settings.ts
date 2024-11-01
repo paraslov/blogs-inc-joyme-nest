@@ -5,6 +5,8 @@ import { HttpExceptionFilter } from '../base/exceptionFilters/http-exception.fil
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from './configuration'
 import cookieParser from 'cookie-parser'
+import { AppModule } from '../app.module'
+import { useContainer } from 'class-validator'
 
 const APP_PREFIX = '/api'
 
@@ -18,6 +20,7 @@ export const applyAppSettings = (app: INestApplication) => {
   app.use(LoggerMiddlewareFunc)
   app.use(cookieParser())
 
+  setAppUseContainersToEnableCustomClassValidatorDecorators(app)
   setAppPrefix(app)
   setSwagger(app)
   setAppPipes(app)
@@ -72,4 +75,8 @@ const setAppPipes = (app: INestApplication) => {
 
 const setAppExceptionsFilters = (app: INestApplication) => {
   app.useGlobalFilters(new HttpExceptionFilter())
+}
+
+const setAppUseContainersToEnableCustomClassValidatorDecorators = (app: INestApplication) => {
+  useContainer(app.select(AppModule), { fallbackOnErrors: true })
 }

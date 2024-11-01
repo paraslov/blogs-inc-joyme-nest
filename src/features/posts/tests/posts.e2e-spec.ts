@@ -99,10 +99,13 @@ describe('posts like-statuses', () => {
     }
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })
 
-    const { postRequestBody, postResponseBody } = await postsTestManager.createPost(
+    const { postRequestBody, postResponseBody } = await postsTestManager.createPost<any>(
       { username, password },
       { blogId: postBody.blogId, createPostModel: postBody },
       HttpStatusCodes.BAD_REQUEST_400,
     )
+
+    expect(postResponseBody.errorsMessages.some((message: any) => message.field === 'blogId')).toBeTruthy()
+    expect(postResponseBody.errorsMessages.some((message: any) => message.field === 'shortDescription')).toBeTruthy()
   })
 })

@@ -44,14 +44,14 @@ export class PostsTestManager {
     return response.body
   }
 
-  async createPost(
+  async createPost<T = PostViewDto>(
     auth: { username: string; password: string },
     createData: {
       blogId: string
       createPostModel?: CreatePostDto
     },
     expectedStatus: HttpStatusCodes = HttpStatusCodes.CREATED_201,
-  ): Promise<{ postRequestBody: CreatePostDto; postResponseBody: PostViewDto }> {
+  ): Promise<{ postRequestBody: CreatePostDto; postResponseBody: T }> {
     const createPostDto = createData.createPostModel ?? { ...this.getPostDto, blogId: createData.blogId }
 
     const response = await request(this.httpSever)

@@ -87,4 +87,22 @@ describe('posts like-statuses', () => {
     expect(updatedPost.extendedLikesInfo.likesCount).toBe(1)
     expect(updatedPost.extendedLikesInfo.myStatus).toBe(LikeStatus.LIKE)
   })
+
+  it('should throw 400 if passed body is incorrect', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const postBody = {
+      title: 'valid',
+      content: 'valid',
+      blogId: '63189b06003380064c4193be',
+      shortDescription:
+        'length_101-DnZlTI1khUHpqOqCzftIYiSHCV8fKjYFQOoCIwmUczzW9V5K8cqY3aPKo3XKwbfrmeWOJyQgGnlX5sP3aW3RlaRSQx',
+    }
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postRequestBody, postResponseBody } = await postsTestManager.createPost(
+      { username, password },
+      { blogId: postBody.blogId, createPostModel: postBody },
+      HttpStatusCodes.BAD_REQUEST_400,
+    )
+  })
 })

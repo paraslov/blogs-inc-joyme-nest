@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common'
 import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
-import { UpdateBlogDto } from './models/input/update-blog.dto'
 import { StandardInputFilters, StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../../posts'
@@ -87,7 +86,7 @@ export class BlogsController {
   @UseGuards(SaAuthGuard)
   @HttpCode(204)
   @Put(':id')
-  async update(@Param('id', ObjectIdValidationPipe) id: string, @Body() updateBlogDto: UpdateBlogDto) {
+  async update(@Param('id', ObjectIdValidationPipe) id: string, @Body() updateBlogDto: CreateBlogDto) {
     const updateResult = await this.blogsService.updateBlog(id, updateBlogDto)
 
     if (!updateResult) {

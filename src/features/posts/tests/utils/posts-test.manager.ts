@@ -50,6 +50,7 @@ export class PostsTestManager {
       blogId: string
       createPostModel?: CreatePostDto
     },
+    expectedStatus: HttpStatusCodes = HttpStatusCodes.CREATED_201,
   ): Promise<{ postRequestBody: CreatePostDto; postResponseBody: PostViewDto }> {
     const createPostDto = createData.createPostModel ?? { ...this.getPostDto, blogId: createData.blogId }
 
@@ -59,7 +60,7 @@ export class PostsTestManager {
         type: 'basic',
       })
       .send(createPostDto)
-      .expect(HttpStatusCodes.CREATED_201)
+      .expect(expectedStatus)
 
     return { postRequestBody: createPostDto, postResponseBody: response.body }
   }

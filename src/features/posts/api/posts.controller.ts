@@ -17,7 +17,6 @@ import { StandardInputFilters } from '../../../common/models/input/QueryInputPar
 import { CreatePostDto } from './models/input/create-post.dto'
 import { PostsService } from '../application/posts.service'
 import { BlogsQueryRepository } from '../../blogs'
-import { UpdatePostDto } from './models/input/update-post.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { CommentsCommandService, CommentsQueryRepository, CreateUpdateCommentDto } from '../../comments'
 import { JwtAuthGuard, SaAuthGuard } from '../../auth'
@@ -134,7 +133,7 @@ export class PostsController {
   @UseGuards(SaAuthGuard)
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Put(':id')
-  async updateOne(@Param('id', ObjectIdValidationPipe) id: string, @Body() updatePostDto: UpdatePostDto) {
+  async updateOne(@Param('id', ObjectIdValidationPipe) id: string, @Body() updatePostDto: CreatePostDto) {
     const blog = await this.blogsQueryRepository.getBlogById(updatePostDto.blogId)
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${updatePostDto.blogId} not found`)

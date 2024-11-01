@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { Blog } from '../domain/mongoose/blogs.entity'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { UpdateBlogDto } from '../api/models/input/update-blog.dto'
 import { PostEntity, PostsMappers } from '../../posts'
+import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 
 @Injectable()
 export class BlogsRepository {
@@ -21,7 +21,7 @@ export class BlogsRepository {
 
     return this.postsMappers.mapPostToOutputDto(newPost)
   }
-  async updateBlog(id: string, updateBlog: UpdateBlogDto) {
+  async updateBlog(id: string, updateBlog: CreateBlogDto) {
     const updateResult = await this.blogsModel.updateOne({ _id: id }, updateBlog)
 
     return Boolean(updateResult.matchedCount)

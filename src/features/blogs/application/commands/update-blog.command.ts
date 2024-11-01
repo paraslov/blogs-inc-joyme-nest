@@ -1,11 +1,11 @@
-import { UpdateBlogDto } from '../../api/models/input/update-blog.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { BlogsRepository } from '../../infrastructure/blogs.repository'
+import { CreateBlogDto } from '../../api/models/input/create-blog.dto'
 
 export class UpdateBlogCommand {
   constructor(
     public readonly blogId: string,
-    public readonly updateBlogDto: UpdateBlogDto,
+    public readonly updateBlogDto: CreateBlogDto,
   ) {}
 }
 

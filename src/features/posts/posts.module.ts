@@ -12,6 +12,7 @@ import { LikesModule } from '../likes/likes.module'
 import { CqrsModule } from '@nestjs/cqrs'
 import { postsCommandHandlers } from './application/commands'
 import { PostsCommandService } from './application/posts.command.service'
+import { IsBlogExistsConstraint } from './application/decorators/is-blog-exists.decorator'
 
 @Module({
   imports: [PostsMongooseModule, BlogsModule, CommentsModule, UsersModule, LikesModule, CqrsModule],
@@ -23,6 +24,7 @@ import { PostsCommandService } from './application/posts.command.service'
     PostsService,
     PostsCommandService,
     PostsRepository,
+    IsBlogExistsConstraint,
     ...postsCommandHandlers,
   ],
 })

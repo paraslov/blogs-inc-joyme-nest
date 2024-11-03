@@ -68,9 +68,8 @@ export class UsersTestManager {
     const promises = arr.map(async () => {
       return await this.createUser()
     })
-    const result = await Promise.all(promises)
 
-    return result
+    return await Promise.all(promises)
   }
 
   async getUser(userId: string) {

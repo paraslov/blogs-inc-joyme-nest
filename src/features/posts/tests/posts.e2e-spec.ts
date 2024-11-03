@@ -97,9 +97,9 @@ describe('posts like-statuses', () => {
       shortDescription:
         'length_101-DnZlTI1khUHpqOqCzftIYiSHCV8fKjYFQOoCIwmUczzW9V5K8cqY3aPKo3XKwbfrmeWOJyQgGnlX5sP3aW3RlaRSQx',
     }
-    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+    await blogsTestManager.createBlog({ username, password })
 
-    const { postRequestBody, postResponseBody } = await postsTestManager.createPost<any>(
+    const { postResponseBody } = await postsTestManager.createPost<any>(
       { username, password },
       { blogId: postBody.blogId, createPostModel: postBody },
       HttpStatusCodes.BAD_REQUEST_400,

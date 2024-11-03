@@ -8,7 +8,7 @@ export class CommentsTestManager {
   constructor(protected readonly app: INestApplication) {}
   httpSever = this.app.getHttpServer()
 
-  async updateCommentLikeStatus(accessToken: string, updateData: { commentId: string, likeStatus: LikeStatus }) {
+  async updateCommentLikeStatus(accessToken: string, updateData: { commentId: string; likeStatus: LikeStatus }) {
     await request(this.httpSever)
       .put(`/api/comments/${updateData.commentId}/like-status`)
       .auth(accessToken, {

@@ -50,7 +50,7 @@ export class PostsTestManager {
     return response.body
   }
 
-  async getPostsComments(accessToken: string, postId: string): Promise<{ items: CommentViewDto[]}> {
+  async getPostsComments(accessToken: string, postId: string): Promise<{ items: CommentViewDto[] }> {
     const response = await request(this.httpSever)
       .get(`/api/posts/${postId}/comments`)
       .auth(accessToken, {
@@ -102,7 +102,7 @@ export class PostsTestManager {
   async addSeveralCommentsToPost(assessToken: string, createData: { commentsCount: number; postId: string }) {
     const arr = Array(createData.commentsCount).fill(0)
 
-    const promises = arr.map(async (value) => {
+    const promises = arr.map(async () => {
       return await this.addCommentToPost(assessToken, { postId: createData.postId })
     })
 

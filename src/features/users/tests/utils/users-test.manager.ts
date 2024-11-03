@@ -62,6 +62,17 @@ export class UsersTestManager {
     }
   }
 
+  async createSeveralUsers(usersCount: number) {
+    const arr = Array(usersCount).fill(0)
+
+    const promises = arr.map(async () => {
+      return await this.createUser()
+    })
+    const result = await Promise.all(promises)
+
+    return result
+  }
+
   async getUser(userId: string) {
     const response = await request(this.app.getHttpServer())
       .get(`/api/users/${userId}`)

@@ -9,6 +9,7 @@ export class PostsTestManager {
   constructor(protected readonly app: INestApplication) {}
   httpSever = this.app.getHttpServer()
   postIndex = 0
+  commentIndex = 0
 
   private get getPostDto(): Omit<CreatePostDto, 'blogId'> {
     this.postIndex++
@@ -20,6 +21,11 @@ export class PostsTestManager {
       likesCount: 0,
       dislikesCount: 0,
     }
+  }
+  private get getCommentText() {
+    this.commentIndex++
+
+    return `Comment content #${this.commentIndex} to post #`
   }
 
   expectCorrectModel(requestBody: CreatePostDto, responseBody: PostViewDto) {
@@ -36,6 +42,17 @@ export class PostsTestManager {
   async getPostById(accessToken: string, postId: string): Promise<PostViewDto> {
     const response = await request(this.httpSever)
       .get(`/api/posts/${postId}`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .expect(HttpStatusCodes.OK_200)
+
+    return response.body
+  }
+
+  async getPostsComments(accessToken: string, postId: string): Promise<{ items: CommentViewDto[]}> {
+    const response = await request(this.httpSever)
+      .get(`/api/posts/${postId}/comments`)
       .auth(accessToken, {
         type: 'bearer',
       })
@@ -67,16 +84,28 @@ export class PostsTestManager {
 
   async addCommentToPost(
     accessToken: string,
-    createData: { postId: string; content: string },
+    createData: { postId: string; content?: string },
   ): Promise<CommentViewDto> {
+    const commentContent = createData.content ?? `${this.getCommentText}${createData.postId}`
+
     const response = await request(this.httpSever)
       .post(`/api/posts/${createData.postId}/comments`)
       .auth(accessToken, {
         type: 'bearer',
       })
-      .send({ content: createData.content })
+      .send({ content: commentContent })
       .expect(HttpStatusCodes.CREATED_201)
 
     return response.body
+  }
+
+  async addSeveralCommentsToPost(assessToken: string, createData: { commentsCount: number; postId: string }) {
+    const arr = Array(createData.commentsCount).fill(0)
+
+    const promises = arr.map(async (value) => {
+      return await this.addCommentToPost(assessToken, { postId: createData.postId })
+    })
+
+    return Promise.all(promises)
   }
 }

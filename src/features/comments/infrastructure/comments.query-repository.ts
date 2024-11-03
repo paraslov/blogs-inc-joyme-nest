@@ -36,7 +36,7 @@ export class CommentsQueryRepository {
       .exec()
 
     const mappedCommentsPromises = comments.map(async (comment) => {
-      const likeStatus = await this.likesRepository.getUserLikeStatus(comment.parentId, userId)
+      const likeStatus = await this.likesRepository.getUserLikeStatus(comment.id, userId)
 
       return this.commentsMappers.mapEntityToOutputDto(comment, likeStatus)
     })

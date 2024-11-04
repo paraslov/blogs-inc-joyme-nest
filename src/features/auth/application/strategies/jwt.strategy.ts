@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../../settings/configuration'
+import { AuthStrategiesDto } from '../../api/models/utility/auth-strategies-dto'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: any) {
+  async validate(payload: AuthStrategiesDto) {
     return { userId: payload.sub, username: payload.username }
   }
 }

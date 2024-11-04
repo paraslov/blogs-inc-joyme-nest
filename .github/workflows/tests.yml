@@ -1,0 +1,27 @@
+#name: Tests
+#
+#jobs:
+#  test:
+#    runs-on: ubuntu-20.04
+#
+#    services:
+#      mongodb:
+#        image: mongo:4.4.6
+#        env:
+#          MONGO_INITDB_ROOT_USERNAME: admin
+#          MONGO_INITDB_ROOT_PASSWORD: admin
+#          MONGO_INITDB_DATABASE: APP-DATABASE
+#        ports:
+#          - 27017:27017
+#        options: >-
+#          --health-cmd mongo
+#          --health-interval 10s
+#          --health-timeout 5s
+#          --health-retries 5
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - name: Test
+#        run: |
+#          echo "Run your integration Tests"

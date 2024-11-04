@@ -23,6 +23,7 @@ import { EmailDto } from './models/input/email.dto'
 import { PasswordRecoveryDto } from './models/input/password-recovery.dto'
 import { AuthQueryRepository } from '../infrastructure/auth.query-repository'
 import { RefreshTokenGuard } from '../application/guards/refresh-auth.guard'
+import { AuthRequestDto } from './models/utility/auth-request.dto'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -57,7 +58,7 @@ export class AuthController {
 
   @UseGuards(RefreshTokenGuard)
   @Post('/refresh-token')
-  async refreshToken(@Request() req: any, @Response() res: any) {
+  async refreshToken(@Request() req: { user: AuthRequestDto }, @Response() res: any) {
     const refreshToken = req.user?.refreshToken
     const user = req.user
 

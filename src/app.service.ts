@@ -16,7 +16,7 @@ export class AppService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(CommentDto.name) private commentModel: Model<CommentDto>,
     @InjectModel(Like.name) private likeModel: Model<Like>,
-    @InjectModel(Like.name) private devicesModel: Model<Device>,
+    @InjectModel(Device.name) private devicesModel: Model<Device>,
   ) {}
 
   getHello(): string {

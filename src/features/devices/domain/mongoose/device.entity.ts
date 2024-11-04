@@ -21,7 +21,7 @@ export class Device {
   iat: number
 
   @Prop({ type: Number })
-  exp: { type: number }
+  exp: number
 }
 
 const DeviceSchema = SchemaFactory.createForClass(Device)

@@ -10,7 +10,7 @@ import { DevicesCommandService } from './application/devices.command-service'
 
 @Module({
   imports: [DeviceMongooseModule, CqrsModule],
-  exports: [DeviceMongooseModule],
+  exports: [DeviceMongooseModule, DevicesCommandService],
   controllers: [DevicesController],
   providers: [
     DevicesMappers,

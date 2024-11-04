@@ -5,9 +5,17 @@ import { Model } from 'mongoose'
 
 @Injectable()
 export class DevicesRepository {
-  constructor(@InjectModel(Device.name) private devicesModel: Model<Device>,) {
+  constructor(@InjectModel(Device.name) private devicesModel: Model<Device>) {}
+
+  async getDeviceById(deviceId: string) {
+    const device = await this.devicesModel.findOne({ deviceId })
+
+    return device
   }
-  async getDeviceByRefreshToken(refreshToken: string) {
-    const device = await this.devicesModel.findOne({ refreshToken })
+
+  async saveDeviceSession(device: Device) {
+    const saveResult = await new this.devicesModel(device).save()
+
+    return saveResult._id.toString()
   }
 }

@@ -10,7 +10,7 @@ export class DevicesMappers {
     deviceView.deviceId = device.deviceId
     deviceView.ip = device.ip
     deviceView.title = device.deviceName
-    deviceView.lastActiveDate = new Date(device.iat).toISOString()
+    deviceView.lastActiveDate = new Date(device.iat * 1000).toISOString()
 
     return deviceView
   }

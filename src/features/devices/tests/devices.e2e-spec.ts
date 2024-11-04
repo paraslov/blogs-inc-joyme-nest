@@ -40,4 +40,30 @@ describe('auth', () => {
 
     console.log('@> response: ', response.body)
   })
+
+  it('should delete all device session except current: ', async () => {
+    const { userRequestBody } = await userTestManger.createUser()
+    const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
+
+    const response = await request(httpServer)
+      .get('/api/security/devices')
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.OK_200)
+
+    await request(httpServer)
+      .delete('/api/security/devices')
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const responseAfterDelete = await request(httpServer)
+      .get('/api/security/devices')
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.OK_200)
+
+    expect(response.body.length).toBe(3)
+    expect(responseAfterDelete.body.length).toBe(1)
+  })
 })

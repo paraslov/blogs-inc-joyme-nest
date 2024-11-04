@@ -32,6 +32,6 @@ export class DevicesController {
       throw new HttpException(deleteResult.extensions, deleteResult.code)
     }
 
-    return res.status(HttpStatusCodes.NO_CONTENT_204)
+    return res.status(HttpStatusCodes.NO_CONTENT_204).send()
   }
 }

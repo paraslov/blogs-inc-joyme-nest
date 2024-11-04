@@ -60,8 +60,6 @@ export class AuthController {
   async refreshToken(@Request() req: any, @Response() res: any) {
     const refreshToken = req.user?.refreshToken
     const user = req.user
-    console.log('@> refreshToken ', refreshToken)
-    console.log('@> user ', user)
 
     return res.status(HttpStatusCodes.OK_200).send({ refreshToken, user })
   }

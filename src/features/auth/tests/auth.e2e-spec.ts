@@ -29,17 +29,25 @@ describe('auth', () => {
   })
 
   it('should login user', async () => {
-    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { userRequestBody } = await userTestManger.createUser()
 
-    const response = await request(httpServer)
-      .post('/api/auth/login')
-      .send({ loginOrEmail: userResponseBody.email, password: userRequestBody.password })
-      .expect(HttpStatusCodes.OK_200)
-
-    const cookies: any = response.headers['set-cookie']
+    const { accessToken, cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
 
-    expect(response.body.accessToken).toEqual(expect.any(String))
+    expect(accessToken).toEqual(expect.any(String))
     expect(refreshToken).toEqual(expect.any(String))
+  })
+
+  it('should refresh user tokens', async () => {
+    const { userRequestBody } = await userTestManger.createUser()
+    const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
+
+    const response = await request(httpServer)
+      .post('/api/auth/refresh-token')
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.OK_200)
+
+    expect(response.body.user.refreshToken).toEqual(expect.any(String))
   })
 })

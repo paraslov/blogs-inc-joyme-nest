@@ -30,10 +30,6 @@ export class AuthService {
     return { username: user.userData.login, sub: user._id.toString() }
   }
 
-  async login(payload: AuthStrategiesDto) {
-    return this.getTokens(payload)
-  }
-
   async getTokens(payload: AuthStrategiesDto) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload),

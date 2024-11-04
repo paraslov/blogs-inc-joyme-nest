@@ -82,12 +82,17 @@ export class UsersTestManager {
     return response.body
   }
 
-  static async login(app: INestApplication, loginOrEmail: string, password: string): Promise<{ accessToken: string }> {
+  static async login(
+    app: INestApplication,
+    loginOrEmail: string,
+    password: string,
+  ): Promise<{ accessToken: string; cookies: any }> {
     const loginResult = await request(app.getHttpServer())
       .post('/api/auth/login')
       .send({ loginOrEmail, password })
       .expect(200)
+    const cookies = loginResult.headers['set-cookie']
 
-    return { accessToken: loginResult.body.accessToken }
+    return { accessToken: loginResult.body.accessToken, cookies }
   }
 }

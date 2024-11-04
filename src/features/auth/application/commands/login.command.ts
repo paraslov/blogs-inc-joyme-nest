@@ -2,6 +2,7 @@ import { AuthStrategiesDto } from '../../api/models/utility/auth-strategies-dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../auth.service'
 import { InterlayerDataManager } from '../../../../common/manager'
+import { DevicesCommandService } from '../../../devices'
 
 export type TokensPair = {
   accessToken: string
@@ -14,7 +15,10 @@ export class LoginCommand {
 
 @CommandHandler(LoginCommand)
 export class LoginCommandHandler implements ICommandHandler<LoginCommand> {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private deviceCommandService: DevicesCommandService,
+  ) {}
 
   async execute(command: LoginCommand) {
     const { authData } = command

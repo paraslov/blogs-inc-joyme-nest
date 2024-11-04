@@ -15,11 +15,13 @@ import { ConfigurationType } from '../../settings/configuration'
 import { AuthRepository } from './infrastructure/auth.repository'
 import { AuthQueryRepository } from './infrastructure/auth.query-repository'
 import { AuthMappers } from './infrastructure/auth.mappers'
+import { DevicesModule } from '../devices'
 
 @Module({
   imports: [
     PassportModule,
     UsersModule,
+    DevicesModule,
     CqrsModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService<ConfigurationType>) => ({

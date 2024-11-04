@@ -13,7 +13,7 @@ import {
 import { LocalAuthGuard } from '../application/guards/local-auth.guard'
 import { AuthService } from '../application/auth.service'
 import { JwtAuthGuard } from '../application/guards/jwt-auth.guard'
-import { CurrentUserId } from '../../../base/decorators/current-user-id.decorator'
+import { CurrentUserId } from '../../../base/decorators'
 import { CreateUserDto } from '../../users'
 import { AuthCommandService } from '../application/auth.command.service'
 import { ConfirmUserDto } from './models/input/confirm-user.dto'
@@ -22,6 +22,7 @@ import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler'
 import { EmailDto } from './models/input/email.dto'
 import { PasswordRecoveryDto } from './models/input/password-recovery.dto'
 import { AuthQueryRepository } from '../infrastructure/auth.query-repository'
+import { RefreshTokenGuard } from '../application/guards/refresh-auth.guard'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -42,10 +43,27 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@Request() req: any, @Response() res: any) {
-    const loginResult = await this.authService.login(req.user)
-    res.cookie('refreshToken', loginResult.refreshToken, { httpOnly: true, secure: true })
+    const deviceName = req.headers['user-agent'] ?? 'Your device'
+    const ip = req.ip ?? 'no_ip'
+    console.log('@> deviceName', deviceName)
+    console.log('@> ip', ip)
 
-    return res.status(HttpStatusCodes.OK_200).send({ accessToken: loginResult.accessToken })
+    const loginResult = await this.authCommandService.loginUser(req.user)
+    const { accessToken, refreshToken } = loginResult.data
+
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+    return res.status(HttpStatusCodes.OK_200).send({ accessToken })
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('/refresh-token')
+  async refreshToken(@Request() req: any, @Response() res: any) {
+    const refreshToken = req.user?.refreshToken
+    const user = req.user
+    console.log('@> refreshToken ', refreshToken)
+    console.log('@> user ', user)
+
+    return res.status(HttpStatusCodes.OK_200).send({ refreshToken, user })
   }
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)

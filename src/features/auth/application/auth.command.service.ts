@@ -8,6 +8,8 @@ import { RegistrationEmailResendingCommand } from './commands/registration-email
 import { PasswordRecoveryCommand } from './commands/password-recovery.command'
 import { PasswordRecoveryDto } from '../api/models/input/password-recovery.dto'
 import { ConfirmNewPasswordCommand } from './commands/confirm-new-password.command'
+import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
+import { LoginCommand, TokensPair } from './commands/login.command'
 
 @Injectable()
 export class AuthCommandService {
@@ -41,5 +43,11 @@ export class AuthCommandService {
     const command = new ConfirmNewPasswordCommand(passwordRecoveryDto)
 
     return this.commandBus.execute<ConfirmNewPasswordCommand, InterlayerDataManager>(command)
+  }
+
+  loginUser(authData: AuthStrategiesDto) {
+    const command = new LoginCommand(authData)
+
+    return this.commandBus.execute<LoginCommand, InterlayerDataManager<TokensPair>>(command)
   }
 }

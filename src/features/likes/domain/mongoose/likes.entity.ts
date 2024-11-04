@@ -22,5 +22,5 @@ export class Like {
   createdAt: Date
 }
 
-export const LikeSchema = SchemaFactory.createForClass(Like)
+const LikeSchema = SchemaFactory.createForClass(Like)
 export const LikesMongooseModule = MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }])

@@ -6,6 +6,7 @@ import { PostEntity } from './features/posts'
 import { User } from './features/users'
 import { CommentDto } from './features/comments'
 import { Like } from './features/likes'
+import { Device } from './features/devices'
 
 @Injectable()
 export class AppService {
@@ -15,6 +16,7 @@ export class AppService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(CommentDto.name) private commentModel: Model<CommentDto>,
     @InjectModel(Like.name) private likeModel: Model<Like>,
+    @InjectModel(Like.name) private devicesModel: Model<Device>,
   ) {}
 
   getHello(): string {
@@ -30,6 +32,7 @@ export class AppService {
       await this.userModel.deleteMany({})
       await this.commentModel.deleteMany({})
       await this.likeModel.deleteMany({})
+      await this.devicesModel.deleteMany({})
     } catch (err) {
       throw new NotFoundException(`Failed to clear data: ${err.message}`)
     }

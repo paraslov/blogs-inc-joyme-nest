@@ -14,6 +14,7 @@ import { ThrottlerModule } from '@nestjs/throttler'
 import { LikesModule } from './features/likes/likes.module'
 import { JwtMiddleware } from './base/middlewares'
 import { JwtService } from '@nestjs/jwt'
+import { DevicesModule } from './features/devices/devices.module'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { JwtService } from '@nestjs/jwt'
     UsersModule,
     CommentsModule,
     LikesModule,
+    DevicesModule,
     ThrottlerModule.forRoot([
       {
         name: 'default',

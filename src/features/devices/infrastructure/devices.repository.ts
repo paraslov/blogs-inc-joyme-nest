@@ -18,4 +18,12 @@ export class DevicesRepository {
 
     return saveResult._id.toString()
   }
+
+  async deleteOtherDevices(devicesIds: string[]) {
+    const deleteResult = await this.devicesModel.deleteMany({
+      deviceId: { $in: devicesIds },
+    })
+
+    return deleteResult.deletedCount
+  }
 }

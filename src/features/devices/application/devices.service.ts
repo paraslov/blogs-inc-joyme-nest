@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { DecodedTokenDto } from '../api/models/utils/decoded-token.dto'
 
 @Injectable()
 export class DevicesService {
   constructor(private jwtService: JwtService) {}
 
-  decodeRefreshToken(refreshToken: string) {
+  decodeRefreshToken(refreshToken: string): DecodedTokenDto | null {
     try {
       const decoded = this.jwtService.decode(refreshToken)
 

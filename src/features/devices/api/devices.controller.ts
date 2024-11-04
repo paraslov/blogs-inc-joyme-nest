@@ -1,4 +1,4 @@
-import { Controller, Get, Request, Response, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Get, HttpException, Request, Response, UseGuards } from '@nestjs/common'
 import { RefreshTokenGuard } from '../../auth/application/guards/refresh-auth.guard'
 import { AuthRequestDto } from '../../auth'
 import { HttpStatusCodes } from '../../../common/models'
@@ -23,12 +23,15 @@ export class DevicesController {
   }
 
   @UseGuards(RefreshTokenGuard)
-  @Get()
+  @Delete()
   async deleteDevices(@Request() req: { user: AuthRequestDto }, @Response() res: any) {
     const refreshToken = req.user.refreshToken
 
-    const device = await this.devicesCommandService.deleteOtherDevices(refreshToken)
+    const deleteResult = await this.devicesCommandService.deleteOtherDevices(refreshToken)
+    if (deleteResult.hasError()) {
+      throw new HttpException(deleteResult.extensions, deleteResult.code)
+    }
 
-    return res.status(HttpStatusCodes.OK_200).send(device)
+    return res.status(HttpStatusCodes.NO_CONTENT_204)
   }
 }

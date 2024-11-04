@@ -4,16 +4,10 @@ import { Device } from '../../domain/mongoose/device.entity'
 import { DevicesRepository } from '../../infrastructure/devices.repository'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
+import { CreateDeviceSessionDto } from '../../api/models/input/create-device-session.dto'
 
 export class CreateDeviceSessionCommand {
-  constructor(
-    public readonly payload: {
-      userId: string
-      deviceName: string
-      ip: string
-      refreshToken: string
-    },
-  ) {}
+  constructor(public readonly payload: CreateDeviceSessionDto) {}
 }
 
 @CommandHandler(CreateDeviceSessionCommand)

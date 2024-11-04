@@ -3,10 +3,8 @@ import { CryptService } from '../../../common/services'
 import { JwtService } from '@nestjs/jwt'
 import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
 import { AuthRepository } from '../infrastructure/auth.repository'
-
-const REFRESH_TOKEN =
-  // eslint-disable-next-line max-len
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ld1VzZXIxIiwic3ViIjoiNjcwYjRiNDEzNjYwNjg4OWQ4NDBhODhiIiwiaWF0IjoxNzI5NjEzODEzLCJleHAiOjE3Mjk2MTQxMTN9.-HG3EeneipJqGMX24zmYvcU_X8oDoqS4WLZJjAklCpE'
+import { ConfigService } from '@nestjs/config'
+import { ConfigurationType } from '../../../settings/configuration'
 
 @Injectable()
 export class AuthService {
@@ -14,6 +12,7 @@ export class AuthService {
     private authRepository: AuthRepository,
     private cryptService: CryptService,
     private jwtService: JwtService,
+    private readonly configService: ConfigService<ConfigurationType>,
   ) {}
 
   async validateUser(username: string, password: string): Promise<AuthStrategiesDto | null> {
@@ -32,9 +31,21 @@ export class AuthService {
   }
 
   async login(payload: AuthStrategiesDto) {
+    return this.getTokens(payload)
+  }
+
+  async getTokens(payload: AuthStrategiesDto) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload),
+      this.jwtService.signAsync(payload, {
+        secret: this.configService.get('jwtSettings').REFRESH_JWT_SECRET,
+        expiresIn: this.configService.get('jwtSettings').REFRESH_JWT_EXPIRES,
+      }),
+    ])
+
     return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: REFRESH_TOKEN,
+      accessToken,
+      refreshToken,
     }
   }
 }

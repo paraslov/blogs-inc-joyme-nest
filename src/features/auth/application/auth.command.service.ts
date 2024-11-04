@@ -45,8 +45,8 @@ export class AuthCommandService {
     return this.commandBus.execute<ConfirmNewPasswordCommand, InterlayerDataManager>(command)
   }
 
-  loginUser(authData: AuthStrategiesDto) {
-    const command = new LoginCommand(authData)
+  loginUser(authData: AuthStrategiesDto, deviceName: string, ip: string) {
+    const command = new LoginCommand(authData, deviceName, ip)
 
     return this.commandBus.execute<LoginCommand, InterlayerDataManager<TokensPair>>(command)
   }

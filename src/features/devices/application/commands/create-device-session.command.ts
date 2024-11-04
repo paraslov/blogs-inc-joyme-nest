@@ -51,6 +51,7 @@ export class CreateDeviceSessionCommandHandler implements ICommandHandler<Create
 
       return { decodedData, notice }
     }
+
     const hasCurrentDevice = await this.devicesRepository.getDeviceById(decodedData.deviceId)
     if (hasCurrentDevice) {
       notice.addError('Already has device session', 'refreshToken', HttpStatusCodes.BAD_REQUEST_400)

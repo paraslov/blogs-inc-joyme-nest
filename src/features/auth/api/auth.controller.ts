@@ -46,10 +46,12 @@ export class AuthController {
   async login(@Request() req: any, @Response() res: any) {
     const deviceName = req.headers['user-agent'] ?? 'Your device'
     const ip = req.ip ?? 'no_ip'
-    console.log('@> deviceName', deviceName)
-    console.log('@> ip', ip)
 
-    const loginResult = await this.authCommandService.loginUser(req.user)
+    const loginResult = await this.authCommandService.loginUser(req.user, deviceName, ip)
+    if (loginResult.hasError()) {
+      throw new HttpException(loginResult.extensions, loginResult.code)
+    }
+
     const { accessToken, refreshToken } = loginResult.data
 
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })

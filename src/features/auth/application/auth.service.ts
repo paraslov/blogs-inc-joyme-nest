@@ -30,13 +30,16 @@ export class AuthService {
     return { username: user.userData.login, sub: user._id.toString() }
   }
 
-  async getTokens(payload: AuthStrategiesDto) {
+  async getTokens(payload: AuthStrategiesDto, deviceId: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload),
-      this.jwtService.signAsync(payload, {
-        secret: this.configService.get('jwtSettings').REFRESH_JWT_SECRET,
-        expiresIn: this.configService.get('jwtSettings').REFRESH_JWT_EXPIRES,
-      }),
+      this.jwtService.signAsync(
+        { ...payload, deviceId },
+        {
+          secret: this.configService.get('jwtSettings').REFRESH_JWT_SECRET,
+          expiresIn: this.configService.get('jwtSettings').REFRESH_JWT_EXPIRES,
+        },
+      ),
     ])
 
     return {

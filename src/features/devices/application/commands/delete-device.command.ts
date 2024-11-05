@@ -20,6 +20,9 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
 
   async execute({ refreshToken, deviceId }) {
     const notice = await this.deleteDeviceValidations(refreshToken, deviceId)
+    if (notice.hasError()) {
+      return notice
+    }
 
     const deleteResult = await this.devicesRepository.deleteDeviceByDeviceId(deviceId)
     if (!deleteResult) {

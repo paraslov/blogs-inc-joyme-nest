@@ -26,4 +26,10 @@ export class DevicesRepository {
 
     return deleteResult.deletedCount
   }
+
+  async deleteDeviceByDeviceId(deviceId: string) {
+    const deleteResult = await this.devicesModel.deleteOne({ deviceId })
+
+    return Boolean(deleteResult.deletedCount)
+  }
 }

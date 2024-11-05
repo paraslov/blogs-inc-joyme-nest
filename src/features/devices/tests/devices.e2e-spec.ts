@@ -63,7 +63,6 @@ describe('auth', () => {
   })
 
   it('should delete device session by device id: ', async () => {
-    await wait(1)
     const { userRequestBody } = await userTestManger.createUser()
     const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
@@ -91,12 +90,16 @@ describe('auth', () => {
   })
 
   it('should throw 403 if trying to delete other user device: ', async () => {
-    await wait(1)
     const { userRequestBody } = await userTestManger.createUser()
     const { userRequestBody: otherUserRequestBody } = await userTestManger.createUser()
 
     const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    const { cookies: cookiesToDelete } = await UsersTestManager.login(
+      app,
+      userRequestBody.login,
+      userRequestBody.password,
+    )
 
     const { cookies: otherUserCookies } = await UsersTestManager.login(
       app,
@@ -104,11 +107,6 @@ describe('auth', () => {
       otherUserRequestBody.password,
     )
 
-    const { cookies: cookiesToDelete } = await UsersTestManager.login(
-      app,
-      userRequestBody.login,
-      userRequestBody.password,
-    )
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
     const refreshTokenToDelete = authTestManager.getRefreshTokenFromResponseCookies(cookiesToDelete)
     const otherUserRefreshToken = authTestManager.getRefreshTokenFromResponseCookies(otherUserCookies)
@@ -120,6 +118,26 @@ describe('auth', () => {
       .delete(`/api/security/devices/${deviceIdToDelete}`)
       .set({ Cookie: `refreshToken=${otherUserRefreshToken}` })
       .expect(HttpStatusCodes.FORBIDDEN_403)
+
+    const responseAfterDeleteBody = await devicesTestManager.getDevices(refreshToken)
+
+    expect(responseBody.length).toBe(3)
+    expect(responseAfterDeleteBody.length).toBe(3)
+  })
+
+  it('should throw 404 if device not found: ', async () => {
+    const { userRequestBody } = await userTestManger.createUser()
+    const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
+    const responseBody = await devicesTestManager.getDevices(refreshToken)
+    const incorrectDeviceId = '123-456-789'
+
+    await request(httpServer)
+      .delete(`/api/security/devices/${incorrectDeviceId}`)
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.NOT_FOUND_404)
 
     const responseAfterDeleteBody = await devicesTestManager.getDevices(refreshToken)
 

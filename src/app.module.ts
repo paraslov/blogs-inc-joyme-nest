@@ -34,8 +34,8 @@ import { DevicesModule } from './features/devices'
         return [
           {
             name: 'default',
-            ttl: environmentSettings.isTesting ? 1000 : 10000,
-            limit: 5,
+            ttl: 10000,
+            limit: environmentSettings.isTesting ? 10000 : 5,
           },
         ]
       },

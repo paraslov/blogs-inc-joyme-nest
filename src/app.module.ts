@@ -14,7 +14,7 @@ import { ThrottlerModule } from '@nestjs/throttler'
 import { LikesModule } from './features/likes/likes.module'
 import { JwtMiddleware } from './base/middlewares'
 import { JwtService } from '@nestjs/jwt'
-import { DevicesModule } from './features/devices/devices.module'
+import { DevicesModule } from './features/devices'
 
 @Module({
   imports: [
@@ -25,13 +25,22 @@ import { DevicesModule } from './features/devices/devices.module'
     CommentsModule,
     LikesModule,
     DevicesModule,
-    ThrottlerModule.forRoot([
-      {
-        name: 'default',
-        ttl: 10000,
-        limit: 5,
+    ThrottlerModule.forRootAsync({
+      useFactory: (configService: ConfigService<ConfigurationType>) => {
+        const environmentSettings = configService.get('environmentSettings', {
+          infer: true,
+        })!
+
+        return [
+          {
+            name: 'default',
+            ttl: environmentSettings.isTesting ? 1000 : 10000,
+            limit: 5,
+          },
+        ]
       },
-    ]),
+      inject: [ConfigService],
+    }),
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService<ConfigurationType>) => {
         const databaseSettings = configService.get('databaseSettings', {

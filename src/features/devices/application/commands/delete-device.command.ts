@@ -5,7 +5,10 @@ import { DevicesRepository } from '../../infrastructure/devices.repository'
 import { HttpStatusCodes } from '../../../../common/models'
 
 export class DeleteDeviceCommand {
-  constructor(public readonly refreshToken: string) {}
+  constructor(
+    public readonly refreshToken: string,
+    public readonly deviceId: string,
+  ) {}
 }
 
 @CommandHandler(DeleteDeviceCommand)
@@ -15,7 +18,18 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
     private devicesRepository: DevicesRepository,
   ) {}
 
-  async execute({ refreshToken }) {
+  async execute({ refreshToken, deviceId }) {
+    const notice = await this.deleteDeviceValidations(refreshToken, deviceId)
+
+    const deleteResult = await this.devicesRepository.deleteDeviceByDeviceId(deviceId)
+    if (!deleteResult) {
+      notice.addError('Device id not found', 'refreshToken', HttpStatusCodes.BAD_REQUEST_400)
+    }
+
+    return notice
+  }
+
+  async deleteDeviceValidations(refreshToken: string, deviceId: string) {
     const notice = new InterlayerDataManager()
 
     const decodedData = this.deviceService.decodeRefreshToken(refreshToken)
@@ -25,9 +39,17 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
       return notice
     }
 
-    const deleteResult = await this.devicesRepository.deleteDeviceByDeviceId(decodedData.deviceId)
-    if (!deleteResult) {
-      notice.addError('Device id not found', 'refreshToken', HttpStatusCodes.BAD_REQUEST_400)
+    const device = await this.devicesRepository.getDeviceById(deviceId)
+    if (!device) {
+      notice.addError('Device not found', 'deviceId', HttpStatusCodes.NOT_FOUND_404)
+
+      return notice
+    }
+
+    if (device.userId !== decodedData.sub) {
+      notice.addError('You are trying to delete device of another user', 'deviceId', HttpStatusCodes.FORBIDDEN_403)
+
+      return notice
     }
 
     return notice

@@ -1,17 +1,19 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings, wait } from '../../../common/tests'
+import { initTestsSettings } from '../../../common/tests'
 import { AuthTestManager } from '../../auth'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 import { DevicesTestManager } from './utils/devices.test-manager'
 import { JwtService } from '@nestjs/jwt'
+import { JwtOperationsService } from '../../../common/services'
 
 describe('auth', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let authTestManager: AuthTestManager
   let devicesTestManager: DevicesTestManager
+  let jwtOperationsService: JwtOperationsService
   let httpServer: any
 
   beforeAll(async () => {
@@ -21,7 +23,8 @@ describe('auth', () => {
       httpServer = result.httpServer
       userTestManger = result.userTestManger
 
-      devicesTestManager = new DevicesTestManager(app, new JwtService())
+      devicesTestManager = new DevicesTestManager(app)
+      jwtOperationsService = new JwtOperationsService(new JwtService())
       authTestManager = new AuthTestManager(app)
     } catch (err) {
       console.log('@> auth tests error: ', err)
@@ -73,7 +76,7 @@ describe('auth', () => {
     )
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
     const refreshTokenToDelete = authTestManager.getRefreshTokenFromResponseCookies(cookiesToDelete)
-    const { deviceId: deviceIdToDelete } = devicesTestManager.decodeRefreshToken(refreshTokenToDelete)
+    const { deviceId: deviceIdToDelete } = jwtOperationsService.decodeRefreshToken(refreshTokenToDelete)
 
     const responseBody = await devicesTestManager.getDevices(refreshToken)
 
@@ -110,7 +113,7 @@ describe('auth', () => {
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
     const refreshTokenToDelete = authTestManager.getRefreshTokenFromResponseCookies(cookiesToDelete)
     const otherUserRefreshToken = authTestManager.getRefreshTokenFromResponseCookies(otherUserCookies)
-    const { deviceId: deviceIdToDelete } = devicesTestManager.decodeRefreshToken(refreshTokenToDelete)
+    const { deviceId: deviceIdToDelete } = jwtOperationsService.decodeRefreshToken(refreshTokenToDelete)
 
     const responseBody = await devicesTestManager.getDevices(refreshToken)
 

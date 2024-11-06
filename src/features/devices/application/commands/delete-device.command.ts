@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
-import { DevicesService } from '../devices.service'
 import { DevicesRepository } from '../../infrastructure/devices.repository'
 import { HttpStatusCodes } from '../../../../common/models'
+import { JwtOperationsService } from '../../../../common/services'
 
 export class DeleteDeviceCommand {
   constructor(
@@ -14,7 +14,7 @@ export class DeleteDeviceCommand {
 @CommandHandler(DeleteDeviceCommand)
 export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceCommand> {
   constructor(
-    private deviceService: DevicesService,
+    private jwtOperationsService: JwtOperationsService,
     private devicesRepository: DevicesRepository,
   ) {}
 
@@ -35,7 +35,7 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
   async deleteDeviceValidations(refreshToken: string, deviceId: string) {
     const notice = new InterlayerDataManager()
 
-    const decodedData = this.deviceService.decodeRefreshToken(refreshToken)
+    const decodedData = this.jwtOperationsService.decodeRefreshToken(refreshToken)
     if (!decodedData?.deviceId) {
       notice.addError('No refresh token data', 'refreshToken', HttpStatusCodes.BAD_REQUEST_400)
 

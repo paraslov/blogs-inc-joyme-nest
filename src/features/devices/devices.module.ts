@@ -7,8 +7,8 @@ import { DevicesQueryRepository } from './infrastructure/devices.query-repositor
 import { devicesCommandHandlers } from './application/commands'
 import { DevicesRepository } from './infrastructure/devices.repository'
 import { DevicesCommandService } from './application/devices.command-service'
-import { DevicesService } from './application/devices.service'
 import { JwtModule } from '@nestjs/jwt'
+import { JwtOperationsService } from '../../common/services'
 
 @Module({
   imports: [DeviceMongooseModule, CqrsModule, JwtModule],
@@ -18,8 +18,8 @@ import { JwtModule } from '@nestjs/jwt'
     DevicesMappers,
     DevicesQueryRepository,
     DevicesRepository,
-    DevicesService,
     DevicesCommandService,
+    JwtOperationsService,
     ...devicesCommandHandlers,
   ],
 })

@@ -1,15 +1,17 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
 import { initTestsSettings } from '../../../common/tests'
+import { AuthTestManager } from './utils/auth-test.manager'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
-import { AuthTestManager } from './utils/auth-test.manager'
+import { DevicesTestManager } from '../../devices'
 
 describe('auth', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
-  let authTestManager: AuthTestManager
   let httpServer: any
+  let authTestManager: AuthTestManager
+  let devicesTestManager: DevicesTestManager
 
   beforeAll(async () => {
     try {
@@ -19,6 +21,7 @@ describe('auth', () => {
       userTestManger = result.userTestManger
 
       authTestManager = new AuthTestManager(app)
+      devicesTestManager = new DevicesTestManager(app)
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }
@@ -38,16 +41,27 @@ describe('auth', () => {
     expect(refreshToken).toEqual(expect.any(String))
   })
 
-  it('should refresh user tokens', async () => {
+  it('should logout user, cant refresh', async () => {
     const { userRequestBody } = await userTestManger.createUser()
+
     const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
 
-    const response = await request(httpServer)
+    const devicesBeforeLogout = await devicesTestManager.getDevices(refreshToken)
+
+    await request(httpServer)
+      .post('/api/auth/logout')
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const devicesAfterLogout = await devicesTestManager.getDevices(refreshToken)
+
+    await request(httpServer)
       .post('/api/auth/refresh-token')
       .set({ Cookie: `refreshToken=${refreshToken}` })
-      .expect(HttpStatusCodes.OK_200)
+      .expect(HttpStatusCodes.UNAUTHORIZED_401)
 
-    expect(response.body.user.refreshToken).toEqual(expect.any(String))
+    expect(devicesBeforeLogout.length).toBe(1)
+    expect(devicesAfterLogout.length).toBe(0)
   })
 })

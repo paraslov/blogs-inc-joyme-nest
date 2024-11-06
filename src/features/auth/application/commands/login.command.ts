@@ -5,11 +5,7 @@ import { InterlayerDataManager } from '../../../../common/manager'
 import { DevicesCommandService } from '../../../devices'
 import { v4 as uuidv4 } from 'uuid'
 import { HttpStatusCodes } from '../../../../common/models'
-
-export type TokensPair = {
-  accessToken: string
-  refreshToken: string
-}
+import { TokensPair } from '../../api/models/utility/token-pair.dto'
 
 export class LoginCommand {
   constructor(

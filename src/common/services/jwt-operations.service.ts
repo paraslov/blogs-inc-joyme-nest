@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { DecodedTokenDto } from '../api/models/utils/decoded-token.dto'
+
+export class DecodedTokenDto {
+  username: string
+  sub: string
+  deviceId: string
+  iat: number
+  exp: number
+}
 
 @Injectable()
-export class DevicesService {
+export class JwtOperationsService {
   constructor(private jwtService: JwtService) {}
 
   decodeRefreshToken(refreshToken: string): DecodedTokenDto | null {

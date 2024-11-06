@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { DevicesService } from '../devices.service'
 import { Device } from '../../domain/mongoose/device.entity'
 import { DevicesRepository } from '../../infrastructure/devices.repository'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreateDeviceSessionDto } from '../../api/models/input/create-device-session.dto'
+import { JwtOperationsService } from '../../../../common/services'
 
 export class CreateDeviceSessionCommand {
   constructor(public readonly payload: CreateDeviceSessionDto) {}
@@ -13,7 +13,7 @@ export class CreateDeviceSessionCommand {
 @CommandHandler(CreateDeviceSessionCommand)
 export class CreateDeviceSessionCommandHandler implements ICommandHandler<CreateDeviceSessionCommand> {
   constructor(
-    private deviceService: DevicesService,
+    private jwtOperationsService: JwtOperationsService,
     private devicesRepository: DevicesRepository,
   ) {}
 
@@ -44,7 +44,7 @@ export class CreateDeviceSessionCommandHandler implements ICommandHandler<Create
 
   async checkTokenData(refreshToken: string) {
     const notice = new InterlayerDataManager()
-    const decodedData = this.deviceService.decodeRefreshToken(refreshToken)
+    const decodedData = this.jwtOperationsService.decodeRefreshToken(refreshToken)
 
     if (!decodedData?.deviceId) {
       notice.addError('No refresh token data', 'refreshToken', HttpStatusCodes.BAD_REQUEST_400)

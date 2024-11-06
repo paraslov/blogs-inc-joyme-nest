@@ -11,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { LocalAuthGuard } from '../application/guards/local-auth.guard'
-import { AuthService } from '../application/auth.service'
 import { JwtAuthGuard } from '../application/guards/jwt-auth.guard'
 import { CurrentUserId } from '../../../base/decorators'
 import { CreateUserDto } from '../../users'
@@ -24,13 +23,14 @@ import { PasswordRecoveryDto } from './models/input/password-recovery.dto'
 import { AuthQueryRepository } from '../infrastructure/auth.query-repository'
 import { RefreshTokenGuard } from '../application/guards/refresh-auth.guard'
 import { AuthRequestDto } from './models/utility/auth-request.dto'
+import { DevicesCommandService } from '../../devices'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
     private readonly authCommandService: AuthCommandService,
+    private readonly devicesCommandService: DevicesCommandService,
     private readonly authQueryRepository: AuthQueryRepository,
   ) {}
 
@@ -62,9 +62,16 @@ export class AuthController {
   @Post('/refresh-token')
   async refreshToken(@Request() req: { user: AuthRequestDto }, @Response() res: any) {
     const refreshToken = req.user?.refreshToken
-    const user = req.user
 
-    return res.status(HttpStatusCodes.OK_200).send({ refreshToken, user })
+    const refreshResult = await this.authCommandService.refreshTokenPair(refreshToken)
+    if (refreshResult.hasError()) {
+      throw new HttpException(refreshResult.extensions, refreshResult.code)
+    }
+
+    const { accessToken, refreshToken: updatedRefreshToken } = refreshResult.data
+
+    res.cookie('refreshToken', updatedRefreshToken, { httpOnly: true, secure: true })
+    return res.status(HttpStatusCodes.OK_200).send({ accessToken })
   }
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)
@@ -115,5 +122,19 @@ export class AuthController {
     if (result.hasError()) {
       throw new BadRequestException(result.extensions)
     }
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('/logout')
+  async logout(@Request() req: { user: AuthRequestDto }, @Response() res: any) {
+    const refreshToken = req.user?.refreshToken
+
+    const deleteResult = await this.devicesCommandService.deleteDevice(refreshToken)
+    if (deleteResult.hasError()) {
+      throw new HttpException(deleteResult.extensions, deleteResult.code)
+    }
+
+    res.clearCookie('refreshToken')
+    return res.sendStatus(HttpStatusCodes.NO_CONTENT_204)
   }
 }

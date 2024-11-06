@@ -4,6 +4,7 @@ import { RegistrationEmailResendingHandler } from './registration-email-resendin
 import { PasswordRecoveryHandler } from './password-recovery.command'
 import { ConfirmNewPasswordHandler } from './confirm-new-password.command'
 import { LoginCommandHandler } from './login.command'
+import { RefreshTokenPairCommandHandler } from './refresh-token-pair.command'
 
 export const authCommandHandlers = [
   RegisterUserHandler,
@@ -12,4 +13,5 @@ export const authCommandHandlers = [
   PasswordRecoveryHandler,
   ConfirmNewPasswordHandler,
   LoginCommandHandler,
+  RefreshTokenPairCommandHandler,
 ]

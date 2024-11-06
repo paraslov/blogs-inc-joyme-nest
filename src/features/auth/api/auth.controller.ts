@@ -29,7 +29,6 @@ import { AuthRequestDto } from './models/utility/auth-request.dto'
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
     private readonly authCommandService: AuthCommandService,
     private readonly authQueryRepository: AuthQueryRepository,
   ) {}

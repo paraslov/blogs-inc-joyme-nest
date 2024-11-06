@@ -102,4 +102,23 @@ describe('>auth refresh tokens<', () => {
     expect(deviceAfterUpdate?.lastActiveDate.includes(currentYear.toString())).toBeTruthy()
     expect(deviceAfterUpdate?.deviceId === deviceBeforeUpdate?.deviceId).toBeTruthy()
   })
+
+  it('should 401 old refresh token after update: ', async () => {
+    const { userRequestBody } = await userTestManger.createUser()
+    const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
+    const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
+    await wait(1)
+
+    const response = await request(httpServer)
+      .post('/api/auth/refresh-token')
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.OK_200)
+
+    await request(httpServer)
+      .post('/api/auth/refresh-token')
+      .set({ Cookie: `refreshToken=${refreshToken}` })
+      .expect(HttpStatusCodes.UNAUTHORIZED_401)
+
+    expect(response.body.accessToken).toEqual(expect.any(String))
+  })
 })

@@ -1,21 +1,17 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings, wait } from '../../../common/tests'
-import request from 'supertest'
-import { HttpStatusCodes } from '../../../common/models'
+import { initTestsSettings } from '../../../common/tests'
 import { AuthTestManager } from './utils/auth-test.manager'
 
 describe('auth', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let authTestManager: AuthTestManager
-  let httpServer: any
 
   beforeAll(async () => {
     try {
       const result = await initTestsSettings()
       app = result.app
-      httpServer = result.httpServer
       userTestManger = result.userTestManger
 
       authTestManager = new AuthTestManager(app)

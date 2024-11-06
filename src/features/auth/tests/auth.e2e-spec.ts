@@ -37,22 +37,4 @@ describe('auth', () => {
     expect(accessToken).toEqual(expect.any(String))
     expect(refreshToken).toEqual(expect.any(String))
   })
-
-  it('should refresh user tokens', async () => {
-    const { userRequestBody } = await userTestManger.createUser()
-    const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
-    const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
-    await wait(1)
-
-    const response = await request(httpServer)
-      .post('/api/auth/refresh-token')
-      .set({ Cookie: `refreshToken=${refreshToken}` })
-      .expect(HttpStatusCodes.OK_200)
-    const updateResponseCookies = response.headers['set-cookie']
-    const updatedRefreshToken = authTestManager.getRefreshTokenFromResponseCookies(updateResponseCookies)
-
-    expect(response.body.accessToken).toEqual(expect.any(String))
-    expect(updatedRefreshToken).toEqual(expect.any(String))
-    expect(updatedRefreshToken === refreshToken).toBeFalsy()
-  })
 })

@@ -11,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { LocalAuthGuard } from '../application/guards/local-auth.guard'
-import { AuthService } from '../application/auth.service'
 import { JwtAuthGuard } from '../application/guards/jwt-auth.guard'
 import { CurrentUserId } from '../../../base/decorators'
 import { CreateUserDto } from '../../users'

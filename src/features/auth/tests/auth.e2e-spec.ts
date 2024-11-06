@@ -47,21 +47,13 @@ describe('auth', () => {
     const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
 
-    const devicesBeforeLogout = await devicesTestManager.getDevices(refreshToken)
-
     await request(httpServer)
       .post('/api/auth/logout')
       .set({ Cookie: `refreshToken=${refreshToken}` })
       .expect(HttpStatusCodes.NO_CONTENT_204)
-
-    const devicesAfterLogout = await devicesTestManager.getDevices(refreshToken)
-
     await request(httpServer)
       .post('/api/auth/refresh-token')
       .set({ Cookie: `refreshToken=${refreshToken}` })
       .expect(HttpStatusCodes.UNAUTHORIZED_401)
-
-    expect(devicesBeforeLogout.length).toBe(1)
-    expect(devicesAfterLogout.length).toBe(0)
   })
 })

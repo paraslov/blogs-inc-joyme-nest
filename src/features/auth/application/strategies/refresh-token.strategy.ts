@@ -1,14 +1,20 @@
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { Request } from 'express'
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../../settings/configuration'
 import { AuthStrategiesDto } from '../../api/models/utility/auth-strategies-dto'
+import { DevicesRepository } from '../../../devices'
+import { JwtOperationsService } from '../../../../common/services'
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor(private readonly configService: ConfigService<ConfigurationType>) {
+  constructor(
+    private configService: ConfigService<ConfigurationType>,
+    private devicesRepository: DevicesRepository,
+    private jwtOperationsService: JwtOperationsService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
@@ -22,8 +28,17 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refres
     })
   }
 
-  validate(req: Request, payload: AuthStrategiesDto) {
+  async validate(req: Request, payload: AuthStrategiesDto) {
     const refreshToken = req?.cookies?.['refreshToken'] ?? null
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found')
+    }
+
+    const decodedData = this.jwtOperationsService.decodeRefreshToken(refreshToken)
+    const device = await this.devicesRepository.getDeviceById(decodedData.deviceId)
+    if (!device || device.iat !== decodedData.iat) {
+      throw new UnauthorizedException('Refresh token expired')
+    }
 
     return { userId: payload.sub, username: payload.username, refreshToken }
   }

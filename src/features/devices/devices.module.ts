@@ -12,7 +12,7 @@ import { JwtOperationsService } from '../../common/services'
 
 @Module({
   imports: [DeviceMongooseModule, CqrsModule, JwtModule],
-  exports: [DeviceMongooseModule, DevicesCommandService],
+  exports: [DeviceMongooseModule, DevicesCommandService, DevicesRepository],
   controllers: [DevicesController],
   providers: [
     DevicesMappers,

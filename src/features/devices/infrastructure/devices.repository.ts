@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Device } from '../domain/mongoose/device.entity'
+import { Device, DeviceDocument } from '../domain/mongoose/device.entity'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 
@@ -17,6 +17,10 @@ export class DevicesRepository {
     const saveResult = await new this.devicesModel(device).save()
 
     return saveResult._id.toString()
+  }
+
+  async updateDeviceSession(device: DeviceDocument) {
+    return device.save()
   }
 
   async deleteOtherDevices(devicesIds: string[]) {

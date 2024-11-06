@@ -86,7 +86,7 @@ export class UsersTestManager {
     app: INestApplication,
     loginOrEmail: string,
     password: string,
-  ): Promise<{ accessToken: string; cookies: any }> {
+  ): Promise<{ accessToken: string; cookies: string | string[] }> {
     const loginResult = await request(app.getHttpServer())
       .post('/api/auth/login')
       .send({ loginOrEmail, password })

@@ -9,7 +9,9 @@ import { PasswordRecoveryCommand } from './commands/password-recovery.command'
 import { PasswordRecoveryDto } from '../api/models/input/password-recovery.dto'
 import { ConfirmNewPasswordCommand } from './commands/confirm-new-password.command'
 import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
-import { LoginCommand, TokensPair } from './commands/login.command'
+import { LoginCommand } from './commands/login.command'
+import { RefreshTokenPairCommand } from './commands/refresh-token-pair.command'
+import { TokensPair } from '../api/models/utility/token-pair.dto'
 
 @Injectable()
 export class AuthCommandService {
@@ -49,5 +51,11 @@ export class AuthCommandService {
     const command = new LoginCommand(authData, deviceName, ip)
 
     return this.commandBus.execute<LoginCommand, InterlayerDataManager<TokensPair>>(command)
+  }
+
+  refreshTokenPair(refreshToken: string) {
+    const command = new RefreshTokenPairCommand(refreshToken)
+
+    return this.commandBus.execute<RefreshTokenPairCommand, InterlayerDataManager<TokensPair>>(command)
   }
 }

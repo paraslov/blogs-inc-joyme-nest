@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { AuthService } from './application/auth.service'
-import { CryptService, MailerService } from '../../common/services'
+import { CryptService, JwtOperationsService, MailerService } from '../../common/services'
 import { AuthController } from './api/auth.controller'
 import { PassportModule } from '@nestjs/passport'
 import { UsersModule } from '../users/users.module'
@@ -40,6 +40,7 @@ import { DevicesModule } from '../devices'
     EmailSendManager,
     MailerService,
     EmailTemplatesManager,
+    JwtOperationsService,
     AuthRepository,
     AuthQueryRepository,
     AuthMappers,

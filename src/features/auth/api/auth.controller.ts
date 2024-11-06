@@ -61,9 +61,16 @@ export class AuthController {
   @Post('/refresh-token')
   async refreshToken(@Request() req: { user: AuthRequestDto }, @Response() res: any) {
     const refreshToken = req.user?.refreshToken
-    const user = req.user
 
-    return res.status(HttpStatusCodes.OK_200).send({ refreshToken, user })
+    const refreshResult = await this.authCommandService.refreshTokenPair(refreshToken)
+    if (refreshResult.hasError()) {
+      throw new HttpException(refreshResult.extensions, refreshResult.code)
+    }
+
+    const { accessToken, refreshToken: updatedRefreshToken } = refreshResult.data
+
+    res.cookie('refreshToken', updatedRefreshToken, { httpOnly: true, secure: true })
+    return res.status(HttpStatusCodes.OK_200).send({ accessToken })
   }
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)

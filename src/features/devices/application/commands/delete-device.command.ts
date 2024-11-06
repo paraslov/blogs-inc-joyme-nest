@@ -7,7 +7,7 @@ import { JwtOperationsService } from '../../../../common/services'
 export class DeleteDeviceCommand {
   constructor(
     public readonly refreshToken: string,
-    public readonly deviceId: string,
+    public readonly deviceId?: string,
   ) {}
 }
 
@@ -18,13 +18,14 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
     private devicesRepository: DevicesRepository,
   ) {}
 
-  async execute({ refreshToken, deviceId }) {
+  async execute({ refreshToken, deviceId }: DeleteDeviceCommand) {
     const notice = await this.deleteDeviceValidations(refreshToken, deviceId)
     if (notice.hasError()) {
       return notice
     }
+    const deviceIdToDelete = notice.data.deviceIdToDelete
 
-    const deleteResult = await this.devicesRepository.deleteDeviceByDeviceId(deviceId)
+    const deleteResult = await this.devicesRepository.deleteDeviceByDeviceId(deviceIdToDelete)
     if (!deleteResult) {
       notice.addError('Device id not found', 'refreshToken', HttpStatusCodes.BAD_REQUEST_400)
     }
@@ -32,8 +33,8 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
     return notice
   }
 
-  async deleteDeviceValidations(refreshToken: string, deviceId: string) {
-    const notice = new InterlayerDataManager()
+  async deleteDeviceValidations(refreshToken: string, deviceId?: string) {
+    const notice = new InterlayerDataManager<{ deviceIdToDelete: string }>()
 
     const decodedData = this.jwtOperationsService.decodeRefreshToken(refreshToken)
     if (!decodedData?.deviceId) {
@@ -42,7 +43,9 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
       return notice
     }
 
-    const device = await this.devicesRepository.getDeviceById(deviceId)
+    const deviceIdToDelete = deviceId ?? decodedData.deviceId
+
+    const device = await this.devicesRepository.getDeviceById(deviceIdToDelete)
     if (!device) {
       notice.addError('Device not found', 'deviceId', HttpStatusCodes.NOT_FOUND_404)
 
@@ -55,6 +58,7 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
       return notice
     }
 
+    notice.addData({ deviceIdToDelete })
     return notice
   }
 }

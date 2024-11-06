@@ -26,7 +26,7 @@ export class DevicesCommandService {
 
     return this.commandBus.execute<UpdateDeviceSessionCommand, InterlayerDataManager>(command)
   }
-  deleteDevice(refreshToken: string, deviceId: string) {
+  deleteDevice(refreshToken: string, deviceId?: string) {
     const command = new DeleteDeviceCommand(refreshToken, deviceId)
 
     return this.commandBus.execute<DeleteDeviceCommand, InterlayerDataManager>(command)

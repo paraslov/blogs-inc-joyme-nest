@@ -23,12 +23,14 @@ import { PasswordRecoveryDto } from './models/input/password-recovery.dto'
 import { AuthQueryRepository } from '../infrastructure/auth.query-repository'
 import { RefreshTokenGuard } from '../application/guards/refresh-auth.guard'
 import { AuthRequestDto } from './models/utility/auth-request.dto'
+import { DevicesCommandService } from '../../devices'
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authCommandService: AuthCommandService,
+    private readonly devicesCommandService: DevicesCommandService,
     private readonly authQueryRepository: AuthQueryRepository,
   ) {}
 
@@ -120,5 +122,19 @@ export class AuthController {
     if (result.hasError()) {
       throw new BadRequestException(result.extensions)
     }
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('/logout')
+  async logout(@Request() req: { user: AuthRequestDto }, @Response() res: any) {
+    const refreshToken = req.user?.refreshToken
+
+    const deleteResult = await this.devicesCommandService.deleteDevice(refreshToken)
+    if (deleteResult.hasError()) {
+      throw new HttpException(deleteResult.extensions, deleteResult.code)
+    }
+
+    res.clearCookie('refreshToken')
+    return res.sendStatus(HttpStatusCodes.NO_CONTENT_204)
   }
 }

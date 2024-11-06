@@ -69,16 +69,11 @@ describe('>auth refresh tokens<', () => {
       .set({ Cookie: `refreshToken=${refreshToken}` })
       .expect(HttpStatusCodes.OK_200)
 
-    const meResponse = await request(httpServer)
-      .get('/api/auth/me')
-      .auth(response.body.accessToken, {
-        type: 'bearer',
-      })
-      .expect(HttpStatusCodes.OK_200)
+    const meResponse = await authTestManager.getMe(response.body.accessToken)
 
-    expect(meResponse.body.userId).toEqual(expect.any(String))
-    expect(meResponse.body.email).toBe(userRequestBody.email)
-    expect(meResponse.body.login).toBe(userRequestBody.login)
+    expect(meResponse.userId).toEqual(expect.any(String))
+    expect(meResponse.email).toBe(userRequestBody.email)
+    expect(meResponse.login).toBe(userRequestBody.login)
   })
 
   it('should update devices lastUpdate time after tokens update: ', async () => {

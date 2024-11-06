@@ -90,7 +90,7 @@ export class UsersTestManager {
     const loginResult = await request(app.getHttpServer())
       .post('/api/auth/login')
       .send({ loginOrEmail, password })
-      .expect(200)
+      .expect(HttpStatusCodes.OK_200)
     const cookies = loginResult.headers['set-cookie']
 
     return { accessToken: loginResult.body.accessToken, cookies }

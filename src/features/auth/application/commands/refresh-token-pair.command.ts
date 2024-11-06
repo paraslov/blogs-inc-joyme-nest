@@ -32,6 +32,7 @@ export class RefreshTokenPairCommandHandler implements ICommandHandler<RefreshTo
 
     if (!newTokenPair.refreshToken || !newTokenPair.accessToken || updateResultNotice.hasError()) {
       notice.extensions = updateResultNotice.extensions
+      notice.code = updateResultNotice.code
 
       return notice
     }

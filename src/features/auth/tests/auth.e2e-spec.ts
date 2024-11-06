@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings } from '../../../common/tests'
+import { initTestsSettings, wait } from '../../../common/tests'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 import { AuthTestManager } from './utils/auth-test.manager'
@@ -42,12 +42,17 @@ describe('auth', () => {
     const { userRequestBody } = await userTestManger.createUser()
     const { cookies } = await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
+    await wait(1)
 
     const response = await request(httpServer)
       .post('/api/auth/refresh-token')
       .set({ Cookie: `refreshToken=${refreshToken}` })
       .expect(HttpStatusCodes.OK_200)
+    const updateResponseCookies = response.headers['set-cookie']
+    const updatedRefreshToken = authTestManager.getRefreshTokenFromResponseCookies(updateResponseCookies)
 
-    expect(response.body.user.refreshToken).toEqual(expect.any(String))
+    expect(response.body.accessToken).toEqual(expect.any(String))
+    expect(updatedRefreshToken).toEqual(expect.any(String))
+    expect(updatedRefreshToken === refreshToken).toBeFalsy()
   })
 })

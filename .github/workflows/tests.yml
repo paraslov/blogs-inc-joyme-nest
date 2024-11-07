@@ -1,27 +1,49 @@
-#name: Tests
-#
-#jobs:
-#  test:
-#    runs-on: ubuntu-20.04
-#
-#    services:
-#      mongodb:
-#        image: mongo:4.4.6
-#        env:
-#          MONGO_INITDB_ROOT_USERNAME: admin
-#          MONGO_INITDB_ROOT_PASSWORD: admin
-#          MONGO_INITDB_DATABASE: APP-DATABASE
-#        ports:
-#          - 27017:27017
-#        options: >-
-#          --health-cmd mongo
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - name: Test
-#        run: |
-#          echo "Run your integration Tests"
+name: Run tests
+
+on:
+  push:
+    branches: ['**']
+
+  pull_request:
+    branches:
+      - master
+
+env:
+  MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
+  MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+  ACCESS_JWT_SECRET: ${{ secrets.ACCESS_JWT_SECRET }}
+  REFRESH_JWT_SECRET: ${{ secrets.REFRESH_JWT_SECRET }}
+  ACCESS_JWT_EXPIRES: ${{ secrets.ACCESS_JWT_EXPIRES }}
+  REFRESH_JWT_EXPIRES: ${{ secrets.REFRESH_JWT_EXPIRES }}
+  SA_USER_USERNAME: ${{ secrets.SA_USER_USERNAME }}
+  SA_USER_PASSWORD: ${{ secrets.SA_USER_PASSWORD }}
+  SEND_MAIL_SERVICE_EMAIL: ${{ secrets.GH_UTIL_ENV }}
+  SEND_MAIL_SERVICE_PASSWORD: ${{ secrets.GH_UTIL_ENV }}
+  SEND_MAIL_SERVICE_APP_NAME: ${{ secrets.GH_UTIL_ENV }}
+  APP_PORT: ${{ secrets.APP_PORT }}
+  ENV: ${{ secrets.ENV_GH }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up node.js
+        uses: actions/checkout@v3
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: yarn install
+
+      - name: Run e2e tests
+        run: yarn test:e2e

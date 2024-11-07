@@ -6,7 +6,7 @@ on:
 
   pull_request:
     branches:
-      - main
+      - master
 
 env:
   MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}

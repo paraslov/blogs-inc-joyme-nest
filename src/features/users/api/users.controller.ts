@@ -18,6 +18,7 @@ import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation
 import { HttpStatusCodes } from '../../../common/models'
 import { UsersCommandService } from '../application/users.command.service'
 import { SaAuthGuard } from '../../auth'
+import { UsersSqlQueryRepository } from '../infrastructure/users.sql-query-repository'
 
 @UseGuards(SaAuthGuard)
 @Controller('users')
@@ -25,6 +26,7 @@ export class UsersController {
   constructor(
     private usersCommandService: UsersCommandService,
     private usersQueryRepository: UsersQueryRepository,
+    private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
 
   @Get()
@@ -33,8 +35,9 @@ export class UsersController {
   }
 
   @Get(':userId')
-  async getUser(@Param('userId', ObjectIdValidationPipe) userId: string) {
-    const user = await this.usersQueryRepository.getUser(userId)
+  async getUser(@Param('userId') userId: string) {
+    // const user = await this.usersQueryRepository.getUser(userId)
+    const user = await this.usersSqlQueryRepository.getUser(userId)
 
     if (!user) {
       throw new NotFoundException('User not found')

@@ -8,6 +8,7 @@ import { CryptService } from '../../common/services'
 import { usersCommandHandlers } from './application/commands'
 import { UsersCommandService } from './application/users.command.service'
 import { CqrsModule } from '@nestjs/cqrs'
+import { UsersSqlQueryRepository } from './infrastructure/users.sql-query-repository'
 
 @Module({
   imports: [UsersMongooseModule, CqrsModule],
@@ -18,6 +19,7 @@ import { CqrsModule } from '@nestjs/cqrs'
     UsersRepository,
     UsersQueryRepository,
     UsersMappers,
+    UsersSqlQueryRepository,
     CryptService,
     ...usersCommandHandlers,
   ],

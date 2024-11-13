@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
+import { InternalServerErrorException, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { BlogsModule } from './features/blogs/blogs.module'
@@ -15,6 +15,7 @@ import { LikesModule } from './features/likes/likes.module'
 import { JwtMiddleware } from './base/middlewares'
 import { JwtService } from '@nestjs/jwt'
 import { DevicesModule } from './features/devices'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
   imports: [
@@ -53,6 +54,35 @@ import { DevicesModule } from './features/devices'
         return {
           uri,
           dbName,
+        }
+      },
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: (configService: ConfigService<ConfigurationType>) => {
+        const databaseSettings = configService.get('databaseSettings', {
+          infer: true,
+        })!
+
+        const username = databaseSettings.POSTGRES_USER_NAME
+        const password = databaseSettings.POSTGRES_USER_PASSWORD
+        const database = databaseSettings.POSTGRES_DATABASE
+        const host = databaseSettings.POSTGRES_HOST
+        const port = Number(databaseSettings.POSTGRES_PORT)
+
+        if (!port) {
+          throw new InternalServerErrorException('PORT IS NOT DEFINED')
+        }
+
+        return {
+          database,
+          username,
+          password,
+          host,
+          port,
+          type: 'postgres',
+          autoLoadEntities: false,
+          synchronize: false,
         }
       },
       inject: [ConfigService],

@@ -16,8 +16,6 @@ export class UsersSqlQueryRepository {
       [userId],
     )
 
-    console.log('@> res: ', res)
-
-    return res
+    return res[0]
   }
 }

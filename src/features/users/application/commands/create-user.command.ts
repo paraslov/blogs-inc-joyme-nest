@@ -3,6 +3,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { User } from '../../domain/mongoose/users.entity'
 import { CryptService } from '../../../../common/services'
 import { UsersRepository } from '../../infrastructure/users.repository'
+import { UsersSqlRepository } from '../../infrastructure/users.sql-repository'
+import { UsersSqlQueryRepository } from '../../infrastructure/users.sql-query-repository'
 
 export class CreateUserCommand {
   constructor(public readonly createUserDto: CreateUserDto) {}
@@ -12,7 +14,8 @@ export class CreateUserCommand {
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
     private cryptService: CryptService,
-    private usersRepository: UsersRepository,
+    private usersSqlRepository: UsersSqlRepository,
+    private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
 
   async execute(command: CreateUserCommand) {
@@ -27,12 +30,14 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         createdAt: new Date().toISOString(),
       },
       userConfirmationData: {
-        confirmationCode: 'default_code',
+        confirmationCode: '44444444-4444-4444-4444-444444444444',
         confirmationCodeExpirationDate: new Date(),
         isConfirmed: true,
       },
     }
 
-    return this.usersRepository.saveUser(newUser)
+    const createdUserId = await this.usersSqlRepository.createUser(newUser)
+
+    return this.usersSqlQueryRepository.getUser(createdUserId)
   }
 }

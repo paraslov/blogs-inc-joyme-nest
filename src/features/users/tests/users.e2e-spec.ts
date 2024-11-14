@@ -25,11 +25,10 @@ describe('users', () => {
   })
 
   it('should get user', async () => {
-    const userById = await userTestManger.getUser('b996f022-3b02-4fdf-bf38-f1148e4400b9')
+    const { userResponseBody } = await userTestManger.createUser()
+    const userById = await userTestManger.getUser(userResponseBody.id)
 
-    console.log('@> userbiid: ', userById)
-
-    // expect(userResponseBody).toEqual(userById)
+    expect(userResponseBody.id).toEqual(userById.id)
   })
 
   it('should create user', async () => {

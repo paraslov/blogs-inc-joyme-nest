@@ -39,6 +39,7 @@ export const initTestsSettings = async (addSettingsToModuleBuilder?: (moduleBuil
   return {
     app,
     databaseConnection,
+    dataSource,
     httpServer,
     userTestManger,
     configService,

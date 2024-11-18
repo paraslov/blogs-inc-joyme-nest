@@ -8,5 +8,5 @@ export const deleteAllData = async (databaseConnection: Connection, dataSource: 
   await databaseConnection.collection('comments').deleteMany({})
   await databaseConnection.collection('likes').deleteMany({})
 
-  await dataSource.query('TRUNCATE TABLE "users" RESTART IDENTITY CASCADE')
+  await dataSource.query('DELETE FROM public.users;')
 }

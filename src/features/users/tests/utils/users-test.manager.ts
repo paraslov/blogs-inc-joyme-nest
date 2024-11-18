@@ -32,6 +32,10 @@ export class UsersTestManager {
     }
   }
 
+  resetUserIndex() {
+    this.userIndex = 0
+  }
+
   expectCorrectModel(createModel: CreateUserDto, responseModel: UserViewDto) {
     expect(createModel.login).toBe(responseModel.login)
     expect(createModel.email).toBe(responseModel.email)

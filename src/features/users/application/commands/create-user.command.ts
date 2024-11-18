@@ -2,7 +2,6 @@ import { CreateUserDto } from '../../api/models/input/create-user.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { User } from '../../domain/mongoose/users.entity'
 import { CryptService } from '../../../../common/services'
-import { UsersRepository } from '../../infrastructure/users.repository'
 import { UsersSqlRepository } from '../../infrastructure/users.sql-repository'
 import { UsersSqlQueryRepository } from '../../infrastructure/users.sql-query-repository'
 

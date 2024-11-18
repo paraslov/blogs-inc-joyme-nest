@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectDataSource } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
 import { UsersMappers } from './users.mappers'
+import { FilterUsersDto } from '../api/models/input/filter-users.dto'
 
 @Injectable()
 export class UsersSqlQueryRepository {
@@ -23,5 +24,22 @@ export class UsersSqlQueryRepository {
     )
 
     return this.usersMappers.mapSqlToOutputDto(res[0])
+  }
+
+  async getUsers(query: FilterUsersDto) {
+    const offset = (query.pageNumber - 1) * query.pageSize
+
+    const res = await this.dataSource.query(
+      `SELECT id, login, email, "passwordHash", "createdAt"
+              FROM public.users
+              WHERE 
+                login ILIKE '%' || $3 || '%' OR
+                email ILIKE '%' || $4 || '%'
+              ORDER BY "createdAt" DESC
+              LIMIT $1 OFFSET $2;`,
+      [query.pageSize, offset, query.searchLoginTerm, query.searchEmailTerm],
+    )
+
+    return res.map(this.usersMappers.mapSqlToOutputDto)
   }
 }

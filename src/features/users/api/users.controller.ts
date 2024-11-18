@@ -31,7 +31,7 @@ export class UsersController {
 
   @Get()
   getAll(@Query() query: FilterUsersDto) {
-    return this.usersQueryRepository.getUsers(query)
+    return this.usersSqlQueryRepository.getUsers(query)
   }
 
   @Get(':userId')

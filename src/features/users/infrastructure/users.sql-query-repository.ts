@@ -3,6 +3,7 @@ import { InjectDataSource } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
 import { UsersMappers } from './users.mappers'
 import { FilterUsersDto } from '../api/models/input/filter-users.dto'
+import { SortDirection } from '../../../common/models/enums/sort-direction'
 
 @Injectable()
 export class UsersSqlQueryRepository {
@@ -28,6 +29,7 @@ export class UsersSqlQueryRepository {
 
   async getUsers(query: FilterUsersDto) {
     const offset = (query.pageNumber - 1) * query.pageSize
+    const direction = query.sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
 
     const res = await this.dataSource.query(
       `SELECT id, login, email, "passwordHash", "createdAt"
@@ -35,7 +37,7 @@ export class UsersSqlQueryRepository {
               WHERE 
                 login ILIKE '%' || $3 || '%' OR
                 email ILIKE '%' || $4 || '%'
-              ORDER BY "createdAt" DESC
+              ORDER BY "${query.sortBy}" ${direction}
               LIMIT $1 OFFSET $2;`,
       [query.pageSize, offset, query.searchLoginTerm, query.searchEmailTerm],
     )

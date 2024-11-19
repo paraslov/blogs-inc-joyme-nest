@@ -16,4 +16,13 @@ export const deleteAllData = async (databaseConnection: Connection, dataSource: 
         END IF;
     END $$;
   `)
+  await dataSource.query(`
+    DO $$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'devices') 
+        THEN
+          DELETE FROM public.devices;
+        END IF;
+    END $$;
+  `)
 }

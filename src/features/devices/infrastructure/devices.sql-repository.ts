@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { Device } from '../domain/mongoose/device.entity'
+import { DeviceEntitySql } from '../domain/postgres/device.entity'
 
 @Injectable()
 export class DevicesSqlRepository {
@@ -26,7 +27,7 @@ export class DevicesSqlRepository {
     console.log('@> createDevicesTable')
   }
 
-  async getDeviceById(deviceId: string) {
+  async getDeviceById(deviceId: string): Promise<DeviceEntitySql> {
     const result = await this.dataSource.query(
       `
       SELECT device_id, device_name, user_id, ip, iat, exp
@@ -44,7 +45,8 @@ export class DevicesSqlRepository {
       `
       INSERT INTO public.devices(
         device_id, device_name, user_id, ip, iat, exp)
-        VALUES ($1, $2, $3, $4, $5, $6);
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING device_id;
     `,
       [device.deviceId, device.deviceName, device.userId, device.ip, device.iat, device.exp],
     )
@@ -64,12 +66,16 @@ export class DevicesSqlRepository {
     return Boolean(deleteResult?.[1])
   }
 
-  // todo: finish method
-  async updateDeviceSession(device: Device) {
-    const updateResult = await this.dataSource.query(`
+  async updateDeviceSession(device: DeviceEntitySql) {
+    const updateResult = await this.dataSource.query(
+      `
       UPDATE public.devices
-        SET device_name=?, user_id=?, ip=?, iat=?, exp=?
-        WHERE device_id=;
-    `)
+        SET device_name=$2, user_id=$3, ip=$4, iat=$5, exp=$6
+        WHERE device_id=$1;
+    `,
+      [device.device_id, device.device_name, device.user_id, device.ip, device.iat, device.exp],
+    )
+
+    console.log('@> updateResult: ', updateResult)
   }
 }

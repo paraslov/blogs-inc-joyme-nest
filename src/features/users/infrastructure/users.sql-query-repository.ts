@@ -31,6 +31,16 @@ export class UsersSqlQueryRepository {
     const offset = (query.pageNumber - 1) * query.pageSize
     const direction = query.sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
 
+    const totalCountResult = await this.dataSource.query(
+      `SELECT COUNT(*) AS "totalCount"
+     FROM public.users
+     WHERE 
+       login ILIKE '%' || $1 || '%' AND
+       email ILIKE '%' || $2 || '%'`,
+      [query.searchLoginTerm, query.searchEmailTerm],
+    )
+    const totalCount = parseInt(totalCountResult[0].totalCount, 10)
+
     const res = await this.dataSource.query(
       `SELECT id, login, email, "passwordHash", "createdAt"
               FROM public.users
@@ -42,6 +52,15 @@ export class UsersSqlQueryRepository {
       [query.pageSize, offset, query.searchLoginTerm, query.searchEmailTerm],
     )
 
-    return res.map(this.usersMappers.mapSqlToOutputDto)
+    const mappedUsers = res.map(this.usersMappers.mapSqlToOutputDto)
+    const pagesCount = Math.ceil(totalCount / query.pageSize)
+
+    return {
+      pagesCount,
+      totalCount,
+      pageSize: query.pageSize,
+      page: query.pageNumber,
+      items: mappedUsers,
+    }
   }
 }

@@ -33,6 +33,7 @@ export class UsersSqlRepository {
               password_recovery_code uuid,
               password_recovery_code_expiration_date timestamp without time zone,
               is_password_recovery_confirmed boolean,
+              PRIMARY KEY (user_id),
               CONSTRAINT link_with_users FOREIGN KEY (user_id)
                   REFERENCES public.users (id) MATCH SIMPLE
                   ON UPDATE NO ACTION

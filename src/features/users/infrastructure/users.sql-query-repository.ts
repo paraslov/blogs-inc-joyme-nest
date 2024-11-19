@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm'
 import { UsersMappers } from './users.mappers'
 import { FilterUsersDto } from '../api/models/input/filter-users.dto'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
+import { camelToSnakeUtil } from '../../../common/utils'
 
 @Injectable()
 export class UsersSqlQueryRepository {
@@ -14,12 +15,13 @@ export class UsersSqlQueryRepository {
 
   async getUser(userId: string) {
     const res = await this.dataSource.query(
-      `SELECT u.id, u.login, u.email, u."passwordHash", u."createdAt", uci."confirmationCode",
-                uci."confirmationExpirationDate", uci."isConfirmed",
-                uci."passwordRecoveryCode", uci."passwordRecoveryCodeExpirationDate", uci."isPasswordRecoveryConfirmed"
+      `SELECT u.id, u.login, u.email, u.password_hash, u.created_at,
+                uci.confirmation_code, uci.confirmation_code_expiration_date, uci.is_confirmed,
+                uci.password_recovery_code, uci.password_recovery_code_expiration_date,
+                uci.is_password_recovery_confirmed
       FROM public.users u
-      LEFT JOIN public."usersConfirmationInfo" uci
-      ON u.id = uci."userId"
+      LEFT JOIN public.users_confirmation_info uci
+      ON u.id = uci.user_id
       WHERE u.id=$1;`,
       [userId],
     )
@@ -30,6 +32,7 @@ export class UsersSqlQueryRepository {
   async getUsers(query: FilterUsersDto) {
     const offset = (query.pageNumber - 1) * query.pageSize
     const direction = query.sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
+    const sortBySnakeCase = camelToSnakeUtil(query.sortBy)
 
     const totalCountResult = await this.dataSource.query(
       `SELECT COUNT(*) AS "totalCount"
@@ -42,12 +45,12 @@ export class UsersSqlQueryRepository {
     const totalCount = parseInt(totalCountResult[0].totalCount, 10)
 
     const res = await this.dataSource.query(
-      `SELECT id, login, email, "passwordHash", "createdAt"
+      `SELECT id, login, email, password_hash, created_at
               FROM public.users
               WHERE 
                 login ILIKE '%' || $3 || '%' OR
                 email ILIKE '%' || $4 || '%'
-              ORDER BY "${query.sortBy}" ${direction}
+              ORDER BY "${sortBySnakeCase}" ${direction}
               LIMIT $1 OFFSET $2;`,
       [query.pageSize, offset, query.searchLoginTerm, query.searchEmailTerm],
     )

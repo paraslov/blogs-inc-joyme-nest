@@ -27,7 +27,7 @@ export class UsersMappers {
     mappedUser.id = userSql.id
     mappedUser.email = userSql.email
     mappedUser.login = userSql.login
-    mappedUser.createdAt = userSql.createdAt
+    mappedUser.createdAt = userSql.created_at
 
     return mappedUser
   }

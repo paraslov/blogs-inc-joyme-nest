@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional } from 'class-validator'
 import { SortDirection } from '../enums/sort-direction'
 import { Transform } from 'class-transformer'
 import { TrimmedString } from '../../../base/decorators'
@@ -36,6 +36,7 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
   sortBy: string = 'createdAt'
 
   @IsOptional()
+  @IsEnum(SortDirection)
   @Transform(({ value }) => (!value ? 'desc' : value))
   sortDirection: SortDirection = SortDirection.DESC
 }

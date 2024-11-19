@@ -7,10 +7,48 @@ import { User } from '../domain/mongoose/users.entity'
 export class UsersSqlRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
+  async createUsersTable() {
+    await this.dataSource.query(`
+      CREATE TABLE IF NOT EXISTS public.users
+        (
+            id uuid NOT NULL DEFAULT gen_random_uuid(),
+            email character varying(255) NOT NULL,
+            login character varying(10) NOT NULL,
+            password_hash character varying(255) NOT NULL,
+            created_at timestamp without time zone NOT NULL DEFAULT NOW(),
+            PRIMARY KEY (id)
+        );
+  
+      ALTER TABLE IF EXISTS public.users
+          OWNER to sa_sql_user;
+    `)
+
+    await this.dataSource.query(`
+        CREATE TABLE IF NOT EXISTS public.users_confirmation_info
+          (
+              user_id uuid NOT NULL,
+              confirmation_code uuid NOT NULL,
+              confirmation_code_expiration_date timestamp without time zone NOT NULL,
+              is_confirmed boolean NOT NULL,
+              password_recovery_code uuid,
+              password_recovery_code_expiration_date timestamp without time zone,
+              is_password_recovery_confirmed boolean,
+              CONSTRAINT link_with_users FOREIGN KEY (user_id)
+                  REFERENCES public.users (id) MATCH SIMPLE
+                  ON UPDATE NO ACTION
+                  ON DELETE CASCADE
+                  NOT VALID
+          );
+
+        ALTER TABLE IF EXISTS public.users_confirmation_info
+            OWNER to sa_sql_user;
+    `)
+  }
+
   async createUser(user: User) {
     const res = await this.dataSource.query(
       `
-      INSERT INTO public.users(login, email, "passwordHash", "createdAt")
+      INSERT INTO public.users(login, email, password_hash, created_at)
       VALUES ($1, $2, $3, $4)
       RETURNING id;
     `,
@@ -19,8 +57,8 @@ export class UsersSqlRepository {
 
     await this.dataSource.query(
       `
-      INSERT INTO public."usersConfirmationInfo"(
-      "userId", "confirmationCode", "isConfirmed", "confirmationExpirationDate")
+      INSERT INTO public.users_confirmation_info(
+      user_id, confirmation_code, is_confirmed, confirmation_code_expiration_date)
       VALUES ($4, $1, $2, $3);
     `,
       [

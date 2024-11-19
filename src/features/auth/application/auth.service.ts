@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common'
 import { CryptService } from '../../../common/services'
 import { JwtService } from '@nestjs/jwt'
 import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
-import { AuthRepository } from '../infrastructure/auth.repository'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../settings/configuration'
+import { AuthSqlRepository } from '../infrastructure/auth.sql-repository'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private authRepository: AuthRepository,
+    private authRepository: AuthSqlRepository,
     private cryptService: CryptService,
     private jwtService: JwtService,
     private readonly configService: ConfigService<ConfigurationType>,
@@ -21,13 +21,13 @@ export class AuthService {
       return null
     }
 
-    const isPasswordValid = await this.cryptService.checkPassword(password, user.userData.passwordHash)
+    const isPasswordValid = await this.cryptService.checkPassword(password, user.password_hash)
 
     if (!isPasswordValid) {
       return null
     }
 
-    return { username: user.userData.login, sub: user._id.toString() }
+    return { username: user.login, sub: user.id }
   }
 
   async getTokens(payload: AuthStrategiesDto, deviceId: string) {

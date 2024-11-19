@@ -16,6 +16,8 @@ export class UsersSqlRepository {
             login character varying(10) NOT NULL,
             password_hash character varying(255) NOT NULL,
             created_at timestamp without time zone NOT NULL DEFAULT NOW(),
+            CONSTRAINT login UNIQUE (login),
+            CONSTRAINT email UNIQUE (email),
             PRIMARY KEY (id)
         );
   

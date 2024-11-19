@@ -5,14 +5,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../../settings/configuration'
 import { AuthStrategiesDto } from '../../api/models/utility/auth-strategies-dto'
-import { DevicesRepository } from '../../../devices'
 import { JwtOperationsService } from '../../../../common/services'
+import { DevicesSqlRepository } from '../../../devices'
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(
     private configService: ConfigService<ConfigurationType>,
-    private devicesRepository: DevicesRepository,
+    private devicesRepository: DevicesSqlRepository,
     private jwtOperationsService: JwtOperationsService,
   ) {
     super({
@@ -36,6 +36,7 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refres
 
     const decodedData = this.jwtOperationsService.decodeRefreshToken(refreshToken)
     const device = await this.devicesRepository.getDeviceById(decodedData.deviceId)
+
     if (!device || device.iat !== decodedData.iat) {
       throw new UnauthorizedException('Refresh token expired')
     }

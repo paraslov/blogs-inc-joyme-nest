@@ -140,7 +140,7 @@ describe('auth', () => {
     await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
     const responseBody = await devicesTestManager.getDevices(refreshToken)
-    const incorrectDeviceId = '123-456-789'
+    const incorrectDeviceId = '6662f063-b3bf-40b4-8ed4-ad37c0a72666'
 
     await request(httpServer)
       .delete(`/api/security/devices/${incorrectDeviceId}`)

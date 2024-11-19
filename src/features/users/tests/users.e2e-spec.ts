@@ -90,6 +90,19 @@ describe('users', () => {
     expect(users.body?.some((u: any) => u.id === userResponseBody.id)).toBeFalsy()
   })
 
+  it('should throw 400 if sortBy not correct', async () => {
+    await userTestManger.createUser()
+    const { username, password } = userTestManger.getSaCredits
+
+    await request(httpServer)
+      .get('/api/users')
+      .query({ searchEmailTerm: '2', searchLoginTerm: '3', sortBy: 'sql_injection' })
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .expect(HttpStatusCodes.BAD_REQUEST_400)
+  })
+
   it('should create user', async () => {
     const { userResponseBody, userRequestBody } = await userTestManger.createUser()
 

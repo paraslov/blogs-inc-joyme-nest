@@ -30,8 +30,8 @@ export class DevicesSqlRepository {
     const result = await this.dataSource.query(
       `
       SELECT device_id, device_name, user_id, ip, iat, exp
-        FROM public.devices d
-        WHERE d.device_id=$1;
+        FROM public.devices
+        WHERE device_id=$1;
     `,
       [deviceId],
     )
@@ -50,5 +50,26 @@ export class DevicesSqlRepository {
     )
 
     return createResult?.[0]
+  }
+
+  async deleteDeviceByDeviceId(deviceId: string) {
+    const deleteResult = await this.dataSource.query(
+      `
+      DELETE FROM public.devices
+        WHERE device_id=$1;
+    `,
+      [deviceId],
+    )
+
+    return Boolean(deleteResult?.[1])
+  }
+
+  // todo: finish method
+  async updateDeviceSession(device: Device) {
+    const updateResult = await this.dataSource.query(`
+      UPDATE public.devices
+        SET device_name=?, user_id=?, ip=?, iat=?, exp=?
+        WHERE device_id=;
+    `)
   }
 }

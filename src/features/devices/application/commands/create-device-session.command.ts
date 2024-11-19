@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { Device } from '../../domain/mongoose/device.entity'
-import { DevicesRepository } from '../../infrastructure/devices.repository'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreateDeviceSessionDto } from '../../api/models/input/create-device-session.dto'
 import { JwtOperationsService } from '../../../../common/services'
+import { DevicesSqlRepository } from '../../infrastructure/devices.sql-repository'
 
 export class CreateDeviceSessionCommand {
   constructor(public readonly payload: CreateDeviceSessionDto) {}
@@ -14,7 +14,7 @@ export class CreateDeviceSessionCommand {
 export class CreateDeviceSessionCommandHandler implements ICommandHandler<CreateDeviceSessionCommand> {
   constructor(
     private jwtOperationsService: JwtOperationsService,
-    private devicesRepository: DevicesRepository,
+    private devicesRepository: DevicesSqlRepository,
   ) {}
 
   async execute({ payload }: CreateDeviceSessionCommand) {
@@ -34,7 +34,7 @@ export class CreateDeviceSessionCommandHandler implements ICommandHandler<Create
       exp: decodedData.exp,
     }
 
-    const saveResult = await this.devicesRepository.saveDeviceSession(newDeviceSession)
+    const saveResult = await this.devicesRepository.createDeviceSession(newDeviceSession)
     if (!saveResult) {
       notice.addError('Failed to create device session', null, HttpStatusCodes.EXPECTATION_FAILED_417)
     }

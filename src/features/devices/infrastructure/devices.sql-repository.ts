@@ -66,6 +66,18 @@ export class DevicesSqlRepository {
     return Boolean(deleteResult?.[1])
   }
 
+  async deleteOtherDevices(devicesIds: string[]) {
+    const deleteResult = await this.dataSource.query(
+      `
+        DELETE FROM public.devices
+          WHERE device_id = ANY($1);
+    `,
+      [devicesIds],
+    )
+
+    return deleteResult?.[1]
+  }
+
   async updateDeviceSession(device: DeviceEntitySql) {
     const updateResult = await this.dataSource.query(
       `

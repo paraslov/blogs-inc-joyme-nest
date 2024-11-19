@@ -52,7 +52,7 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
       return notice
     }
 
-    if (device.userId !== decodedData.sub) {
+    if (device.user_id !== decodedData.sub) {
       notice.addError('You are trying to delete device of another user', 'deviceId', HttpStatusCodes.FORBIDDEN_403)
 
       return notice

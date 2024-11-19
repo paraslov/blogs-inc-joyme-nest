@@ -9,15 +9,17 @@ import { DevicesRepository } from './infrastructure/devices.repository'
 import { DevicesCommandService } from './application/devices.command-service'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtOperationsService } from '../../common/services'
+import { DevicesSqlRepository } from './infrastructure/devices.sql-repository'
 
 @Module({
   imports: [DeviceMongooseModule, CqrsModule, JwtModule],
-  exports: [DeviceMongooseModule, DevicesCommandService, DevicesRepository],
+  exports: [DeviceMongooseModule, DevicesCommandService, DevicesSqlRepository],
   controllers: [DevicesController],
   providers: [
     DevicesMappers,
     DevicesQueryRepository,
     DevicesRepository,
+    DevicesSqlRepository,
     DevicesCommandService,
     JwtOperationsService,
     ...devicesCommandHandlers,

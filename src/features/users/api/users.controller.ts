@@ -21,7 +21,7 @@ import { UsersSqlQueryRepository } from '../infrastructure/users.sql-query-repos
 import { UUIDValidationPipe } from '../../../base/pipes'
 
 @UseGuards(SaAuthGuard)
-@Controller('users')
+@Controller('sa/users')
 export class UsersController {
   constructor(
     private usersCommandService: UsersCommandService,

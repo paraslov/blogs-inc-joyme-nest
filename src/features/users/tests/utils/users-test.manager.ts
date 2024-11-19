@@ -53,7 +53,7 @@ export class UsersTestManager {
 
     const requestBody = createUserDto ?? this.getUserModel
     const response = await request(this.app.getHttpServer())
-      .post('/api/users')
+      .post('/api/sa/users')
       .auth(saUsername, saPassword, {
         type: 'basic',
       })
@@ -78,7 +78,7 @@ export class UsersTestManager {
 
   async getUser(userId: string) {
     const response = await request(this.app.getHttpServer())
-      .get(`/api/users/${userId}`)
+      .get(`/api/sa/users/${userId}`)
       .auth(this.username, this.password, {
         type: 'basic',
       })

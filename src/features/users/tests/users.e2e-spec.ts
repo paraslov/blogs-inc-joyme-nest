@@ -46,7 +46,7 @@ describe('users', () => {
     const { username, password } = userTestManger.getSaCredits
 
     const users = await request(httpServer)
-      .get('/api/users')
+      .get('/api/sa/users')
       .auth(username, password, {
         type: 'basic',
       })
@@ -62,7 +62,7 @@ describe('users', () => {
     const { username, password } = userTestManger.getSaCredits
 
     const users = await request(httpServer)
-      .get('/api/users')
+      .get('/api/sa/users')
       .query({ page: 2, limit: 10 })
       .auth(username, password, {
         type: 'basic',
@@ -79,7 +79,7 @@ describe('users', () => {
     const { username, password } = userTestManger.getSaCredits
 
     const users = await request(httpServer)
-      .get('/api/users')
+      .get('/api/sa/users')
       .query({ searchEmailTerm: '2', searchLoginTerm: '3' })
       .auth(username, password, {
         type: 'basic',
@@ -95,7 +95,7 @@ describe('users', () => {
     const { username, password } = userTestManger.getSaCredits
 
     await request(httpServer)
-      .get('/api/users')
+      .get('/api/sa/users')
       .query({ searchEmailTerm: '2', searchLoginTerm: '3', sortBy: 'sql_injection' })
       .auth(username, password, {
         type: 'basic',
@@ -121,7 +121,7 @@ describe('users', () => {
     const { username, password } = userTestManger.getSaCredits
 
     await request(httpServer)
-      .delete(`/api/users/${userResponseBody.id}`)
+      .delete(`/api/sa/users/${userResponseBody.id}`)
       .auth(username, password, {
         type: 'basic',
       })

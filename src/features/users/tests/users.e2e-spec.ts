@@ -52,8 +52,8 @@ describe('users', () => {
       })
       .expect(HttpStatusCodes.OK_200)
 
-    expect(users.body?.length).toBe(3)
-    expect(users.body?.some((u: any) => u.id === userResponseBody.id)).toBeTruthy()
+    expect(users.body?.items?.length).toBe(3)
+    expect(users.body?.items?.some((u: any) => u.id === userResponseBody.id)).toBeTruthy()
   })
 
   it('should get paginated users', async () => {
@@ -69,8 +69,8 @@ describe('users', () => {
       })
       .expect(HttpStatusCodes.OK_200)
 
-    expect(users.body?.length).toBe(10)
-    expect(users.body?.some((u: any) => u.id === userResponseBody.id)).toBeFalsy()
+    expect(users.body?.items?.length).toBe(10)
+    expect(users.body?.items?.some((u: any) => u.id === userResponseBody.id)).toBeFalsy()
   })
 
   it('should get paginated users with login and email search', async () => {
@@ -86,8 +86,8 @@ describe('users', () => {
       })
       .expect(HttpStatusCodes.OK_200)
 
-    expect(users.body?.length).toBe(4)
-    expect(users.body?.some((u: any) => u.id === userResponseBody.id)).toBeFalsy()
+    expect(users.body?.items?.length).toBe(4)
+    expect(users.body?.items?.some((u: any) => u.id === userResponseBody.id)).toBeFalsy()
   })
 
   it('should throw 400 if sortBy not correct', async () => {

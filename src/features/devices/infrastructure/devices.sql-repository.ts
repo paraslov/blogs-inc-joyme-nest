@@ -88,6 +88,6 @@ export class DevicesSqlRepository {
       [device.device_id, device.device_name, device.user_id, device.ip, device.iat, device.exp],
     )
 
-    console.log('@> updateResult: ', updateResult)
+    return Boolean(updateResult?.[1])
   }
 }

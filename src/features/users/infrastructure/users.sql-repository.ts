@@ -85,4 +85,16 @@ export class UsersSqlRepository {
 
     return Boolean(deleteResult[1])
   }
+  async confirmUser(confirmationCode: string) {
+    const updateResult = await this.dataSource.query(
+      `
+      UPDATE public.users_confirmation_info
+        SET is_confirmed=true
+        WHERE confirmation_code=$1;
+    `,
+      [confirmationCode],
+    )
+
+    return updateResult?.[1] === 1
+  }
 }

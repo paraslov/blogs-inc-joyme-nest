@@ -1,8 +1,20 @@
 import { CreateUserDto } from './api/models/input/create-user.dto'
 import { User, UserDocument } from './domain/mongoose/users.entity'
-import { UsersSqlEntity } from './domain/postgres/users-sql.entity'
+import { UserInfo } from './domain/postgres/user-info.entity'
+import { UserSql } from './domain/postgres/user.sql'
 import { UsersQueryRepository } from './infrastructure/users.query-repository'
 import { UsersRepository } from './infrastructure/users.repository'
+import { UsersSqlRepository } from './infrastructure/users.sql-repository'
 import { UsersTestManager } from './tests/utils/users-test.manager'
 
-export { User, CreateUserDto, UsersRepository, UserDocument, UsersQueryRepository, UsersTestManager, UsersSqlEntity }
+export {
+  User,
+  CreateUserDto,
+  UsersRepository,
+  UserDocument,
+  UsersQueryRepository,
+  UsersSqlRepository,
+  UsersTestManager,
+  UserSql,
+  UserInfo,
+}

@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { CreateUserDto, User } from '../../../users'
+import { CreateUserDto, User, UsersSqlRepository } from '../../../users'
 import { CryptService } from '../../../../common/services'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
-import { UsersRepository } from '../../../users'
 import { EmailSendManager, InterlayerDataManager } from '../../../../common/manager'
 import { AuthRepository } from '../../infrastructure/auth.repository'
 import { HttpStatusCodes } from '../../../../common/models'
@@ -16,7 +15,7 @@ export class RegisterUserCommand {
 export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand> {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersSqlRepository,
     private readonly cryptService: CryptService,
     private readonly emailSendManager: EmailSendManager,
   ) {}
@@ -50,7 +49,7 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand>
       },
     }
 
-    await this.usersRepository.saveUser(userToRegister)
+    await this.usersRepository.createUser(userToRegister)
 
     try {
       const mailInfo = await this.emailSendManager.sendRegistrationEmail(email, confirmationCode)

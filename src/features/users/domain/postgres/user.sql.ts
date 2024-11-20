@@ -1,4 +1,4 @@
-export class UsersSqlEntity {
+export class UserSql {
   id: string
   login: string
   email: string

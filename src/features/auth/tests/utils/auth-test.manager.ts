@@ -2,9 +2,13 @@ import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../../common/models'
 import { MeViewModelDto } from '../../api/models/output/me-view-model.dto'
+import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
 
 export class AuthTestManager {
-  constructor(protected readonly app: INestApplication) {}
+  constructor(
+    protected readonly app: INestApplication,
+    private authSqlRepository: AuthSqlRepository,
+  ) {}
   httpServer = this.app.getHttpServer()
 
   getRefreshTokenFromResponseCookies = (cookies: string | string[]) => {
@@ -29,5 +33,11 @@ export class AuthTestManager {
       .expect(options.expectedStatus)
 
     return meResponse.body
+  }
+
+  async getUserByLogin(userLogin: string) {
+    const response = await this.authSqlRepository.getUserByLoginOrEmail(userLogin)
+
+    return response
   }
 }

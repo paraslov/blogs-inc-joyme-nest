@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { UserDocument, UsersRepository } from '../../../users'
+import { UserInfo, UsersSqlRepository } from '../../../users'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { AuthRepository } from '../../infrastructure/auth.repository'
+import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
 
 export class ConfirmUserCommand {
   constructor(public readonly confirmationCode: string) {}
@@ -11,8 +11,8 @@ export class ConfirmUserCommand {
 @CommandHandler(ConfirmUserCommand)
 export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
   constructor(
-    private readonly authRepository: AuthRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly authRepository: AuthSqlRepository,
+    private readonly usersRepository: UsersSqlRepository,
   ) {}
   async execute(command: ConfirmUserCommand) {
     const { confirmationCode } = command
@@ -31,7 +31,7 @@ export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
     return resultNotice
   }
 
-  checkUserToConfirm(userToConfirm: UserDocument) {
+  checkUserToConfirm(userToConfirm: UserInfo | null) {
     const notice = new InterlayerDataManager()
 
     if (!userToConfirm) {
@@ -39,12 +39,12 @@ export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
 
       return notice
     }
-    if (userToConfirm.userConfirmationData.isConfirmed) {
+    if (userToConfirm.is_confirmed) {
       notice.addError('Registration was already confirmed', 'code', HttpStatusCodes.BAD_REQUEST_400)
 
       return notice
     }
-    if (userToConfirm.userConfirmationData.confirmationCodeExpirationDate < new Date()) {
+    if (userToConfirm.confirmation_code_expiration_date < new Date()) {
       notice.addError('Confirmation code expired', 'code', HttpStatusCodes.BAD_REQUEST_400)
 
       return notice

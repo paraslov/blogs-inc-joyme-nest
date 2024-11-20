@@ -4,8 +4,8 @@ import { CryptService } from '../../../../common/services'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { EmailSendManager, InterlayerDataManager } from '../../../../common/manager'
-import { AuthRepository } from '../../infrastructure/auth.repository'
 import { HttpStatusCodes } from '../../../../common/models'
+import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
 
 export class RegisterUserCommand {
   constructor(public readonly createUserDto: CreateUserDto) {}
@@ -14,7 +14,7 @@ export class RegisterUserCommand {
 @CommandHandler(RegisterUserCommand)
 export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand> {
   constructor(
-    private readonly authRepository: AuthRepository,
+    private readonly authRepository: AuthSqlRepository,
     private readonly usersRepository: UsersSqlRepository,
     private readonly cryptService: CryptService,
     private readonly emailSendManager: EmailSendManager,

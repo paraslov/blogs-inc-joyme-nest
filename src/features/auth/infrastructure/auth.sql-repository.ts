@@ -6,7 +6,7 @@ import { UserInfo, UserSql } from '../../users'
 export class AuthSqlRepository {
   constructor(protected dataSource: DataSource) {}
 
-  async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserSql | null> {
+  async getUserByLoginOrEmail(loginOrEmail: string): Promise<{ user: UserSql; userInfo: UserInfo } | null> {
     const users = await this.dataSource.query(
       `
       SELECT id, login, email, password_hash, created_at
@@ -15,12 +15,41 @@ export class AuthSqlRepository {
     `,
       [loginOrEmail],
     )
+    const user = users?.[0]
 
-    if (users.length !== 1) {
+    if (!user) {
       return null
     }
 
-    return users[0]
+    const userInfos = await this.dataSource.query(
+      `
+        SELECT confirmation_code, confirmation_code_expiration_date, is_confirmed, password_recovery_code,
+          password_recovery_code_expiration_date, is_password_recovery_confirmed
+            FROM public.users_confirmation_info
+            WHERE user_id=$1;
+    `,
+      [user.id],
+    )
+    const userInfo = userInfos?.[0]
+    if (!userInfo) {
+      return null
+    }
+
+    return { user, userInfo }
+  }
+
+  async getUserByConfirmationCode(confirmationCode: string): Promise<UserInfo | null> {
+    const userInfos = await this.dataSource.query(
+      `
+        SELECT user_id, confirmation_code, confirmation_code_expiration_date, is_confirmed, password_recovery_code,
+          password_recovery_code_expiration_date, is_password_recovery_confirmed
+            FROM public.users_confirmation_info
+            WHERE confirmation_code=$1;
+    `,
+      [confirmationCode],
+    )
+
+    return userInfos?.[0] ?? null
   }
 
   async getUserConfirmationInfoByUserId(userId: string): Promise<UserInfo | null> {

@@ -16,18 +16,18 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<AuthStrategiesDto | null> {
-    const user = await this.authRepository.getUserByLoginOrEmail(username)
-    if (!user) {
+    const userData = await this.authRepository.getUserByLoginOrEmail(username)
+    if (!userData) {
       return null
     }
 
-    const isPasswordValid = await this.cryptService.checkPassword(password, user.password_hash)
+    const isPasswordValid = await this.cryptService.checkPassword(password, userData.user.password_hash)
 
     if (!isPasswordValid) {
       return null
     }
 
-    return { username: user.login, sub: user.id }
+    return { username: userData.user.login, sub: userData.user.id }
   }
 
   async getTokens(payload: AuthStrategiesDto, deviceId: string) {

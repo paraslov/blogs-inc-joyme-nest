@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { AuthRepository } from '../../infrastructure/auth.repository'
 import { EmailSendManager, InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
-import { UserDocument, UsersRepository } from '../../../users'
+import { UserInfo, UsersSqlRepository } from '../../../users'
+import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
 
 export class RegistrationEmailResendingCommand {
   constructor(public readonly email: string) {}
@@ -13,28 +13,28 @@ export class RegistrationEmailResendingCommand {
 @CommandHandler(RegistrationEmailResendingCommand)
 export class RegistrationEmailResendingHandler implements ICommandHandler<RegistrationEmailResendingCommand> {
   constructor(
-    private readonly authRepository: AuthRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly authRepository: AuthSqlRepository,
+    private readonly usersRepository: UsersSqlRepository,
     private readonly emailSendManager: EmailSendManager,
   ) {}
 
   async execute(command: RegistrationEmailResendingCommand) {
     const { email } = command
-    const user = await this.authRepository.getUserByLoginOrEmail(email)
+    const userData = await this.authRepository.getUserByLoginOrEmail(email)
 
-    const resultNotice = this.checkUser(email, user)
-    if (resultNotice.hasError() || !user) {
+    const resultNotice = this.checkUser(email, userData?.userInfo)
+    if (resultNotice.hasError() || !userData) {
       return resultNotice
     }
 
     const confirmationCode = uuidv4()
-    user.userConfirmationData.confirmationCode = confirmationCode
-    user.userConfirmationData.confirmationCodeExpirationDate = add(new Date(), {
+    userData.userInfo.confirmation_code = confirmationCode
+    userData.userInfo.confirmation_code_expiration_date = add(new Date(), {
       hours: 1,
       minutes: 1,
     })
 
-    await this.usersRepository.saveUser(user)
+    await this.usersRepository.updateUserAndInfo(userData.user, userData.userInfo)
 
     try {
       const mailInfo = await this.emailSendManager.resendRegistrationEmail(email, confirmationCode)
@@ -46,7 +46,7 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
     return resultNotice
   }
 
-  checkUser(email: string, user: UserDocument | false) {
+  checkUser(email: string, user: UserInfo | null) {
     const notice = new InterlayerDataManager()
 
     if (!user) {
@@ -54,7 +54,7 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
 
       return notice
     }
-    if (user.userConfirmationData.isConfirmed) {
+    if (user.is_confirmed) {
       notice.addError(`Registration was already confirmed`, 'email', HttpStatusCodes.BAD_REQUEST_400)
 
       return notice

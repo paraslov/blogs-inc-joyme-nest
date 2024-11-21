@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectDataSource } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
 import { User } from '../domain/mongoose/users.entity'
+import { UserSql } from '../domain/postgres/user.sql'
+import { UserInfo } from '../domain/postgres/user-info.entity'
 
 @Injectable()
 export class UsersSqlRepository {
@@ -96,5 +98,35 @@ export class UsersSqlRepository {
     )
 
     return updateResult?.[1] === 1
+  }
+  async updateUserAndInfo(user: UserSql, userInfo: UserInfo) {
+    const userUpdateResult = await this.dataSource.query(
+      `
+        UPDATE public.users
+          SET email=$2, login=$3
+          WHERE id=$1;
+    `,
+      [user.id, user.email, user.login],
+    )
+
+    const userInfoUpdateResult = await this.dataSource.query(
+      `
+        UPDATE public.users_confirmation_info
+        SET confirmation_code=$2, confirmation_code_expiration_date=$3, is_confirmed=$4,
+          password_recovery_code=$5, password_recovery_code_expiration_date=$6, is_password_recovery_confirmed=$7
+        WHERE user_id=$1;
+    `,
+      [
+        user.id,
+        userInfo.confirmation_code,
+        userInfo.confirmation_code_expiration_date,
+        userInfo.is_confirmed,
+        userInfo.password_recovery_code,
+        userInfo.password_recovery_code_expiration_date,
+        userInfo.is_password_recovery_confirmed,
+      ],
+    )
+
+    return Boolean(userUpdateResult?.[1] && userInfoUpdateResult?.[1])
   }
 }

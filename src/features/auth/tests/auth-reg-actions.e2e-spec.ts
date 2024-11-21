@@ -37,12 +37,7 @@ describe('>auth reg actions<', () => {
   })
 
   it('should register user and login after: ', async () => {
-    const requestBody = {
-      login: 'myLogin',
-      password: 'myPassword#$%',
-      email: 'balanov.kaspi@gmail.com',
-    }
-    await request(httpServer).post('/api/auth/registration').send(requestBody).expect(HttpStatusCodes.NO_CONTENT_204)
+    const { requestBody } = await authTestManager.registerUser()
 
     const { accessToken } = await UsersTestManager.login(app, requestBody.login, requestBody.password)
 
@@ -55,25 +50,20 @@ describe('>auth reg actions<', () => {
       password: 'myPassword#$%',
       email: 'myEmail1@gl.co',
     }
-    await request(httpServer).post('/api/auth/registration').send(requestBody).expect(HttpStatusCodes.NO_CONTENT_204)
+    await authTestManager.registerUser(requestBody)
 
-    await request(httpServer)
-      .post('/api/auth/registration')
-      .send({ ...requestBody, email: 'other@email.co' })
-      .expect(HttpStatusCodes.BAD_REQUEST_400)
-    await request(httpServer)
-      .post('/api/auth/registration')
-      .send({ ...requestBody, login: 'otherLogin' })
-      .expect(HttpStatusCodes.BAD_REQUEST_400)
+    await authTestManager.registerUser(
+      { ...requestBody, email: 'other@email.co' },
+      { expectedStatus: HttpStatusCodes.BAD_REQUEST_400 },
+    )
+    await authTestManager.registerUser(
+      { ...requestBody, login: 'otherLogin' },
+      { expectedStatus: HttpStatusCodes.BAD_REQUEST_400 },
+    )
   })
 
   it('should confirm user registration: ', async () => {
-    const requestBody = {
-      login: 'myLogin3',
-      password: 'myPassword#$%',
-      email: 'myEmail3@gl.co',
-    }
-    await request(httpServer).post('/api/auth/registration').send(requestBody).expect(HttpStatusCodes.NO_CONTENT_204)
+    const { requestBody } = await authTestManager.registerUser()
     const user = await authTestManager.getUserByLogin(requestBody.login)
 
     await request(httpServer)
@@ -84,5 +74,22 @@ describe('>auth reg actions<', () => {
 
     expect(user.userInfo.is_confirmed).toBeFalsy()
     expect(userAfterConfirm.userInfo.is_confirmed).toBeTruthy()
+  })
+
+  it('should resend user registration email: ', async () => {
+    const { requestBody } = await authTestManager.registerUser()
+    const userData = await authTestManager.getUserByLogin(requestBody.login)
+
+    await request(httpServer)
+      .post('/api/auth/registration-email-resending')
+      .send({ email: requestBody.email })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+    const userAfterResend = await authTestManager.getUserByLogin(requestBody.login)
+
+    expect(
+      userData.userInfo.confirmation_code_expiration_date !==
+        userAfterResend.userInfo.confirmation_code_expiration_date,
+    ).toBeTruthy()
+    expect(userData.userInfo.confirmation_code !== userAfterResend.userInfo.confirmation_code).toBeTruthy()
   })
 })

@@ -11,9 +11,7 @@ import { AuthSqlRepository } from '../infrastructure/auth.sql-repository'
 
 describe('>auth reg actions<', () => {
   let app: INestApplication
-  let userTestManger: UsersTestManager
   let authTestManager: AuthTestManager
-  let devicesTestManager: DevicesTestManager
   let httpServer: any
 
   beforeAll(async () => {
@@ -23,10 +21,8 @@ describe('>auth reg actions<', () => {
       })
       app = result.app
       httpServer = result.httpServer
-      userTestManger = result.userTestManger
 
       authTestManager = new AuthTestManager(app, new AuthSqlRepository(result.dataSource))
-      devicesTestManager = new DevicesTestManager(app)
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }
@@ -91,5 +87,46 @@ describe('>auth reg actions<', () => {
         userAfterResend.userInfo.confirmation_code_expiration_date,
     ).toBeTruthy()
     expect(userData.userInfo.confirmation_code !== userAfterResend.userInfo.confirmation_code).toBeTruthy()
+  })
+
+  it('should send user password recovery email: ', async () => {
+    const { requestBody } = await authTestManager.registerUser()
+    const userData = await authTestManager.getUserByLogin(requestBody.login)
+
+    await request(httpServer)
+      .post('/api/auth/password-recovery')
+      .send({ email: requestBody.email })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+    const userAfterPasswordRecoveryEmail = await authTestManager.getUserByLogin(requestBody.login)
+
+    expect(userData.userInfo.password_recovery_code).toBeFalsy()
+    expect(userAfterPasswordRecoveryEmail.userInfo.password_recovery_code).toStrictEqual(expect.any(String))
+    expect(userAfterPasswordRecoveryEmail.userInfo.password_recovery_code_expiration_date).toStrictEqual(
+      expect.any(Date),
+    )
+    expect(userAfterPasswordRecoveryEmail.userInfo.is_password_recovery_confirmed).toBeFalsy()
+  })
+
+  it('should change user password after recovery email: ', async () => {
+    const { requestBody } = await authTestManager.registerUser()
+
+    await request(httpServer)
+      .post('/api/auth/password-recovery')
+      .send({ email: requestBody.email })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+    const userAfterPasswordRecoveryEmail = await authTestManager.getUserByLogin(requestBody.login)
+
+    const passwordRecoveryDto = {
+      newPassword: 'myNewPass$%$#',
+      recoveryCode: userAfterPasswordRecoveryEmail.userInfo.password_recovery_code,
+    }
+    await request(httpServer)
+      .post('/api/auth/new-password')
+      .send(passwordRecoveryDto)
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+    const userAfterPasswordRecovery = await authTestManager.getUserByLogin(requestBody.login)
+
+    expect(userAfterPasswordRecoveryEmail.userInfo.is_password_recovery_confirmed).toBeFalsy()
+    expect(userAfterPasswordRecovery.userInfo.is_password_recovery_confirmed).toBeTruthy()
   })
 })

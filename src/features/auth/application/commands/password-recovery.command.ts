@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { EmailSendManager, InterlayerDataManager } from '../../../../common/manager'
-import { AuthRepository } from '../../infrastructure/auth.repository'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { HttpStatusCodes } from '../../../../common/models'
-import { UsersRepository } from '../../../users'
+import { UsersSqlRepository } from '../../../users'
+import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
 
 export class PasswordRecoveryCommand {
   constructor(public readonly email: string) {}
@@ -14,26 +14,27 @@ export class PasswordRecoveryCommand {
 export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecoveryCommand> {
   constructor(
     private readonly emailSendManager: EmailSendManager,
-    private readonly authRepository: AuthRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly authRepository: AuthSqlRepository,
+    private readonly usersRepository: UsersSqlRepository,
   ) {}
 
   async execute(command: PasswordRecoveryCommand) {
     const { email } = command
     const notice = new InterlayerDataManager()
-    const user = await this.authRepository.getUserByLoginOrEmail(email)
+    const userData = await this.authRepository.getUserByLoginOrEmail(email)
 
-    if (!user) {
+    if (!userData) {
+      notice.addError('No user found', 'email', HttpStatusCodes.NOT_FOUND_404)
       return notice
     }
 
     const recoveryCode = uuidv4()
-    user.userConfirmationData.passwordRecoveryCode = recoveryCode
-    user.userConfirmationData.passwordRecoveryCodeExpirationDate = add(new Date(), {
+    userData.userInfo.password_recovery_code = recoveryCode
+    userData.userInfo.password_recovery_code_expiration_date = add(new Date(), {
       hours: 1,
       minutes: 1,
     })
-    user.userConfirmationData.isPasswordRecoveryConfirmed = false
+    userData.userInfo.is_password_recovery_confirmed = false
 
     try {
       const mailInfo = await this.emailSendManager.sendPasswordRecoveryEmail(email, recoveryCode)
@@ -43,7 +44,7 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
       notice.addError('Cannot send email. Try again later', 'email', HttpStatusCodes.FAILED_DEPENDENCY_424)
     }
 
-    await this.usersRepository.saveUser(user)
+    await this.usersRepository.updateUserAndInfo(userData.user, userData.userInfo)
 
     return notice
   }

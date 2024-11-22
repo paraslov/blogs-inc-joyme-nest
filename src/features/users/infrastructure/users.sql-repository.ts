@@ -50,6 +50,19 @@ export class UsersSqlRepository {
     `)
   }
 
+  async getUserById(userId: string): Promise<UserSql | null> {
+    const user = await this.dataSource.query(
+      `
+      SELECT id, login, email, password_hash, created_at
+              FROM public.users
+              WHERE id=$1
+    `,
+      [userId],
+    )
+
+    return user?.[0] ?? null
+  }
+
   async createUser(user: User) {
     const res = await this.dataSource.query(
       `
@@ -103,10 +116,10 @@ export class UsersSqlRepository {
     const userUpdateResult = await this.dataSource.query(
       `
         UPDATE public.users
-          SET email=$2, login=$3
+          SET email=$2, login=$3, password_hash=$4
           WHERE id=$1;
     `,
-      [user.id, user.email, user.login],
+      [user.id, user.email, user.login, user.password_hash],
     )
 
     const userInfoUpdateResult = await this.dataSource.query(

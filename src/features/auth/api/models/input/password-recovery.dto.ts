@@ -1,4 +1,4 @@
-import { MaxLength, MinLength } from 'class-validator'
+import { IsUUID, MaxLength, MinLength } from 'class-validator'
 import { TrimmedString } from '../../../../../base/decorators'
 
 export class PasswordRecoveryDto {
@@ -8,5 +8,6 @@ export class PasswordRecoveryDto {
   newPassword: string
 
   @TrimmedString()
+  @IsUUID()
   recoveryCode: string
 }

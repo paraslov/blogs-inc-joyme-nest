@@ -25,7 +25,7 @@ import { RefreshTokenGuard } from '../application/guards/refresh-auth.guard'
 import { AuthRequestDto } from './models/utility/auth-request.dto'
 import { DevicesCommandService } from '../../devices'
 
-@UseGuards(ThrottlerGuard)
+// @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(

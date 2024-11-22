@@ -1,6 +1,5 @@
 import { BadRequestException, INestApplication, ValidationPipe } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { LoggerMiddlewareFunc } from '../base/middlewares/logger.middleware'
 import { HttpExceptionFilter } from '../base/exceptionFilters/http-exception.filter'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from './configuration'
@@ -17,7 +16,7 @@ export const applyAppSettings = (app: INestApplication) => {
 
   //  app.useGlobalGuards(new AuthGuard());
 
-  app.use(LoggerMiddlewareFunc)
+  // app.use(LoggerMiddlewareFunc)
   app.use(cookieParser())
 
   setAppUseContainersToEnableCustomClassValidatorDecorators(app)

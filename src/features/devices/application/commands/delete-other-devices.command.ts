@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { DevicesRepository } from '../../infrastructure/devices.repository'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { DevicesQueryRepository } from '../../infrastructure/devices.query-repository'
 import { JwtOperationsService } from '../../../../common/services'
+import { DevicesSqlRepository } from '../../infrastructure/devices.sql-repository'
 
 export class DeleteOtherDevicesCommand {
   constructor(public readonly refreshToken: string) {}
@@ -13,7 +13,7 @@ export class DeleteOtherDevicesCommand {
 export class DeleteOtherDevicesCommandHandler implements ICommandHandler<DeleteOtherDevicesCommand> {
   constructor(
     private devicesQueryRepository: DevicesQueryRepository,
-    private devicesRepository: DevicesRepository,
+    private devicesRepository: DevicesSqlRepository,
     private jwtOperationsService: JwtOperationsService,
   ) {}
 

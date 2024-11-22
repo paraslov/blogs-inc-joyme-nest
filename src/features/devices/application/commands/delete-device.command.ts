@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
-import { DevicesRepository } from '../../infrastructure/devices.repository'
 import { HttpStatusCodes } from '../../../../common/models'
 import { JwtOperationsService } from '../../../../common/services'
+import { DevicesSqlRepository } from '../../infrastructure/devices.sql-repository'
 
 export class DeleteDeviceCommand {
   constructor(
@@ -15,7 +15,7 @@ export class DeleteDeviceCommand {
 export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceCommand> {
   constructor(
     private jwtOperationsService: JwtOperationsService,
-    private devicesRepository: DevicesRepository,
+    private devicesRepository: DevicesSqlRepository,
   ) {}
 
   async execute({ refreshToken, deviceId }: DeleteDeviceCommand) {
@@ -52,7 +52,7 @@ export class DeleteDeviceCommandHandler implements ICommandHandler<DeleteDeviceC
       return notice
     }
 
-    if (device.userId !== decodedData.sub) {
+    if (device.user_id !== decodedData.sub) {
       notice.addError('You are trying to delete device of another user', 'deviceId', HttpStatusCodes.FORBIDDEN_403)
 
       return notice

@@ -5,6 +5,7 @@ import { AuthRequestDto } from '../../auth'
 import { HttpStatusCodes } from '../../../common/models'
 import { DevicesQueryRepository } from '../infrastructure/devices.query-repository'
 import { DevicesCommandService } from '../application/devices.command-service'
+import { UUIDValidationPipe } from '../../../base/pipes'
 
 @Controller('security/devices')
 export class DevicesController {
@@ -39,7 +40,7 @@ export class DevicesController {
   @UseGuards(RefreshTokenGuard)
   @Delete(':deviceId')
   async deleteDevice(
-    @Param('deviceId') deviceId: string,
+    @Param('deviceId', UUIDValidationPipe) deviceId: string,
     @Req() req: Response & { user: AuthRequestDto },
     @Res() res: any,
   ) {

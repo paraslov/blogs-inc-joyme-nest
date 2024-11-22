@@ -2,10 +2,26 @@ import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../../common/models'
 import { MeViewModelDto } from '../../api/models/output/me-view-model.dto'
+import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { CreateUserDto } from '../../../users'
 
 export class AuthTestManager {
-  constructor(protected readonly app: INestApplication) {}
+  constructor(
+    protected readonly app: INestApplication,
+    private authSqlRepository?: AuthSqlRepository,
+  ) {}
   httpServer = this.app.getHttpServer()
+  userIndex = 0
+
+  private get getUserModel(): CreateUserDto {
+    this.userIndex++
+
+    return {
+      login: `login${this.userIndex}`,
+      email: `email${this.userIndex}@service.oom`,
+      password: `passworD#$${this.userIndex}`,
+    }
+  }
 
   getRefreshTokenFromResponseCookies = (cookies: string | string[]) => {
     if (typeof cookies === 'string') {
@@ -29,5 +45,22 @@ export class AuthTestManager {
       .expect(options.expectedStatus)
 
     return meResponse.body
+  }
+
+  async registerUser(
+    createUserDto?: CreateUserDto,
+    options: { expectedStatus: HttpStatusCodes } = { expectedStatus: HttpStatusCodes.NO_CONTENT_204 },
+  ) {
+    const requestBody = createUserDto ?? this.getUserModel
+
+    await request(this.httpServer).post('/api/auth/registration').send(requestBody).expect(options.expectedStatus)
+
+    return { requestBody }
+  }
+
+  async getUserByLogin(userLogin: string) {
+    const response = await this.authSqlRepository.getUserByLoginOrEmail(userLogin)
+
+    return response
   }
 }

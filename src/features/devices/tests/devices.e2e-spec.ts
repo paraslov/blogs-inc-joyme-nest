@@ -7,6 +7,7 @@ import { HttpStatusCodes } from '../../../common/models'
 import { DevicesTestManager } from './utils/devices.test-manager'
 import { JwtService } from '@nestjs/jwt'
 import { JwtOperationsService } from '../../../common/services'
+import { DevicesSqlRepository } from '../infrastructure/devices.sql-repository'
 
 describe('auth', () => {
   let app: INestApplication
@@ -14,6 +15,7 @@ describe('auth', () => {
   let authTestManager: AuthTestManager
   let devicesTestManager: DevicesTestManager
   let jwtOperationsService: JwtOperationsService
+  let devicesSqlRepository: DevicesSqlRepository
   let httpServer: any
 
   beforeAll(async () => {
@@ -26,6 +28,9 @@ describe('auth', () => {
       devicesTestManager = new DevicesTestManager(app)
       jwtOperationsService = new JwtOperationsService(new JwtService())
       authTestManager = new AuthTestManager(app)
+
+      devicesSqlRepository = new DevicesSqlRepository(result.dataSource)
+      await devicesSqlRepository.createDevicesTable()
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }
@@ -135,7 +140,7 @@ describe('auth', () => {
     await UsersTestManager.login(app, userRequestBody.login, userRequestBody.password)
     const refreshToken = authTestManager.getRefreshTokenFromResponseCookies(cookies)
     const responseBody = await devicesTestManager.getDevices(refreshToken)
-    const incorrectDeviceId = '123-456-789'
+    const incorrectDeviceId = '6662f063-b3bf-40b4-8ed4-ad37c0a72666'
 
     await request(httpServer)
       .delete(`/api/security/devices/${incorrectDeviceId}`)

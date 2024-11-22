@@ -1,18 +1,24 @@
 import { Injectable } from '@nestjs/common'
-import { Device } from '../domain/mongoose/device.entity'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
 import { DevicesMappers } from './devices.mappers'
+import { DataSource } from 'typeorm'
+import { DeviceViewDto } from '../api/models/output/device-view.dto'
 
 @Injectable()
 export class DevicesQueryRepository {
   constructor(
-    @InjectModel(Device.name) private devicesModel: Model<Device>,
+    protected dataSource: DataSource,
     private devicesMappers: DevicesMappers,
   ) {}
 
-  async getAllDevices(userId: string) {
-    const devices = await this.devicesModel.find({ userId })
+  async getAllDevices(userId: string): Promise<DeviceViewDto[]> {
+    const devices = await this.dataSource.query(
+      `
+      SELECT device_id, device_name, user_id, ip, iat, exp
+        FROM public.devices
+        WHERE user_id=$1;
+    `,
+      [userId],
+    )
 
     return devices.map(this.devicesMappers.mapDtoToView)
   }

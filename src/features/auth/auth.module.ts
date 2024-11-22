@@ -16,6 +16,7 @@ import { AuthRepository } from './infrastructure/auth.repository'
 import { AuthQueryRepository } from './infrastructure/auth.query-repository'
 import { AuthMappers } from './infrastructure/auth.mappers'
 import { DevicesModule } from '../devices'
+import { AuthSqlRepository } from './infrastructure/auth.sql-repository'
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { DevicesModule } from '../devices'
     EmailTemplatesManager,
     JwtOperationsService,
     AuthRepository,
+    AuthSqlRepository,
     AuthQueryRepository,
     AuthMappers,
     ...strategies,

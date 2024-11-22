@@ -2,32 +2,32 @@ import { Injectable } from '@nestjs/common'
 import { CryptService } from '../../../common/services'
 import { JwtService } from '@nestjs/jwt'
 import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
-import { AuthRepository } from '../infrastructure/auth.repository'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../settings/configuration'
+import { AuthSqlRepository } from '../infrastructure/auth.sql-repository'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private authRepository: AuthRepository,
+    private authRepository: AuthSqlRepository,
     private cryptService: CryptService,
     private jwtService: JwtService,
     private readonly configService: ConfigService<ConfigurationType>,
   ) {}
 
   async validateUser(username: string, password: string): Promise<AuthStrategiesDto | null> {
-    const user = await this.authRepository.getUserByLoginOrEmail(username)
-    if (!user) {
+    const userData = await this.authRepository.getUserByLoginOrEmail(username)
+    if (!userData) {
       return null
     }
 
-    const isPasswordValid = await this.cryptService.checkPassword(password, user.userData.passwordHash)
+    const isPasswordValid = await this.cryptService.checkPassword(password, userData.user.password_hash)
 
     if (!isPasswordValid) {
       return null
     }
 
-    return { username: user.userData.login, sub: user._id.toString() }
+    return { username: userData.user.login, sub: userData.user.id }
   }
 
   async getTokens(payload: AuthStrategiesDto, deviceId: string) {

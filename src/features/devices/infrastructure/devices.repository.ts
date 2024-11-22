@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common'
 import { Device, DeviceDocument } from '../domain/mongoose/device.entity'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { DataSource } from 'typeorm'
 
 @Injectable()
 export class DevicesRepository {
-  constructor(@InjectModel(Device.name) private devicesModel: Model<Device>) {}
+  constructor(
+    @InjectModel(Device.name) private devicesModel: Model<Device>,
+    protected dataSource: DataSource,
+  ) {}
 
   async getDeviceById(deviceId: string) {
     const device = await this.devicesModel.findOne({ deviceId })

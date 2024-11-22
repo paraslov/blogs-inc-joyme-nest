@@ -16,7 +16,7 @@ export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
   ) {}
   async execute(command: ConfirmUserCommand) {
     const { confirmationCode } = command
-    const userToConfirm = await this.authRepository.getUserByConfirmationCode(confirmationCode)
+    const userToConfirm = await this.authRepository.getUserInfoByConfirmationCode(confirmationCode)
 
     const resultNotice = this.checkUserToConfirm(userToConfirm)
     if (resultNotice.hasError()) {

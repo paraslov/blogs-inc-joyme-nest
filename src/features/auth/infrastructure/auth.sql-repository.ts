@@ -38,7 +38,7 @@ export class AuthSqlRepository {
     return { user, userInfo }
   }
 
-  async getUserByConfirmationCode(confirmationCode: string): Promise<UserInfo | null> {
+  async getUserInfoByConfirmationCode(confirmationCode: string): Promise<UserInfo | null> {
     const userInfos = await this.dataSource.query(
       `
         SELECT user_id, confirmation_code, confirmation_code_expiration_date, is_confirmed, password_recovery_code,
@@ -52,21 +52,17 @@ export class AuthSqlRepository {
     return userInfos?.[0] ?? null
   }
 
-  async getUserConfirmationInfoByUserId(userId: string): Promise<UserInfo | null> {
-    const user = await this.dataSource.query(
+  async getUserInfoByRecoveryCode(passwordRecoveryCode: string): Promise<UserInfo | null> {
+    const userInfos = await this.dataSource.query(
       `
-      SELECT user_id, confirmation_code, confirmation_code_expiration_date, is_confirmed,
-        password_recovery_code, password_recovery_code_expiration_date, is_password_recovery_confirmed
-          FROM public.users_confirmation_info
-          WHERE user_id = $1;
+        SELECT user_id, confirmation_code, confirmation_code_expiration_date, is_confirmed, password_recovery_code,
+          password_recovery_code_expiration_date, is_password_recovery_confirmed
+            FROM public.users_confirmation_info
+            WHERE password_recovery_code=$1;
     `,
-      [userId],
+      [passwordRecoveryCode],
     )
 
-    if (user?.length !== 1) {
-      return null
-    }
-
-    return user?.[0]
+    return userInfos?.[0] ?? null
   }
 }

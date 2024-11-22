@@ -38,11 +38,11 @@ export class UsersSqlQueryRepository {
       `SELECT COUNT(*) AS "totalCount"
      FROM public.users
      WHERE 
-       login ILIKE '%' || $1 || '%' AND
+       login ILIKE '%' || $1 || '%' OR
        email ILIKE '%' || $2 || '%'`,
       [query.searchLoginTerm, query.searchEmailTerm],
     )
-    const totalCount = parseInt(totalCountResult[0].totalCount, 10)
+    const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
 
     const res = await this.dataSource.query(
       `SELECT id, login, email, password_hash, created_at

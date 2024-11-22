@@ -68,7 +68,7 @@ describe('users', () => {
 
     const users = await request(httpServer)
       .get('/api/sa/users')
-      .query({ page: 2, limit: 10 })
+      .query({ page: 2, pageSize: 10 })
       .auth(username, password, {
         type: 'basic',
       })
@@ -92,6 +92,34 @@ describe('users', () => {
       .expect(HttpStatusCodes.OK_200)
 
     expect(users.body?.items?.length).toBe(4)
+    expect(users.body?.items?.some((u: any) => u.id === userResponseBody.id)).toBeFalsy()
+  })
+
+  it('should get paginated users with query search', async () => {
+    const { userResponseBody } = await userTestManger.createUser()
+    await userTestManger.createSeveralUsers(20)
+    const { username, password } = userTestManger.getSaCredits
+
+    const users = await request(httpServer)
+      .get('/api/sa/users')
+      .query({
+        page: 1,
+        pageSize: 15,
+        searchEmailTerm: '2',
+        searchLoginTerm: '3',
+        sortDirection: 'asc',
+        sortBy: 'login',
+      })
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .expect(HttpStatusCodes.OK_200)
+
+    expect(users.body?.items?.length).toBe(6)
+    expect(users.body?.totalCount).toBe(6)
+    expect(users.body?.pageSize).toBe(15)
+    expect(users.body?.pagesCount).toBe(1)
+    expect(users.body?.page).toBe(1)
     expect(users.body?.items?.some((u: any) => u.id === userResponseBody.id)).toBeFalsy()
   })
 

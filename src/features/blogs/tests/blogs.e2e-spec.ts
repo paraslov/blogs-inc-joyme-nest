@@ -4,11 +4,13 @@ import { initTestsSettings } from '../../../common/tests'
 import { BlogsTestManager } from './utils/blogs-test.manager'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { HttpStatusCodes } from '../../../common/models'
+import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
 
 describe('blogs', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager
+  let blogsSqlRepository: BlogsSqlRepository
 
   beforeAll(async () => {
     try {
@@ -17,6 +19,9 @@ describe('blogs', () => {
       userTestManger = result.userTestManger
 
       blogsTestManager = new BlogsTestManager(app)
+
+      blogsSqlRepository = new BlogsSqlRepository(result.dataSource)
+      await blogsSqlRepository.createBlogsTable()
     } catch (err) {
       console.log('@> blogs tests error: ', err)
     }

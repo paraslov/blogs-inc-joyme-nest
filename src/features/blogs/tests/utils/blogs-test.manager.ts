@@ -3,6 +3,7 @@ import request from 'supertest'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreateBlogDto } from '../../api/models/input/create-blog.dto'
 import { BlogViewDto } from '../../api/models/output/blog-view.dto'
+import { PaginatedOutputEntity } from '../../../../common/models/output/Pagination'
 
 export class BlogsTestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -42,5 +43,19 @@ export class BlogsTestManager {
       .expect(expectedStatus)
 
     return { blogRequest: createBlogDto, blogResponse: response.body }
+  }
+
+  async getAllBlogs(
+    auth: { username: string; password: string },
+    expectedStatus: HttpStatusCodes = HttpStatusCodes.OK_200,
+  ): Promise<PaginatedOutputEntity<BlogViewDto[]>> {
+    const response = await request(this.httpSever)
+      .get('/api/sa/blogs')
+      .auth(auth.username, auth.password, {
+        type: 'basic',
+      })
+      .expect(expectedStatus)
+
+    return response.body
   }
 }

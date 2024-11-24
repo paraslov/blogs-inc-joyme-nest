@@ -2,7 +2,7 @@ import { IsNumber, IsOptional, MaxLength, Min, Validate } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { toMongoObjectId } from '../../../../../base/transformers/toMongoObjectId'
 import { TrimmedString } from '../../../../../base/decorators'
-import { IsBlogExists, IsBlogExistsConstraint } from '../../../application/decorators/is-blog-exists.decorator'
+import { IsBlogExistsConstraint } from '../../../application/decorators/is-blog-exists.decorator'
 
 export class CreatePostDto {
   @TrimmedString({ required: true })

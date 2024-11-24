@@ -50,17 +50,6 @@ export class BlogsController {
     return this.postsQueryRepository.getPostsList(query, { blogId: id, userId: currentUserId })
   }
 
-  @Get(':id')
-  async findOne(@Param('id', ObjectIdValidationPipe) id: string) {
-    const blog = await this.blogsQueryRepository.getBlogById(id)
-
-    if (!blog) {
-      throw new NotFoundException(`Blog with ID ${id} not found`)
-    }
-
-    return blog
-  }
-
   @UseGuards(SaAuthGuard)
   @HttpCode(201)
   @Post()

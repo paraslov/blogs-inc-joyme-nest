@@ -1,9 +1,10 @@
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common'
-import { StandardInputFilters, StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
+import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../../posts'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { PossibleUserId } from '../../../base/decorators'
+import { FilterBlogDto } from './models/input/filter.blog.dto'
 
 @Controller('blogs')
 export class BlogsController {
@@ -13,7 +14,7 @@ export class BlogsController {
   ) {}
 
   @Get()
-  findAll(@Query() query: StandardInputFiltersWithSearchTerm) {
+  findAll(@Query() query: FilterBlogDto) {
     return this.blogsQueryRepository.getAllBlogs(query)
   }
 

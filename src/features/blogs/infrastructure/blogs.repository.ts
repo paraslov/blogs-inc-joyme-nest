@@ -13,9 +13,6 @@ export class BlogsRepository {
     private postsMappers: PostsMappers,
   ) {}
 
-  async saveBlog(blog: Blog) {
-    return new this.blogsModel(blog).save()
-  }
   async savePost(post: PostEntity) {
     const newPost = await new this.postsModel(post).save()
 

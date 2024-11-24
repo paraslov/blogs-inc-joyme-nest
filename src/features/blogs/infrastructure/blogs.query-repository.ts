@@ -4,11 +4,14 @@ import { StandardInputFiltersWithSearchTerm } from '../../../common/models/input
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { BlogsMappers } from './blogs.mappers'
+import { DataSource } from 'typeorm'
+import { BlogSql } from '../domain/postgres/blog.sql'
 
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
     @InjectModel(Blog.name) private blogsModel: Model<Blog>,
+    private dataSource: DataSource,
     private blogsMappers: BlogsMappers,
   ) {}
 
@@ -25,7 +28,7 @@ export class BlogsQueryRepository {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec()
-    const mappedBlogs = blogs.map(this.blogsMappers.mapBlogToOutput)
+    // const mappedBlogs = blogs.map(this.blogsMappers.mapBlogToOutput)
 
     const totalCount = await this.blogsModel.countDocuments(filter)
     const pagesCount = Math.ceil(totalCount / pageSize)
@@ -35,13 +38,20 @@ export class BlogsQueryRepository {
       totalCount,
       pageSize,
       page: pageNumber,
-      items: mappedBlogs,
+      items: [],
     }
   }
 
-  async getBlogById(id: string) {
-    const blog = await this.blogsModel.findById(id).exec()
+  async getBlogById(blogId: string) {
+    const blogResult = await this.dataSource.query<BlogSql[]>(
+      `
+      SELECT id, name, description, website_url, created_at, is_membership
+      FROM public.blogs
+      WHERE id=$1;
+    `,
+      [blogId],
+    )
 
-    return this.blogsMappers.mapBlogToOutput(blog)
+    return this.blogsMappers.mapBlogToOutput(blogResult?.[0])
   }
 }

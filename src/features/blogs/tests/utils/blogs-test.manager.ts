@@ -34,7 +34,7 @@ export class BlogsTestManager {
     const createBlogDto = blogCreateDto ?? this.getBlogCreateDto
 
     const response = await request(this.httpSever)
-      .post('/api/blogs')
+      .post('/api/sa/blogs')
       .auth(auth.username, auth.password, {
         type: 'basic',
       })

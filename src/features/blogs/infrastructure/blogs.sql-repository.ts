@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
+import { Blog } from '../domain/mongoose/blogs.entity'
 
 @Injectable()
 export class BlogsSqlRepository {
@@ -47,5 +48,20 @@ export class BlogsSqlRepository {
       ALTER TABLE IF EXISTS public.posts
         OWNER to sa_sql_user;
     `)
+  }
+
+  async createBlog(newBlog: Blog) {
+    const { name, description, websiteUrl, createdAt, isMembership } = newBlog
+    const createBlogResult = await this.dataSource.query(
+      `
+      INSERT INTO public.blogs(
+        name, description, website_url, created_at, is_membership)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id;
+    `,
+      [name, description, websiteUrl, createdAt, isMembership],
+    )
+
+    return createBlogResult?.[0]?.id ?? null
   }
 }

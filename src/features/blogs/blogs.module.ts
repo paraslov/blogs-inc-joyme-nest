@@ -14,7 +14,7 @@ import { BlogsSqlRepository } from './infrastructure/blogs.sql-repository'
 @Module({
   imports: [BlogsMongooseModule, PostsMongooseModule, LikesModule, CqrsModule],
   exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers, BlogsModule],
-  controllers: [BlogsSaController],
+  controllers: [BlogsSaController, BlogsSaController],
   providers: [
     BlogsCommandService,
     BlogsRepository,

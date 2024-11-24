@@ -13,14 +13,16 @@ import {
 } from '@nestjs/common'
 import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
-import { StandardInputFilters, StandardInputFiltersWithSearchTerm } from '../../../common/models/input/QueryInputParams'
+import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../../posts'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { SaAuthGuard } from '../../auth'
 import { PossibleUserId } from '../../../base/decorators'
+import { FilterBlogDto } from './models/input/filter.blog.dto'
 
+@UseGuards(SaAuthGuard)
 @Controller('sa/blogs')
 export class BlogsSaController {
   constructor(
@@ -31,7 +33,7 @@ export class BlogsSaController {
   ) {}
 
   @Get()
-  findAll(@Query() query: StandardInputFiltersWithSearchTerm) {
+  findAll(@Query() query: FilterBlogDto) {
     return this.blogsQueryRepository.getAllBlogs(query)
   }
 
@@ -50,7 +52,6 @@ export class BlogsSaController {
     return this.postsQueryRepository.getPostsList(query, { blogId: id, userId: currentUserId })
   }
 
-  @UseGuards(SaAuthGuard)
   @HttpCode(201)
   @Post()
   async create(@Body() createBlogDto: CreateBlogDto) {
@@ -59,7 +60,6 @@ export class BlogsSaController {
     return await this.blogsQueryRepository.getBlogById(createdBlogId)
   }
 
-  @UseGuards(SaAuthGuard)
   @Post(':id/posts')
   async createPostForBlog(
     @Param('id', ObjectIdValidationPipe) blogId: string,
@@ -74,7 +74,6 @@ export class BlogsSaController {
     return this.blogsCommandService.createPost(createBlogPostDto, blogId, blog.name)
   }
 
-  @UseGuards(SaAuthGuard)
   @HttpCode(204)
   @Put(':id')
   async update(@Param('id', ObjectIdValidationPipe) id: string, @Body() updateBlogDto: CreateBlogDto) {
@@ -85,7 +84,6 @@ export class BlogsSaController {
     }
   }
 
-  @UseGuards(SaAuthGuard)
   @HttpCode(204)
   @Delete(':id')
   async remove(@Param('id', ObjectIdValidationPipe) id: string) {

@@ -103,4 +103,46 @@ describe('>>- blogs sa -<<', () => {
     expect(updatedBlog.websiteUrl).toBe(updateBlogDto.websiteUrl)
     expect(updatedBlog.name === blogBeforeUpdate.name).toBeFalsy()
   })
+
+  it('should delete existing blog', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    await request(httpSever)
+      .delete(`/api/sa/blogs/${blogResponse.id}`)
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    await blogsTestManager.getBlogById<any>(blogResponse.id, HttpStatusCodes.NOT_FOUND_404)
+  })
+
+  it('should throw 404 if blog id not found while deleting', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    await request(httpSever)
+      .delete(`/api/sa/blogs/${blogResponse.id}`)
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+    await request(httpSever)
+      .delete(`/api/sa/blogs/${blogResponse.id}`)
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .expect(HttpStatusCodes.NOT_FOUND_404)
+
+    await blogsTestManager.getBlogById<any>(blogResponse.id, HttpStatusCodes.NOT_FOUND_404)
+  })
+
+  it('should throw 401 if no auth while deleting blog', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    await request(httpSever).delete(`/api/sa/blogs/${blogResponse.id}`).expect(HttpStatusCodes.UNAUTHORIZED_401)
+    await blogsTestManager.getBlogById(blogResponse.id, HttpStatusCodes.OK_200)
+  })
 })

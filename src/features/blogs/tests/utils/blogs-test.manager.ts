@@ -59,7 +59,10 @@ export class BlogsTestManager {
     return response.body
   }
 
-  async getBlogById(blogId: string, expectedStatus: HttpStatusCodes = HttpStatusCodes.OK_200): Promise<BlogViewDto> {
+  async getBlogById<T = BlogViewDto>(
+    blogId: string,
+    expectedStatus: HttpStatusCodes = HttpStatusCodes.OK_200,
+  ): Promise<T> {
     const response = await request(this.httpSever).get(`/api/blogs/${blogId}`).expect(expectedStatus)
 
     return response.body

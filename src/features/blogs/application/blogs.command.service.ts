@@ -20,7 +20,7 @@ export class BlogsCommandService {
   async createPost(createBlogPostDto: CreateBlogPostDto, blogId: string, blogName: string) {
     const command = new CreatePostForBlogCommand(createBlogPostDto, blogId, blogName)
 
-    return this.commandBus.execute(command)
+    return this.commandBus.execute<CreatePostForBlogCommand, string | null>(command)
   }
 
   async updateBlog(blogId: string, updateBlogDto: CreateBlogDto) {

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   NotFoundException,
   Param,
   Post,
@@ -72,7 +73,12 @@ export class BlogsSaController {
       throw new NotFoundException(`Blog with ID ${blogId} not found`)
     }
 
-    return this.blogsCommandService.createPost(createBlogPostDto, blogId, blog.name)
+    const createdPostId = await this.blogsCommandService.createPost(createBlogPostDto, blogId, blog.name)
+    if (!createdPostId) {
+      throw new HttpException(`Blog with ID ${blogId} not found`, HttpStatusCodes.EXPECTATION_FAILED_417)
+    }
+
+    return this.blogsQueryRepository.getPostById(createdPostId)
   }
 
   @HttpCode(HttpStatusCodes.NO_CONTENT_204)

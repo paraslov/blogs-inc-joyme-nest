@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CreateBlogPostDto } from '../../api/models/input/create-blog-post.dto'
 import { PostEntity } from '../../../posts'
-import { BlogsRepository } from '../../infrastructure/blogs.repository'
+import { BlogsSqlRepository } from '../../infrastructure/blogs.sql-repository'
 
 export class CreatePostForBlogCommand {
   constructor(
@@ -13,7 +13,7 @@ export class CreatePostForBlogCommand {
 
 @CommandHandler(CreatePostForBlogCommand)
 export class CreatePostForBlogHandler implements ICommandHandler<CreatePostForBlogCommand> {
-  constructor(private readonly blogsRepository: BlogsRepository) {}
+  constructor(private readonly blogsRepository: BlogsSqlRepository) {}
 
   async execute(command: CreatePostForBlogCommand) {
     const { createBlogPostDto, blogId, blogName } = command
@@ -27,6 +27,6 @@ export class CreatePostForBlogHandler implements ICommandHandler<CreatePostForBl
       dislikesCount: 0,
     }
 
-    return this.blogsRepository.savePost(newPost)
+    return this.blogsRepository.createPostForBlog(newPost)
   }
 }

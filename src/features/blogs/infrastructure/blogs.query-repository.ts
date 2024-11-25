@@ -11,6 +11,9 @@ import { FilterBlogDto } from '../api/models/input/filter.blog.dto'
 import { PostSql } from '../../posts/domain/postgres/post.sql'
 import { PostViewDto } from '../../posts/api/models/output/post.view.dto'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
+import { PaginatedOutputEntity } from '../../../common/models/output/Pagination'
+import { BlogViewDto } from '../api/models/output/blog-view.dto'
+import { PostFilterDto } from '../api/models/input/posts.filter.dto'
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -20,13 +23,13 @@ export class BlogsQueryRepository {
     private blogsMappers: BlogsMappers,
   ) {}
 
-  async getAllBlogs(query: FilterBlogDto) {
+  async getAllBlogs(query: FilterBlogDto): Promise<PaginatedOutputEntity<BlogViewDto[]>> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } = query
     const offset = (pageNumber - 1) * pageSize
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
 
-    const blogs = await this.dataSource.query(
+    const blogs = await this.dataSource.query<BlogSql[]>(
       `
       SELECT id, name, description, website_url, created_at, is_membership
         FROM public.blogs
@@ -83,9 +86,44 @@ export class BlogsQueryRepository {
   }
 
   async getPostsList(
-    queryFilter: StandardInputFilters,
+    queryFilter: PostFilterDto,
     options: { blogId?: string; userId?: string },
-  ): Promise<PostViewDto[]> {
-    return []
+  ): Promise<PaginatedOutputEntity<PostViewDto[]>> {
+    const { pageNumber, pageSize, sortBy, sortDirection } = queryFilter
+    const { blogId } = options
+
+    const offset = (pageNumber - 1) * pageSize
+    const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
+    const sortBySnakeCase = camelToSnakeUtil(sortBy)
+    const filter = blogId ? 'WHERE blog_id=$1' : ''
+
+    const posts = await this.dataSource.query<PostSql[]>(
+      `
+      SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
+        FROM public.posts
+        ${filter}
+        ORDER BY "${sortBySnakeCase}" ${direction}
+        LIMIT $2 OFFSET $3;
+    `,
+      [blogId, pageSize, offset],
+    )
+    const totalCountResult = await this.dataSource.query(
+      `SELECT COUNT(*) AS "totalCount"
+         FROM public.posts
+         ${filter};`,
+      [blogId],
+    )
+
+    const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
+    const mappedPosts = posts.map((post) => this.blogsMappers.mapPostToOutputDto(post))
+    const pagesCount = Math.ceil(totalCount / pageSize)
+
+    return {
+      pagesCount,
+      totalCount,
+      pageSize,
+      page: pageNumber,
+      items: mappedPosts,
+    }
   }
 }

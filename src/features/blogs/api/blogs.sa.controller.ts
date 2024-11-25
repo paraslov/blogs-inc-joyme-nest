@@ -10,11 +10,10 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common'
 import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
-import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 import { PostsQueryRepository } from '../../posts'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
@@ -23,6 +22,7 @@ import { PossibleUserId } from '../../../base/decorators'
 import { FilterBlogDto } from './models/input/filter.blog.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { UUIDValidationPipe } from '../../../base/pipes'
+import { PostFilterDto } from './models/input/posts.filter.dto'
 
 @UseGuards(SaAuthGuard)
 @Controller('sa/blogs')
@@ -39,19 +39,19 @@ export class BlogsSaController {
     return this.blogsQueryRepository.getAllBlogs(query)
   }
 
-  @Get(':id/posts')
+  @Get(':blogId/posts')
   async findAllPostsForBlog(
-    @Param('id', UUIDValidationPipe) id: string,
-    @Query() query: StandardInputFilters,
+    @Param('blogId', UUIDValidationPipe) blogId: string,
+    @Query() query: PostFilterDto,
     @PossibleUserId() currentUserId?: string,
   ) {
-    const blog = await this.blogsQueryRepository.getBlogById(id)
+    const blog = await this.blogsQueryRepository.getBlogById(blogId)
 
     if (!blog) {
-      throw new NotFoundException(`Blog with ID ${id} not found`)
+      throw new NotFoundException(`Blog with ID ${blogId} not found`)
     }
 
-    return this.postsQueryRepository.getPostsList(query, { blogId: id, userId: currentUserId })
+    return this.blogsQueryRepository.getPostsList(query, { blogId, userId: currentUserId })
   }
 
   @HttpCode(HttpStatusCodes.CREATED_201)

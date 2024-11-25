@@ -7,7 +7,7 @@ import { HttpStatusCodes } from '../../../../common/models'
 
 export class PostsTestManager {
   constructor(protected readonly app: INestApplication) {}
-  httpSever = this.app.getHttpServer()
+  httpServer = this.app.getHttpServer()
   postIndex = 0
   commentIndex = 0
 
@@ -39,19 +39,19 @@ export class PostsTestManager {
     expect(responseBody.blogName).toStrictEqual(expect.any(String))
   }
 
-  async getPostById(accessToken: string, postId: string): Promise<PostViewDto> {
-    const response = await request(this.httpSever)
-      .get(`/api/posts/${postId}`)
-      .auth(accessToken, {
-        type: 'bearer',
-      })
-      .expect(HttpStatusCodes.OK_200)
+  async getPostById(postId: string, accessToken: string | null = null): Promise<PostViewDto> {
+    const requestBuilder = request(this.httpServer).get(`/api/posts/${postId}`)
+
+    if (accessToken) {
+      requestBuilder.auth(accessToken, { type: 'bearer' })
+    }
+    const response = await requestBuilder.expect(HttpStatusCodes.OK_200)
 
     return response.body
   }
 
   async getPostsComments(accessToken: string, postId: string): Promise<{ items: CommentViewDto[] }> {
-    const response = await request(this.httpSever)
+    const response = await request(this.httpServer)
       .get(`/api/posts/${postId}/comments`)
       .auth(accessToken, {
         type: 'bearer',
@@ -71,7 +71,7 @@ export class PostsTestManager {
   ): Promise<{ postRequestBody: CreatePostDto; postResponseBody: T }> {
     const createPostDto = createData.createPostModel ?? { ...this.getPostDto, blogId: createData.blogId }
 
-    const response = await request(this.httpSever)
+    const response = await request(this.httpServer)
       .post(`/api/sa/blogs/${createData.blogId}/posts`)
       .auth(auth.username, auth.password, {
         type: 'basic',
@@ -88,7 +88,7 @@ export class PostsTestManager {
   ): Promise<CommentViewDto> {
     const commentContent = createData.content ?? `${this.getCommentText}${createData.postId}`
 
-    const response = await request(this.httpSever)
+    const response = await request(this.httpServer)
       .post(`/api/posts/${createData.postId}/comments`)
       .auth(accessToken, {
         type: 'bearer',

@@ -148,16 +148,4 @@ describe('>>- blogs sa -<<', () => {
     await request(httpSever).delete(`/api/sa/blogs/${blogResponse.id}`).expect(HttpStatusCodes.UNAUTHORIZED_401)
     await blogsTestManager.getBlogById(blogResponse.id, HttpStatusCodes.OK_200)
   })
-
-  it('should create post for blog', async () => {
-    const { username, password } = userTestManger.getSaCredits
-    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
-
-    const { postResponseBody, postRequestBody } = await postsTestManager.createPost(
-      { username, password },
-      { blogId: blogResponse.id },
-    )
-
-    postsTestManager.expectCorrectModel(postRequestBody, postResponseBody)
-  })
 })

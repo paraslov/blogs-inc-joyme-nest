@@ -73,4 +73,21 @@ describe('>>- posts sa -<<', () => {
 
     postsTestManager.expectCorrectModel(postRequestBody, post)
   })
+
+  it('should get all post', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    const posts = await postsTestManager.getAllPosts({ username, password }, blogResponse.id)
+
+    expect(posts.totalCount).toBe(5)
+    expect(posts.items?.length).toBe(5)
+    expect(posts.items?.[0].blogId).toBe(blogResponse.id)
+  })
 })

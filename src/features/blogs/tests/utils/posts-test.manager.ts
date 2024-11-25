@@ -4,6 +4,7 @@ import { CommentViewDto } from '../../../comments'
 import { PostViewDto } from '../../api/models/output/post.view.dto'
 import { CreatePostDto } from '../../api/models/input/create-post.dto'
 import { HttpStatusCodes } from '../../../../common/models'
+import { PaginatedOutputEntity } from '../../../../common/models/output/Pagination'
 
 export class PostsTestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -46,6 +47,20 @@ export class PostsTestManager {
       requestBuilder.auth(accessToken, { type: 'bearer' })
     }
     const response = await requestBuilder.expect(HttpStatusCodes.OK_200)
+
+    return response.body
+  }
+
+  async getAllPosts(
+    auth: { username: string; password: string },
+    blogId: string,
+  ): Promise<PaginatedOutputEntity<PostViewDto[]>> {
+    const response = await request(this.httpServer)
+      .get(`/api/sa/blogs/${blogId}/posts`)
+      .auth(auth.username, auth.password, {
+        type: 'basic',
+      })
+      .expect(HttpStatusCodes.OK_200)
 
     return response.body
   }

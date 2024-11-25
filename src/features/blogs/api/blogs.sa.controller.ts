@@ -10,7 +10,7 @@ import {
   Post,
   Put,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common'
 import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
@@ -22,6 +22,7 @@ import { FilterBlogDto } from './models/input/filter.blog.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { UUIDValidationPipe } from '../../../base/pipes'
 import { PostFilterDto } from './models/input/posts.filter.dto'
+import { UpdatePostDto } from './models/input/update-post.dto'
 
 @UseGuards(SaAuthGuard)
 @Controller('sa/blogs')
@@ -95,6 +96,24 @@ export class BlogsSaController {
 
     if (!deleteResult) {
       throw new NotFoundException(`Couldn't delete Blog with ID ${id}`)
+    }
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @Put(':blogId/posts/:postId')
+  async updatePost(
+    @Param('blogId', UUIDValidationPipe) blogId: string,
+    @Param('postId', UUIDValidationPipe) postId: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    const blog = await this.blogsQueryRepository.getBlogById(blogId)
+    if (!blog) {
+      throw new NotFoundException(`Blog with ID ${blogId} not found`)
+    }
+
+    const updateResult = await this.blogsCommandService.updatePost(postId, updatePostDto)
+    if (!updateResult) {
+      throw new NotFoundException(`Post with ID ${postId} not found`)
     }
   }
 }

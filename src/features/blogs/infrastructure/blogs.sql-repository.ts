@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm'
 import { Blog } from '../domain/mongoose/blogs.entity'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { PostEntity } from '../../posts'
+import { UpdatePostDto } from '../api/models/input/update-post.dto'
 
 @Injectable()
 export class BlogsSqlRepository {
@@ -106,5 +107,19 @@ export class BlogsSqlRepository {
     )
 
     return Boolean(deleteResult?.[1])
+  }
+
+  async updatePostForBlog(postId: string, updateDto: UpdatePostDto) {
+    const { title, shortDescription, content } = updateDto
+    const updateResult = await this.dataSource.query(
+      `
+        UPDATE public.posts
+            SET title=$2, short_description=$3, content=$4
+            WHERE id=$1;
+    `,
+      [postId, title, shortDescription, content],
+    )
+
+    return Boolean(updateResult?.[1])
   }
 }

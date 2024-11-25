@@ -79,4 +79,16 @@ export class BlogsSqlRepository {
 
     return Boolean(updateResult?.[1])
   }
+
+  async deleteBlog(blogId: string) {
+    const deleteResult = await this.dataSource.query(
+      `
+        DELETE FROM public.blogs
+            WHERE id=$1;    
+    `,
+      [blogId],
+    )
+
+    return Boolean(deleteResult?.[1])
+  }
 }

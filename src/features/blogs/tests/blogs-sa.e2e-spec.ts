@@ -7,11 +7,13 @@ import { HttpStatusCodes } from '../../../common/models'
 import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
 import { DataSource } from 'typeorm'
 import request from 'supertest'
+import { PostsTestManager } from './utils/posts-test.manager'
 
 describe('>>- blogs sa -<<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager
+  let postsTestManager: PostsTestManager
   let blogsSqlRepository: BlogsSqlRepository
   let dataSource: DataSource
   let httpSever: any
@@ -25,6 +27,7 @@ describe('>>- blogs sa -<<', () => {
       httpSever = result.httpServer
 
       blogsTestManager = new BlogsTestManager(app)
+      postsTestManager = new PostsTestManager(app)
 
       blogsSqlRepository = new BlogsSqlRepository(dataSource)
       await blogsSqlRepository.createBlogsTable()
@@ -144,5 +147,17 @@ describe('>>- blogs sa -<<', () => {
 
     await request(httpSever).delete(`/api/sa/blogs/${blogResponse.id}`).expect(HttpStatusCodes.UNAUTHORIZED_401)
     await blogsTestManager.getBlogById(blogResponse.id, HttpStatusCodes.OK_200)
+  })
+
+  it('should create post for blog', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody, postRequestBody } = await postsTestManager.createPost(
+      { username, password },
+      { blogId: blogResponse.id },
+    )
+
+    postsTestManager.expectCorrectModel(postRequestBody, postResponseBody)
   })
 })

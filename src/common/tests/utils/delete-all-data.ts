@@ -31,18 +31,18 @@ export const deleteAllData = async (databaseConnection: Connection | null, dataS
     await dataSource.query(`
     DO $$
       BEGIN
-        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blogs') 
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'posts') 
         THEN
-          DELETE FROM public.blogs;
+          DELETE FROM public.posts;
         END IF;
     END $$;
   `)
     await dataSource.query(`
     DO $$
       BEGIN
-        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'posts') 
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blogs') 
         THEN
-          DELETE FROM public.posts;
+          DELETE FROM public.blogs;
         END IF;
     END $$;
   `)

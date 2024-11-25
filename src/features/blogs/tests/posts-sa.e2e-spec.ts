@@ -5,6 +5,9 @@ import { BlogsTestManager } from './utils/blogs-test.manager'
 import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
 import { DataSource } from 'typeorm'
 import { PostsTestManager } from './utils/posts-test.manager'
+import request from 'supertest'
+import { HttpStatusCodes } from '../../../common/models'
+import { UpdatePostDto } from '../api/models/input/update-post.dto'
 
 describe('>>- posts sa -<<', () => {
   let app: INestApplication
@@ -89,5 +92,33 @@ describe('>>- posts sa -<<', () => {
     expect(posts.totalCount).toBe(5)
     expect(posts.items?.length).toBe(5)
     expect(posts.items?.[0].blogId).toBe(blogResponse.id)
+  })
+
+  it('should update post', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+    const updatePostDto: UpdatePostDto = {
+      title: 'Updated Post Title',
+      shortDescription: 'Updated Post Short Description',
+      content: 'Updated Post Content',
+    }
+
+    await request(httpSever)
+      .put(`/api/sa/blogs/${blogResponse.id}/posts/${postResponseBody.id}`)
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .send(updatePostDto)
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const post = await postsTestManager.getPostById(postResponseBody.id)
+
+    expect(post.title).toBe(updatePostDto.title)
+    expect(post.content).toBe(updatePostDto.content)
+    expect(post.shortDescription).toBe(updatePostDto.shortDescription)
+    expect(post.blogId).toBe(blogResponse.id)
+    expect(post.id).toBe(postResponseBody.id)
   })
 })

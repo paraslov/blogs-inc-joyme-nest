@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { Blog } from '../domain/mongoose/blogs.entity'
+import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 
 @Injectable()
 export class BlogsSqlRepository {
@@ -63,5 +64,19 @@ export class BlogsSqlRepository {
     )
 
     return createBlogResult?.[0]?.id ?? null
+  }
+
+  async updateBlog(id: string, updateBlog: CreateBlogDto) {
+    const { name, description, websiteUrl } = updateBlog
+    const updateResult = await this.dataSource.query(
+      `
+      UPDATE public.blogs
+        SET name=$2, description=$3, website_url=$4
+        WHERE id=$1;
+    `,
+      [id, name, description, websiteUrl],
+    )
+
+    return Boolean(updateResult?.[1])
   }
 }

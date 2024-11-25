@@ -11,11 +11,12 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { LikesModule } from '../likes/likes.module'
 import { BlogsSqlRepository } from './infrastructure/blogs.sql-repository'
 import { BlogsController } from './api/blogs.controller'
+import { PostsController } from './api/posts.controller'
 
 @Module({
   imports: [BlogsMongooseModule, PostsMongooseModule, LikesModule, CqrsModule],
   exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers, BlogsModule],
-  controllers: [BlogsSaController, BlogsController],
+  controllers: [BlogsSaController, BlogsController, PostsController],
   providers: [
     BlogsCommandService,
     BlogsRepository,

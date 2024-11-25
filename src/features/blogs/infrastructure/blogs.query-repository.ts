@@ -10,6 +10,7 @@ import { camelToSnakeUtil } from '../../../common/utils'
 import { FilterBlogDto } from '../api/models/input/filter.blog.dto'
 import { PostSql } from '../../posts/domain/postgres/post.sql'
 import { PostViewDto } from '../../posts/api/models/output/post.view.dto'
+import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -68,7 +69,7 @@ export class BlogsQueryRepository {
     return this.blogsMappers.mapBlogToOutput(blogResult?.[0])
   }
 
-  async getPostById(postId: string): Promise<PostViewDto | null> {
+  async getPostById(postId: string, currentUserId?: string): Promise<PostViewDto | null> {
     const postResult = await this.dataSource.query<PostSql[]>(
       `
         SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
@@ -79,5 +80,12 @@ export class BlogsQueryRepository {
     )
 
     return this.blogsMappers.mapPostToOutputDto(postResult?.[0])
+  }
+
+  async getPostsList(
+    queryFilter: StandardInputFilters,
+    options: { blogId?: string; userId?: string },
+  ): Promise<PostViewDto[]> {
+    return []
   }
 }

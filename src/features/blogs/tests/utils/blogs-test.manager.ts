@@ -7,8 +7,8 @@ import { PaginatedOutputEntity } from '../../../../common/models/output/Paginati
 
 export class BlogsTestManager {
   constructor(protected readonly app: INestApplication) {}
-  httpSever = this.app.getHttpServer()
-  blogIndex = 0
+  private httpSever = this.app.getHttpServer()
+  private blogIndex = 0
 
   private get getBlogCreateDto(): CreateBlogDto {
     this.blogIndex++
@@ -55,6 +55,12 @@ export class BlogsTestManager {
         type: 'basic',
       })
       .expect(expectedStatus)
+
+    return response.body
+  }
+
+  async getBlogById(blogId: string, expectedStatus: HttpStatusCodes = HttpStatusCodes.OK_200): Promise<BlogViewDto> {
+    const response = await request(this.httpSever).get(`/api/blogs/${blogId}`).expect(expectedStatus)
 
     return response.body
   }

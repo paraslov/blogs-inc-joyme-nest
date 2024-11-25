@@ -6,6 +6,7 @@ import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
 import { DataSource } from 'typeorm'
+import request from 'supertest'
 
 describe('>>- blogs sa -<<', () => {
   let app: INestApplication
@@ -13,6 +14,7 @@ describe('>>- blogs sa -<<', () => {
   let blogsTestManager: BlogsTestManager
   let blogsSqlRepository: BlogsSqlRepository
   let dataSource: DataSource
+  let httpSever: any
 
   beforeAll(async () => {
     try {
@@ -20,6 +22,7 @@ describe('>>- blogs sa -<<', () => {
       app = result.app
       userTestManger = result.userTestManger
       dataSource = result.dataSource
+      httpSever = result.httpServer
 
       blogsTestManager = new BlogsTestManager(app)
 
@@ -72,5 +75,32 @@ describe('>>- blogs sa -<<', () => {
 
     expect(blogResponse.errorsMessages[0].field).toBe('name')
     expect(blogResponse.errorsMessages[0].message).toStrictEqual(expect.any(String))
+  })
+
+  it('should update existed blog', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+    const updateBlogDto: CreateBlogDto = {
+      name: 'Updated Name',
+      description: `Updated Blog Description`,
+      websiteUrl: `https://blog-site.bold`,
+    }
+
+    const blogBeforeUpdate = await blogsTestManager.getBlogById(blogResponse.id)
+
+    await request(httpSever)
+      .put(`/api/sa/blogs/${blogResponse.id}`)
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .send(updateBlogDto)
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const updatedBlog = await blogsTestManager.getBlogById(blogResponse.id)
+
+    expect(updatedBlog.name).toBe(updateBlogDto.name)
+    expect(updatedBlog.description).toBe(updateBlogDto.description)
+    expect(updatedBlog.websiteUrl).toBe(updateBlogDto.websiteUrl)
+    expect(updatedBlog.name === blogBeforeUpdate.name).toBeFalsy()
   })
 })

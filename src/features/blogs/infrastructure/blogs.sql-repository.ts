@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { Blog } from '../domain/mongoose/blogs.entity'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
+import { PostEntity } from '../../posts'
 
 @Injectable()
 export class BlogsSqlRepository {
@@ -64,6 +65,21 @@ export class BlogsSqlRepository {
     )
 
     return createBlogResult?.[0]?.id ?? null
+  }
+
+  async createPostForBlog(newPost: PostEntity) {
+    const { title, shortDescription, content, blogId, blogName, createdAt, likesCount, dislikesCount } = newPost
+    const createPostResult = await this.dataSource.query(
+      `
+      INSERT INTO public.posts(
+        title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id;
+    `,
+      [title, shortDescription, content, blogId, blogName, createdAt, likesCount, dislikesCount],
+    )
+
+    return createPostResult?.[0]?.id ?? null
   }
 
   async updateBlog(id: string, updateBlog: CreateBlogDto) {

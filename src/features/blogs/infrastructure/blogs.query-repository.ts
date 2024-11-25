@@ -8,6 +8,8 @@ import { BlogSql } from '../domain/postgres/blog.sql'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { FilterBlogDto } from '../api/models/input/filter.blog.dto'
+import { PostSql } from '../../posts/domain/postgres/post.sql'
+import { PostViewDto } from '../../posts/api/models/output/post.view.dto'
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -64,5 +66,18 @@ export class BlogsQueryRepository {
     )
 
     return this.blogsMappers.mapBlogToOutput(blogResult?.[0])
+  }
+
+  async getPostById(postId: string): Promise<PostViewDto | null> {
+    const postResult = await this.dataSource.query<PostSql[]>(
+      `
+        SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
+            FROM public.posts
+            WHERE id=$1;
+    `,
+      [postId],
+    )
+
+    return this.blogsMappers.mapPostToOutputDto(postResult?.[0])
   }
 }

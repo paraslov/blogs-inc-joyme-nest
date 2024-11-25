@@ -1,10 +1,10 @@
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
-import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../../posts'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { PossibleUserId } from '../../../base/decorators'
 import { FilterBlogDto } from './models/input/filter.blog.dto'
+import { UUIDValidationPipe } from '../../../base/pipes'
 
 @Controller('blogs')
 export class BlogsController {
@@ -14,13 +14,13 @@ export class BlogsController {
   ) {}
 
   @Get()
-  findAll(@Query() query: FilterBlogDto) {
+  findAllBlogs(@Query() query: FilterBlogDto) {
     return this.blogsQueryRepository.getAllBlogs(query)
   }
 
   @Get(':id/posts')
   async findAllPostsForBlog(
-    @Param('id', ObjectIdValidationPipe) id: string,
+    @Param('id', UUIDValidationPipe) id: string,
     @Query() query: StandardInputFilters,
     @PossibleUserId() currentUserId?: string,
   ) {
@@ -34,7 +34,7 @@ export class BlogsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ObjectIdValidationPipe) id: string) {
+  async findBlog(@Param('id', UUIDValidationPipe) id: string) {
     const blog = await this.blogsQueryRepository.getBlogById(id)
 
     if (!blog) {

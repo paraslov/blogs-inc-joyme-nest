@@ -14,13 +14,14 @@ import {
 import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
-import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { PostsQueryRepository } from '../../posts'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { SaAuthGuard } from '../../auth'
 import { PossibleUserId } from '../../../base/decorators'
 import { FilterBlogDto } from './models/input/filter.blog.dto'
+import { HttpStatusCodes } from '../../../common/models'
+import { UUIDValidationPipe } from '../../../base/pipes'
 
 @UseGuards(SaAuthGuard)
 @Controller('sa/blogs')
@@ -33,13 +34,13 @@ export class BlogsSaController {
   ) {}
 
   @Get()
-  findAll(@Query() query: FilterBlogDto) {
+  findAllBlogs(@Query() query: FilterBlogDto) {
     return this.blogsQueryRepository.getAllBlogs(query)
   }
 
   @Get(':id/posts')
   async findAllPostsForBlog(
-    @Param('id', ObjectIdValidationPipe) id: string,
+    @Param('id', UUIDValidationPipe) id: string,
     @Query() query: StandardInputFilters,
     @PossibleUserId() currentUserId?: string,
   ) {
@@ -52,9 +53,9 @@ export class BlogsSaController {
     return this.postsQueryRepository.getPostsList(query, { blogId: id, userId: currentUserId })
   }
 
-  @HttpCode(201)
+  @HttpCode(HttpStatusCodes.CREATED_201)
   @Post()
-  async create(@Body() createBlogDto: CreateBlogDto) {
+  async createBlog(@Body() createBlogDto: CreateBlogDto) {
     const createdBlogId = await this.blogsCommandService.createBlog(createBlogDto)
 
     return await this.blogsQueryRepository.getBlogById(createdBlogId)
@@ -62,7 +63,7 @@ export class BlogsSaController {
 
   @Post(':id/posts')
   async createPostForBlog(
-    @Param('id', ObjectIdValidationPipe) blogId: string,
+    @Param('id', UUIDValidationPipe) blogId: string,
     @Body() createBlogPostDto: CreateBlogPostDto,
   ) {
     const blog = await this.blogsQueryRepository.getBlogById(blogId)
@@ -74,9 +75,9 @@ export class BlogsSaController {
     return this.blogsCommandService.createPost(createBlogPostDto, blogId, blog.name)
   }
 
-  @HttpCode(204)
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Put(':id')
-  async update(@Param('id', ObjectIdValidationPipe) id: string, @Body() updateBlogDto: CreateBlogDto) {
+  async updateBlog(@Param('id', UUIDValidationPipe) id: string, @Body() updateBlogDto: CreateBlogDto) {
     const updateResult = await this.blogsCommandService.updateBlog(id, updateBlogDto)
 
     if (!updateResult) {
@@ -84,9 +85,9 @@ export class BlogsSaController {
     }
   }
 
-  @HttpCode(204)
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
   @Delete(':id')
-  async remove(@Param('id', ObjectIdValidationPipe) id: string) {
+  async deleteBlog(@Param('id', UUIDValidationPipe) id: string) {
     const deleteResult = await this.blogsCommandService.deleteBlog(id)
 
     if (!deleteResult) {

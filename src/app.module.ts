@@ -21,7 +21,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
   imports: [
     AuthModule,
     BlogsModule,
-    PostsModule,
     UsersModule,
     CommentsModule,
     LikesModule,

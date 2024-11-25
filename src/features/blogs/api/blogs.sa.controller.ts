@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common'
 import { BlogsCommandService } from '../application/blogs.command.service'
 import { CreateBlogDto } from './models/input/create-blog.dto'
-import { PostsQueryRepository } from '../../posts'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { SaAuthGuard } from '../../auth'
@@ -30,8 +29,6 @@ export class BlogsSaController {
   constructor(
     private readonly blogsCommandService: BlogsCommandService,
     private readonly blogsQueryRepository: BlogsQueryRepository,
-
-    private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
 
   @Get()

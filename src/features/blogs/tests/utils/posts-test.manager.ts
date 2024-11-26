@@ -104,6 +104,22 @@ export class PostsTestManager {
     return { postRequestBody: createPostDto, postResponseBody: response.body }
   }
 
+  async createSeveralPosts(
+    auth: { username: string; password: string },
+    createData: {
+      blogId: string
+      postsCount: number
+    },
+  ) {
+    const arr = Array(createData.postsCount).fill(0)
+
+    const promises = arr.map(async () => {
+      return await this.createPost(auth, { blogId: createData.blogId })
+    })
+
+    return Promise.all(promises)
+  }
+
   async addCommentToPost(
     accessToken: string,
     createData: { postId: string; content?: string },

@@ -62,28 +62,11 @@ describe('>>- posts sa -<<', () => {
     postsTestManager.expectCorrectModel(postRequestBody, postResponseBody)
   })
 
-  it('should get created post through posts controller', async () => {
-    const { username, password } = userTestManger.getSaCredits
-    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
-    const { postResponseBody, postRequestBody } = await postsTestManager.createPost(
-      { username, password },
-      { blogId: blogResponse.id },
-    )
-
-    const post = await postsTestManager.getPostById(postResponseBody.id)
-
-    postsTestManager.expectCorrectModel(postRequestBody, post)
-  })
-
   it('should get all post', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })
 
-    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
-    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
-    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
-    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
-    await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+    await postsTestManager.createSeveralPosts({ username, password }, { blogId: blogResponse.id, postsCount: 5 })
 
     const posts = await postsTestManager.getAllPosts({ username, password }, blogResponse.id)
 

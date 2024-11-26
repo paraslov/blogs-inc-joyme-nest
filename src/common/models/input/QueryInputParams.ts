@@ -40,10 +40,3 @@ export class StandardInputFilters implements PaginationInputModel, SortingInputM
   @Transform(({ value }) => (!value ? 'desc' : value))
   sortDirection: SortDirection = SortDirection.DESC
 }
-
-export class StandardInputFiltersWithSearchTerm extends StandardInputFilters {
-  @IsOptional()
-  @TrimmedString()
-  @Transform(({ value }) => value)
-  searchNameTerm: string = ''
-}

@@ -3,11 +3,12 @@ import request from 'supertest'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreateBlogDto } from '../../api/models/input/create-blog.dto'
 import { BlogViewDto } from '../../api/models/output/blog-view.dto'
+import { PaginatedOutputEntity } from '../../../../common/models/output/Pagination'
 
 export class BlogsTestManager {
   constructor(protected readonly app: INestApplication) {}
-  httpSever = this.app.getHttpServer()
-  blogIndex = 0
+  private httpSever = this.app.getHttpServer()
+  private blogIndex = 0
 
   private get getBlogCreateDto(): CreateBlogDto {
     this.blogIndex++
@@ -34,7 +35,7 @@ export class BlogsTestManager {
     const createBlogDto = blogCreateDto ?? this.getBlogCreateDto
 
     const response = await request(this.httpSever)
-      .post('/api/blogs')
+      .post('/api/sa/blogs')
       .auth(auth.username, auth.password, {
         type: 'basic',
       })
@@ -42,5 +43,38 @@ export class BlogsTestManager {
       .expect(expectedStatus)
 
     return { blogRequest: createBlogDto, blogResponse: response.body }
+  }
+
+  async createSeveralBlogs(auth: { username: string; password: string }, createData: { blogsCount: number }) {
+    const arr = Array(createData.blogsCount).fill(0)
+
+    const promises = arr.map(async () => {
+      return await this.createBlog(auth)
+    })
+
+    return Promise.all(promises)
+  }
+
+  async getAllBlogs(
+    auth: { username: string; password: string },
+    expectedStatus: HttpStatusCodes = HttpStatusCodes.OK_200,
+  ): Promise<PaginatedOutputEntity<BlogViewDto[]>> {
+    const response = await request(this.httpSever)
+      .get('/api/sa/blogs')
+      .auth(auth.username, auth.password, {
+        type: 'basic',
+      })
+      .expect(expectedStatus)
+
+    return response.body
+  }
+
+  async getBlogById<T = BlogViewDto>(
+    blogId: string,
+    expectedStatus: HttpStatusCodes = HttpStatusCodes.OK_200,
+  ): Promise<T> {
+    const response = await request(this.httpSever).get(`/api/blogs/${blogId}`).expect(expectedStatus)
+
+    return response.body
   }
 }

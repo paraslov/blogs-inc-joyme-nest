@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings, wait } from '../../../common/tests'
+import { aDescribe, initTestsSettings, skipSettings, wait } from '../../../common/tests'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 import { AuthTestManager } from './utils/auth-test.manager'
 import { DevicesTestManager } from '../../devices'
 
-describe('>auth refresh tokens<', () => {
+aDescribe(skipSettings.for('auth_refresh'))('>> auth_refresh <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let authTestManager: AuthTestManager

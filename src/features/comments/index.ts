@@ -4,10 +4,12 @@ import { CommentsQueryRepository } from './infrastructure/comments.query-reposit
 import { CommentsMappers } from './infrastructure/comments.mappers'
 import { CreateUpdateCommentDto } from './api/models/input/create-update-comment.dto'
 import { CommentsCommandService } from './application/comments.command.service'
+import { CommentViewDto } from './api/models/output/comment.view.dto'
 
 export {
   CommentsModule,
   CommentDto,
+  CommentViewDto,
   CommentsQueryRepository,
   CommentsMongooseModule,
   CommentsMappers,

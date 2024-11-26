@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { BlogsCommandService } from './application/blogs.command.service'
-import { BlogsController } from './api/blogs.controller'
+import { BlogsSaController } from './api/blogs.sa.controller'
 import { BlogsMongooseModule } from './domain/mongoose/blogs.entity'
 import { BlogsRepository } from './infrastructure/blogs.repository'
 import { BlogsQueryRepository } from './infrastructure/blogs.query-repository'
@@ -9,14 +9,18 @@ import { PostsMappers, PostsMongooseModule, PostsQueryRepository } from '../post
 import { blogsCommandHandlers } from './application/commands'
 import { CqrsModule } from '@nestjs/cqrs'
 import { LikesModule } from '../likes/likes.module'
+import { BlogsSqlRepository } from './infrastructure/blogs.sql-repository'
+import { BlogsController } from './api/blogs.controller'
+import { PostsController } from './api/posts.controller'
 
 @Module({
   imports: [BlogsMongooseModule, PostsMongooseModule, LikesModule, CqrsModule],
   exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers, BlogsModule],
-  controllers: [BlogsController],
+  controllers: [BlogsSaController, BlogsController, PostsController],
   providers: [
     BlogsCommandService,
     BlogsRepository,
+    BlogsSqlRepository,
     BlogsQueryRepository,
     BlogsMappers,
     PostsQueryRepository,

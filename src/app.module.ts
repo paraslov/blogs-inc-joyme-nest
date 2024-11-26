@@ -3,7 +3,6 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { BlogsModule } from './features/blogs/blogs.module'
 import { MongooseModule } from '@nestjs/mongoose'
-import { PostsModule } from './features/posts/posts.module'
 import { UsersModule } from './features/users/users.module'
 import { CommentsModule } from './features/comments'
 import { AuthModule } from './features/auth/auth.module'
@@ -21,7 +20,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
   imports: [
     AuthModule,
     BlogsModule,
-    PostsModule,
     UsersModule,
     CommentsModule,
     LikesModule,

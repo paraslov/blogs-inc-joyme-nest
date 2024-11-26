@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings } from '../../../common/tests'
+import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 import { AuthTestManager } from './utils/auth-test.manager'
@@ -8,7 +8,7 @@ import { EmailSendManager } from '../../../common/manager'
 import { EmailSendManagerMock } from './mocks/EmailSendManagerMock'
 import { AuthSqlRepository } from '../infrastructure/auth.sql-repository'
 
-describe('>auth reg actions<', () => {
+aDescribe(skipSettings.for('auth_reg_actions'))('>> auth_reg_actions <<', () => {
   let app: INestApplication
   let authTestManager: AuthTestManager
   let httpServer: any

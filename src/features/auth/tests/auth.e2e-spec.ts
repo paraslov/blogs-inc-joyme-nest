@@ -1,17 +1,15 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings } from '../../../common/tests'
+import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { AuthTestManager } from './utils/auth-test.manager'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
-import { DevicesTestManager } from '../../devices'
 
-describe('auth', () => {
+aDescribe(skipSettings.for('auth'))('>> auth <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let httpServer: any
   let authTestManager: AuthTestManager
-  let devicesTestManager: DevicesTestManager
 
   beforeAll(async () => {
     try {
@@ -21,7 +19,6 @@ describe('auth', () => {
       userTestManger = result.userTestManger
 
       authTestManager = new AuthTestManager(app)
-      devicesTestManager = new DevicesTestManager(app)
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }

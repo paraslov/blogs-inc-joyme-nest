@@ -1,8 +1,7 @@
 import { Blog } from '../../domain/mongoose/blogs.entity'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CreateBlogDto } from '../../api/models/input/create-blog.dto'
-import { BlogsRepository } from '../../infrastructure/blogs.repository'
-import { BlogsMappers } from '../../infrastructure/blogs.mappers'
+import { BlogsSqlRepository } from '../../infrastructure/blogs.sql-repository'
 
 export class CreateBlogCommand {
   constructor(public readonly createBlogDto: CreateBlogDto) {}
@@ -10,10 +9,7 @@ export class CreateBlogCommand {
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
-  constructor(
-    private readonly blogsRepository: BlogsRepository,
-    private readonly blogsMappers: BlogsMappers,
-  ) {}
+  constructor(private readonly blogsRepository: BlogsSqlRepository) {}
 
   async execute(command: CreateBlogCommand) {
     const { createBlogDto } = command
@@ -23,8 +19,7 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
       createdAt: new Date().toISOString(),
       isMembership: false,
     }
-    const saveBlogResult = await this.blogsRepository.saveBlog(createdBlog)
 
-    return this.blogsMappers.mapBlogToOutput(saveBlogResult)
+    return this.blogsRepository.createBlog(createdBlog)
   }
 }

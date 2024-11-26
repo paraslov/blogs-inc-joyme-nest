@@ -67,4 +67,30 @@ describe('>>- posts sa -<<', () => {
     expect(response.body.items?.length).toBe(5)
     expect(response.body.items?.some((item: any) => item.id === postResponseBody.id)).toBeTruthy()
   })
+
+  it('should get all blogs', async () => {
+    await dataSource.query('DELETE FROM public.posts;')
+    await dataSource.query('DELETE FROM public.blogs;')
+
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+    await blogsTestManager.createSeveralBlogs({ username, password }, { blogsCount: 4 })
+
+    const response = await request(httpServer).get('/api/blogs').expect(HttpStatusCodes.OK_200)
+
+    expect(response.body.totalCount).toBe(5)
+    expect(response.body.items?.length).toBe(5)
+    expect(response.body.items?.some((item: any) => item.id === blogResponse.id)).toBeTruthy()
+  })
+
+  it('should get blogs by id', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const response = await request(httpServer).get(`/api/blogs/${blogResponse.id}`).expect(HttpStatusCodes.OK_200)
+
+    expect(blogResponse.id).toBe(response.body.id)
+    expect(blogResponse.name).toBe(response.body.name)
+    expect(blogResponse.websiteUrl).toBe(response.body.websiteUrl)
+  })
 })

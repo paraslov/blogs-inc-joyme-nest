@@ -45,6 +45,16 @@ export class BlogsTestManager {
     return { blogRequest: createBlogDto, blogResponse: response.body }
   }
 
+  async createSeveralBlogs(auth: { username: string; password: string }, createData: { blogsCount: number }) {
+    const arr = Array(createData.blogsCount).fill(0)
+
+    const promises = arr.map(async () => {
+      return await this.createBlog(auth)
+    })
+
+    return Promise.all(promises)
+  }
+
   async getAllBlogs(
     auth: { username: string; password: string },
     expectedStatus: HttpStatusCodes = HttpStatusCodes.OK_200,

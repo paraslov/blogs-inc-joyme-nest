@@ -8,7 +8,7 @@ import { PostsTestManager } from './utils/posts-test.manager'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 
-describe('>>- posts sa -<<', () => {
+describe('>>- blogs posts public -<<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager
@@ -52,7 +52,7 @@ describe('>>- posts sa -<<', () => {
     postsTestManager.expectCorrectModel(postRequestBody, post)
   })
 
-  it('should get all post through posts controller', async () => {
+  it('should get all post through posts controller "/posts"', async () => {
     await dataSource.query('DELETE FROM public.posts;')
 
     const { username, password } = userTestManger.getSaCredits
@@ -92,5 +92,21 @@ describe('>>- posts sa -<<', () => {
     expect(blogResponse.id).toBe(response.body.id)
     expect(blogResponse.name).toBe(response.body.name)
     expect(blogResponse.websiteUrl).toBe(response.body.websiteUrl)
+  })
+
+  it('should get all post through blogs controller "/blogs/:blogId/posts"', async () => {
+    await dataSource.query('DELETE FROM public.posts;')
+
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+    await postsTestManager.createSeveralPosts({ username, password }, { blogId: blogResponse.id, postsCount: 4 })
+
+    const response = await request(httpServer).get(`/api/blogs/${blogResponse.id}/posts`).expect(HttpStatusCodes.OK_200)
+
+    expect(response.body.totalCount).toBe(5)
+    expect(response.body.items?.length).toBe(5)
+    expect(response.body.items?.some((item: any) => item.id === postResponseBody.id)).toBeTruthy()
   })
 })

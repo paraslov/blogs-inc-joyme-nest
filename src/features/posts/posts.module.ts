@@ -14,6 +14,9 @@ import { postsCommandHandlers } from './application/commands'
 import { PostsCommandService } from './application/posts.command.service'
 import { IsBlogExistsConstraint } from './application/decorators/is-blog-exists.decorator'
 
+/*
+  @deprecated - remove after comments and likes will be refactored to blogs module
+ */
 @Module({
   imports: [PostsMongooseModule, BlogsModule, CommentsModule, UsersModule, LikesModule, CqrsModule],
   exports: [PostsMongooseModule, PostsQueryRepository, PostsMappers],

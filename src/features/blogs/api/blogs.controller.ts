@@ -18,19 +18,19 @@ export class BlogsController {
     return this.blogsQueryRepository.getAllBlogs(query)
   }
 
-  @Get(':id/posts')
+  @Get(':blogId/posts')
   async findAllPostsForBlog(
-    @Param('id', UUIDValidationPipe) id: string,
+    @Param('blogId', UUIDValidationPipe) blogId: string,
     @Query() query: StandardInputFilters,
     @PossibleUserId() currentUserId?: string,
   ) {
-    const blog = await this.blogsQueryRepository.getBlogById(id)
+    const blog = await this.blogsQueryRepository.getBlogById(blogId)
 
     if (!blog) {
-      throw new NotFoundException(`Blog with ID ${id} not found`)
+      throw new NotFoundException(`Blog with ID ${blogId} not found`)
     }
 
-    return this.postsQueryRepository.getPostsList(query, { blogId: id, userId: currentUserId })
+    return this.postsQueryRepository.getPostsList(query, { blogId, userId: currentUserId })
   }
 
   @Get(':id')

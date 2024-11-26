@@ -17,7 +17,6 @@ import { CreateBlogDto } from './models/input/create-blog.dto'
 import { CreateBlogPostDto } from './models/input/create-blog-post.dto'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { SaAuthGuard } from '../../auth'
-import { PossibleUserId } from '../../../base/decorators'
 import { FilterBlogDto } from './models/input/filter.blog.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { UUIDValidationPipe } from '../../../base/pipes'
@@ -38,18 +37,14 @@ export class BlogsSaController {
   }
 
   @Get(':blogId/posts')
-  async findAllPostsForBlog(
-    @Param('blogId', UUIDValidationPipe) blogId: string,
-    @Query() query: PostFilterDto,
-    @PossibleUserId() currentUserId?: string,
-  ) {
+  async findAllPostsForBlog(@Param('blogId', UUIDValidationPipe) blogId: string, @Query() query: PostFilterDto) {
     const blog = await this.blogsQueryRepository.getBlogById(blogId)
 
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${blogId} not found`)
     }
 
-    return this.blogsQueryRepository.getPostsList(query, { blogId, userId: currentUserId })
+    return this.blogsQueryRepository.getPostsList(query, { blogId })
   }
 
   @HttpCode(HttpStatusCodes.CREATED_201)

@@ -94,23 +94,22 @@ export class BlogsQueryRepository {
     const offset = (pageNumber - 1) * pageSize
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
-    const filter = blogId ? 'WHERE blog_id=$1' : ''
 
     const posts = await this.dataSource.query<PostSql[]>(
       `
       SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
         FROM public.posts
-        ${filter}
+        ${blogId ? 'WHERE blog_id=$3' : ''}
         ORDER BY "${sortBySnakeCase}" ${direction}
-        LIMIT $2 OFFSET $3;
+        LIMIT $1 OFFSET $2;
     `,
-      [blogId, pageSize, offset],
+      blogId ? [pageSize, offset, blogId] : [pageSize, offset],
     )
     const totalCountResult = await this.dataSource.query(
       `SELECT COUNT(*) AS "totalCount"
          FROM public.posts
-         ${filter};`,
-      [blogId],
+         ${blogId ? 'WHERE blog_id=$1' : ''};`,
+      blogId ? [blogId] : [],
     )
 
     const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)

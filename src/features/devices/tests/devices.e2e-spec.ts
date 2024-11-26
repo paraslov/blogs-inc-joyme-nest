@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings } from '../../../common/tests'
+import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { AuthTestManager } from '../../auth'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt'
 import { JwtOperationsService } from '../../../common/services'
 import { DevicesSqlRepository } from '../infrastructure/devices.sql-repository'
 
-describe('auth', () => {
+aDescribe(skipSettings.for('devices'))('>> devices <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let authTestManager: AuthTestManager

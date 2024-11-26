@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
 import { BlogsTestManager } from '../../blogs'
-import { initTestsSettings } from '../../../common/tests'
+import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { PostsTestManager } from '../../posts'
 import { CommentsTestManager } from './utils/comments-test.manager'
 import { LikeStatus } from '../../likes'
 
-describe('comments', () => {
+aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager

@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
-import { initTestsSettings } from '../../../common/tests'
+import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { BlogsTestManager } from './utils/blogs-test.manager'
 import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
 import { DataSource } from 'typeorm'
@@ -9,7 +9,7 @@ import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
 
-describe('>>- posts sa -<<', () => {
+aDescribe(skipSettings.for('posts_sa'))('>> posts_sa <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager

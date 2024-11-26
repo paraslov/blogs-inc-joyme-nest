@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { UsersTestManager } from './utils/users-test.manager'
-import { initTestsSettings } from '../../../common/tests'
+import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { HttpStatusCodes } from '../../../common/models'
 import { DataSource } from 'typeorm'
 import { UsersSqlRepository } from '../infrastructure/users.sql-repository'
 
-describe('users', () => {
+aDescribe(skipSettings.for('users'))('>> users <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let httpServer: any

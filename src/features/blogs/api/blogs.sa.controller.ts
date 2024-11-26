@@ -116,4 +116,22 @@ export class BlogsSaController {
       throw new NotFoundException(`Post with ID ${postId} not found`)
     }
   }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @Delete(':blogId/posts/:postId')
+  async deletePost(
+    @Param('blogId', UUIDValidationPipe) blogId: string,
+    @Param('postId', UUIDValidationPipe) postId: string,
+  ) {
+    const blog = await this.blogsQueryRepository.getBlogById(blogId)
+    console.log('@> blog: ', blog)
+    if (!blog) {
+      throw new NotFoundException(`Blog with ID ${blogId} not found`)
+    }
+
+    const deleteResult = await this.blogsCommandService.deletePost(postId)
+    if (!deleteResult) {
+      throw new NotFoundException(`Post with ID ${postId} not found`)
+    }
+  }
 }

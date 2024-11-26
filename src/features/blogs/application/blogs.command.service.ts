@@ -8,6 +8,7 @@ import { UpdateBlogCommand } from './commands/update-blog.command'
 import { DeleteBlogCommand } from './commands/delete-blog.command'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
 import { UpdatePostCommand } from './commands/update-post.command'
+import { DeletePostCommand } from './commands/delete-post.command'
 
 @Injectable()
 export class BlogsCommandService {
@@ -41,5 +42,11 @@ export class BlogsCommandService {
     const command = new UpdatePostCommand(postId, updatePostDto)
 
     return this.commandBus.execute<UpdatePostCommand, boolean>(command)
+  }
+
+  deletePost(postId: string) {
+    const command = new DeletePostCommand(postId)
+
+    return this.commandBus.execute<DeletePostCommand, boolean>(command)
   }
 }

@@ -40,13 +40,20 @@ export class PostsTestManager {
     expect(responseBody.blogName).toStrictEqual(expect.any(String))
   }
 
-  async getPostById(postId: string, accessToken: string | null = null): Promise<PostViewDto> {
+  async getPostById(
+    postId: string,
+    options: { accessToken?: string | null; expectedStatus?: HttpStatusCodes } = {
+      accessToken: null,
+      expectedStatus: HttpStatusCodes.OK_200,
+    },
+  ): Promise<PostViewDto> {
+    const { accessToken, expectedStatus } = options
     const requestBuilder = request(this.httpServer).get(`/api/posts/${postId}`)
 
     if (accessToken) {
       requestBuilder.auth(accessToken, { type: 'bearer' })
     }
-    const response = await requestBuilder.expect(HttpStatusCodes.OK_200)
+    const response = await requestBuilder.expect(expectedStatus)
 
     return response.body
   }

@@ -43,7 +43,6 @@ describe('>>- posts sa -<<', () => {
   it('should create post for blog', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })
-
     const { postResponseBody, postRequestBody } = await postsTestManager.createPost(
       { username, password },
       { blogId: blogResponse.id },
@@ -55,7 +54,6 @@ describe('>>- posts sa -<<', () => {
   it('should create post for blog', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })
-
     const { postResponseBody, postRequestBody } = await postsTestManager.createPost(
       { username, password },
       { blogId: blogResponse.id },
@@ -67,11 +65,11 @@ describe('>>- posts sa -<<', () => {
   it('should get created post through posts controller', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })
-
     const { postResponseBody, postRequestBody } = await postsTestManager.createPost(
       { username, password },
       { blogId: blogResponse.id },
     )
+
     const post = await postsTestManager.getPostById(postResponseBody.id)
 
     postsTestManager.expectCorrectModel(postRequestBody, post)
@@ -97,7 +95,6 @@ describe('>>- posts sa -<<', () => {
   it('should update post', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })
-
     const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
     const updatePostDto: UpdatePostDto = {
       title: 'Updated Post Title',
@@ -120,5 +117,22 @@ describe('>>- posts sa -<<', () => {
     expect(post.shortDescription).toBe(updatePostDto.shortDescription)
     expect(post.blogId).toBe(blogResponse.id)
     expect(post.id).toBe(postResponseBody.id)
+  })
+
+  it('should delete post', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    await request(httpSever)
+      .delete(`/api/sa/blogs/${blogResponse.id}/posts/${postResponseBody.id}`)
+      .auth(username, password, {
+        type: 'basic',
+      })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    await postsTestManager.getPostById(postResponseBody.id, {
+      expectedStatus: HttpStatusCodes.NOT_FOUND_404,
+    })
   })
 })

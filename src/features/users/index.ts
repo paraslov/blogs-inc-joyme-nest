@@ -4,6 +4,7 @@ import { UserInfo } from './domain/postgres/user-info.entity'
 import { UserSql } from './domain/postgres/user.sql'
 import { UsersQueryRepository } from './infrastructure/users.query-repository'
 import { UsersRepository } from './infrastructure/users.repository'
+import { UsersSqlQueryRepository } from './infrastructure/users.sql-query-repository'
 import { UsersSqlRepository } from './infrastructure/users.sql-repository'
 import { UsersTestManager } from './tests/utils/users-test.manager'
 
@@ -13,6 +14,7 @@ export {
   UsersRepository,
   UserDocument,
   UsersQueryRepository,
+  UsersSqlQueryRepository,
   UsersSqlRepository,
   UsersTestManager,
   UserSql,

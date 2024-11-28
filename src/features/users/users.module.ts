@@ -13,7 +13,7 @@ import { UsersSqlRepository } from './infrastructure/users.sql-repository'
 
 @Module({
   imports: [UsersMongooseModule, CqrsModule],
-  exports: [UsersMongooseModule, UsersRepository, UsersSqlRepository, UsersQueryRepository],
+  exports: [UsersMongooseModule, UsersRepository, UsersSqlRepository, UsersQueryRepository, UsersSqlQueryRepository],
   controllers: [UsersController],
   providers: [
     UsersCommandService,

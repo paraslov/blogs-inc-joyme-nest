@@ -12,9 +12,11 @@ import { LikesModule } from '../likes/likes.module'
 import { BlogsSqlRepository } from './infrastructure/blogs.sql-repository'
 import { BlogsController } from './api/blogs.controller'
 import { PostsController } from './api/posts.controller'
+import { UsersModule } from '../users/users.module'
+import { CommentsModule } from '../comments'
 
 @Module({
-  imports: [BlogsMongooseModule, PostsMongooseModule, LikesModule, CqrsModule],
+  imports: [BlogsMongooseModule, PostsMongooseModule, LikesModule, CqrsModule, UsersModule, CommentsModule],
   exports: [BlogsQueryRepository, BlogsMongooseModule, BlogsMappers, BlogsModule],
   controllers: [BlogsSaController, BlogsController, PostsController],
   providers: [

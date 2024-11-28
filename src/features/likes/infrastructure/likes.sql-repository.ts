@@ -7,7 +7,7 @@ export class LikesSqlRepository {
 
   async createLikesTable() {
     await this.dataSource.query(`
-      CREATE TABLE public.likes
+      CREATE TABLE IF NOT EXISTS public.likes
         (
             parent_id uuid NOT NULL,
             status character varying(30) NOT NULL,

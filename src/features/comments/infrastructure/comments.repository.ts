@@ -12,11 +12,6 @@ export class CommentsRepository {
     private readonly commentsMappers: CommentsMappers,
   ) {}
 
-  async saveComment(comment: CommentDto) {
-    const savedComment = await new this.commentModel(comment).save()
-
-    return this.commentsMappers.mapEntityToOutputDto(savedComment)
-  }
   async updateCommentContent(commentId: string, updateCommentDto: CreateUpdateCommentDto) {
     const updateResult = await this.commentModel.updateOne({ _id: commentId }, { content: updateCommentDto.content })
 

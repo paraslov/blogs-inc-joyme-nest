@@ -1,28 +1,28 @@
 import { Injectable } from '@nestjs/common'
-import { CommentDocument } from '../domain/mongoose/comment.entity'
 import { CommentViewDto } from '../api/models/output/comment.view.dto'
 import { LikeStatus } from '../../likes'
+import { CommentSql } from '../domain/postgres/comment-sql'
 
 @Injectable()
 export class CommentsMappers {
-  mapEntityToOutputDto(comment: CommentDocument, likeStatus?: LikeStatus) {
+  mapEntityToOutputDto(comment: CommentSql, likeStatus?: LikeStatus) {
     if (!comment) {
       return null
     }
 
     const mappedComment = new CommentViewDto()
 
-    mappedComment.id = comment._id.toString()
+    mappedComment.id = comment.id
     mappedComment.content = comment.content
-    mappedComment.createdAt = comment.createdAt
+    mappedComment.createdAt = comment.created_at
 
     mappedComment.commentatorInfo = { userId: null, userLogin: null }
-    mappedComment.commentatorInfo.userId = comment.commentatorInfo.userId
-    mappedComment.commentatorInfo.userLogin = comment.commentatorInfo.userLogin
+    mappedComment.commentatorInfo.userId = comment.user_id
+    mappedComment.commentatorInfo.userLogin = comment.user_login
 
     mappedComment.likesInfo = {}
-    mappedComment.likesInfo.likesCount = comment.likesCount
-    mappedComment.likesInfo.dislikesCount = comment.dislikesCount
+    mappedComment.likesInfo.likesCount = comment.likes_count
+    mappedComment.likesInfo.dislikesCount = comment.dislikes_count
     mappedComment.likesInfo.myStatus = likeStatus ?? LikeStatus.NONE
 
     return mappedComment

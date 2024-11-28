@@ -1,7 +1,7 @@
 import { CreateUpdateCommentDto } from '../../api/models/input/create-update-comment.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CommentDto } from '../../domain/mongoose/comment.entity'
-import { CommentsRepository } from '../../infrastructure/comments.repository'
+import { CommentsSqlRepository } from '../../infrastructure/comments.sql-repository'
 
 export class CreateCommentCommand {
   constructor(
@@ -14,7 +14,7 @@ export class CreateCommentCommand {
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler implements ICommandHandler<CreateCommentCommand> {
-  constructor(private readonly commentsRepository: CommentsRepository) {}
+  constructor(private readonly commentsRepository: CommentsSqlRepository) {}
 
   execute(command: CreateCommentCommand) {
     const { createCommentDto, parentId, userLogin, userId } = command
@@ -31,6 +31,6 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
       dislikesCount: 0,
     }
 
-    return this.commentsRepository.saveComment(newComment)
+    return this.commentsRepository.createComment(newComment)
   }
 }

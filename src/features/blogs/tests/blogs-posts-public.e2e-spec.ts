@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm'
 import { PostsTestManager } from './utils/posts-test.manager'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
+import { LikeStatus } from '../../likes'
 
 aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', () => {
   let app: INestApplication
@@ -108,5 +109,39 @@ aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', ()
     expect(response.body.totalCount).toBe(5)
     expect(response.body.items?.length).toBe(5)
     expect(response.body.items?.some((item: any) => item.id === postResponseBody.id)).toBeTruthy()
+  })
+
+  it('should create comment to post: ', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    const comment = await postsTestManager.addCommentToPost(accessToken, { postId: postResponseBody.id })
+
+    expect(comment.id).toStrictEqual(expect.any(String))
+    expect(comment.commentatorInfo.userId).toBe(userResponseBody.id)
+    expect(comment.commentatorInfo.userLogin).toBe(userResponseBody.login)
+    expect(comment.likesInfo.myStatus).toBe(LikeStatus.NONE)
+  })
+
+  it('should get post comment: ', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    const comment = await postsTestManager.addCommentToPost(accessToken, { postId: postResponseBody.id })
+    const fetchComments = await postsTestManager.getPostsComments(accessToken, postResponseBody.id)
+    const newComment = fetchComments.items?.[0]
+
+    expect(newComment.id).toBe(comment.id)
+    expect(newComment.commentatorInfo.userId).toBe(userResponseBody.id)
+    expect(newComment.commentatorInfo.userLogin).toBe(userResponseBody.login)
+    expect(newComment.likesInfo.myStatus).toBe(LikeStatus.NONE)
   })
 })

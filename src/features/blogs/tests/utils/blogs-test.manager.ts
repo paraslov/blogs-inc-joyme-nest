@@ -14,7 +14,7 @@ export class BlogsTestManager {
     this.blogIndex++
 
     return {
-      name: `New Blog Name ${this.blogIndex}`,
+      name: `Blog Name ${this.blogIndex}`,
       description: `New Blog Description ${this.blogIndex}`,
       websiteUrl: `https://blog-site${this.blogIndex}.bol`,
     }

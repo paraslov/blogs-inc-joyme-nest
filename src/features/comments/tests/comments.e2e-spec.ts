@@ -39,22 +39,6 @@ aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
     await app.close()
   })
 
-  it('should create comment: ', async () => {
-    const { username, password } = userTestManger.getSaCredits
-    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
-    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
-    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
-
-    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
-
-    const comment = await postsTestManager.addCommentToPost(accessToken, { postId: postResponseBody.id })
-
-    expect(comment.id).toStrictEqual(expect.any(String))
-    expect(comment.commentatorInfo.userId).toBe(userResponseBody.id)
-    expect(comment.commentatorInfo.userLogin).toBe(userResponseBody.login)
-    expect(comment.likesInfo.myStatus).toBe(LikeStatus.NONE)
-  })
-
   it('should get comment from comments controller: ', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { userRequestBody, userResponseBody } = await userTestManger.createUser()

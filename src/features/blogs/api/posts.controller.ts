@@ -32,6 +32,21 @@ export class PostsController {
     return foundPost
   }
 
+  @Get(':postId/comments')
+  async findAllCommentsForPost(
+    @Param('postId', UUIDValidationPipe) postId: string,
+    @Query() query: StandardInputFilters,
+    @PossibleUserId() currentUserId: string | null,
+  ) {
+    const foundPost = await this.blogsQueryRepository.getPostById(postId)
+
+    if (!foundPost) {
+      throw new NotFoundException(`Post with ID ${postId} not found`)
+    }
+
+    return this.commentsQueryRepository.getCommentsList(query, postId, currentUserId)
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post(':postId/comments')
   async addCommentToPost(

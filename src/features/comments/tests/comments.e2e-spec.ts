@@ -72,7 +72,7 @@ aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
     expect(fetchedComment.likesInfo.myStatus).toBe(LikeStatus.NONE)
   })
 
-  it('should get comment from comments controller: ', async () => {
+  it('should update comment: ', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { userRequestBody, userResponseBody } = await userTestManger.createUser()
     const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
@@ -94,6 +94,29 @@ aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
 
     expect(fetchedComment.id).toBe(comment.id)
     expect(fetchedComment.content).toBe(commentContent)
+  })
+
+  it('should delete comment: ', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    const comment = await postsTestManager.addCommentToPost(accessToken, { postId: postResponseBody.id })
+    await request(httpServer)
+      .delete(`/api/comments/${comment.id}`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const fetchedComment = await commentsTestManager.getCommentById(accessToken, comment.id, {
+      expectedStatus: HttpStatusCodes.NOT_FOUND_404,
+    })
+
+    expect(fetchedComment.id).toBe(undefined)
   })
 
   // it('should correctly add like statuses to post comments: ', async () => {

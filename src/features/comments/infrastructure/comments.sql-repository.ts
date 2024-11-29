@@ -54,4 +54,16 @@ export class CommentsSqlRepository {
 
     return Boolean(updateResult?.[1])
   }
+
+  async deleteComment(commentId: string) {
+    const deleteResult = await this.dataSource.query(
+      `
+      DELETE FROM public.comments
+        WHERE id=$1;
+    `,
+      [commentId],
+    )
+
+    return Boolean(deleteResult?.[1])
+  }
 }

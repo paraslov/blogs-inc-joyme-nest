@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { CommentDto } from '../domain/mongoose/comment.entity'
+import { CreateUpdateCommentDto } from '../api/models/input/create-update-comment.dto'
 
 @Injectable()
 export class CommentsSqlRepository {
@@ -39,5 +40,18 @@ export class CommentsSqlRepository {
     )
 
     return createdCommentResult?.[0]?.id ?? null
+  }
+
+  async updateCommentContent(commentId: string, updateCommentDto: CreateUpdateCommentDto) {
+    const updateResult = await this.dataSource.query(
+      `
+      UPDATE public.comments
+        SET content=$2
+        WHERE id=$1;
+    `,
+      [commentId, updateCommentDto.content],
+    )
+
+    return Boolean(updateResult?.[1])
   }
 }

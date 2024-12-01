@@ -1,73 +1,19 @@
 import { DataSource } from 'typeorm'
-import { DatabaseSettings } from '../../../settings/date-base.settings'
 
-export async function createDbAndTables(dataSource: DataSource, dataBaseSettings: DatabaseSettings) {
+export async function createTablesIfNeeded(dataSource: DataSource) {
   try {
-    await createUser(dataSource, dataBaseSettings)
-    await createDb(dataSource, dataBaseSettings)
-    await createTables(dataSource)
+    await createUsersTable(dataSource)
+    await createBlogsTable(dataSource)
+    await createPostsTable(dataSource)
+    await createDevicesTable(dataSource)
+    await createCommentsTable(dataSource)
+    await createLikesTable(dataSource)
   } catch (err) {
-    console.log('@> CREATE BD ERROR: ', err)
-    throw 'CREATE BD ERROR (createDbAndTables)'
+    console.log('@> CREATE TABLES ERROR: ', err)
+    throw 'CREATE TABLES ERROR (createDbAndTables)'
   }
 
-  console.log('@> CREATE BD SUCCESS')
-}
-
-async function createUser(dataSource: DataSource, dataBaseSettings: DatabaseSettings) {
-  await dataSource.query(
-    `
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM pg_roles WHERE rolname = $1
-      ) THEN
-        CREATE ROLE $1 WITH
-          LOGIN
-          SUPERUSER
-          CREATEDB
-          CREATEROLE
-          INHERIT
-          REPLICATION
-          BYPASSRLS
-          CONNECTION LIMIT -1
-          PASSWORD $2;
-      END IF;
-    END $$;
-`,
-    [dataBaseSettings.POSTGRES_USER_NAME, dataBaseSettings.POSTGRES_USER_PASSWORD],
-  )
-}
-
-async function createDb(dataSource: DataSource, dataBaseSettings: DatabaseSettings) {
-  await dataSource.query(
-    `
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM pg_database WHERE datname = $1
-      ) THEN
-        CREATE DATABASE $1
-        WITH
-        OWNER = $2
-        ENCODING = 'UTF8'
-        LOCALE_PROVIDER = 'libc'
-        CONNECTION LIMIT = -1
-        IS_TEMPLATE = false;
-      END IF;
-    END $$;
-  `,
-    [dataBaseSettings.POSTGRES_DATABASE, dataBaseSettings.POSTGRES_USER_NAME],
-  )
-}
-
-async function createTables(dataSource: DataSource) {
-  await createUsersTable(dataSource)
-  await createBlogsTable(dataSource)
-  await createPostsTable(dataSource)
-  await createDevicesTable(dataSource)
-  await createCommentsTable(dataSource)
-  await createLikesTable(dataSource)
+  console.log('@> CREATE TABLES SUCCESS')
 }
 
 async function createUsersTable(dataSource: DataSource) {

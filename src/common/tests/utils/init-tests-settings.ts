@@ -9,6 +9,7 @@ import { AppModule } from '../../../app.module'
 import { applyAppSettings } from '../../../settings/apply.app.settings'
 import { ConfigService } from '@nestjs/config'
 import { DataSource } from 'typeorm'
+import { createDbAndTables } from './create-db-and-tables'
 
 export const initTestsSettings = async (addSettingsToModuleBuilder?: (moduleBuilder: TestingModuleBuilder) => void) => {
   console.log('in tests ENV: ', configuration().environmentSettings.currentEnv)
@@ -34,6 +35,7 @@ export const initTestsSettings = async (addSettingsToModuleBuilder?: (moduleBuil
   const configService = app.get<ConfigService<ConfigurationType>>(ConfigService)
   const userTestManger = new UsersTestManager(app, configService)
 
+  await createDbAndTables(dataSource, configService.get('databaseSettings'))
   await deleteAllData(databaseConnection, dataSource)
 
   return {

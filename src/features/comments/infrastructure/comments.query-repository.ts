@@ -3,18 +3,18 @@ import { InjectModel } from '@nestjs/mongoose'
 import { CommentDto } from '../domain/mongoose/comment.entity'
 import { Model } from 'mongoose'
 import { CommentsMappers } from './comments.mappers'
-import { LikesRepository } from '../../likes'
 import { DataSource } from 'typeorm'
 import { CommentSql } from '../domain/postgres/comment-sql'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { CommentsFilterDto } from '../api/models/input/comments.filter.dto'
+import { LikesSqlRepository } from '../../likes/infrastructure/likes.sql-repository'
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
     @InjectModel(CommentDto.name) private commentsModel: Model<CommentDto>,
-    private likesRepository: LikesRepository,
+    private likesRepository: LikesSqlRepository,
     private commentsMappers: CommentsMappers,
     private dataSource: DataSource,
   ) {}

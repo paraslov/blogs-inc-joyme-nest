@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { LikesSql } from '../domain/postgres/likes-sql'
 import { Like } from '../domain/mongoose/likes.entity'
+import { LikeStatus } from '../api/models/enums/like-status'
 
 @Injectable()
 export class LikesSqlRepository {
   constructor(private dataSource: DataSource) {}
 
-  async getLikeStatus(userId: string, parentId: string) {
+  async getLikeStatusData(userId: string, parentId: string) {
     const likeStatus = await this.dataSource.query<LikesSql[]>(
       `
       SELECT parent_id, status, created_at, user_id, user_login
@@ -18,6 +19,22 @@ export class LikesSqlRepository {
     )
 
     return likeStatus?.[0]
+  }
+
+  async getUserLikeStatus(parentId: string, userId?: string) {
+    if (!userId) {
+      return
+    }
+    const userLikeData = await this.dataSource.query<{ status: LikeStatus }[]>(
+      `
+      SELECT status
+        FROM public.likes
+        WHERE user_id = $1 AND parent_id = $2;
+    `,
+      [userId, parentId],
+    )
+
+    return userLikeData?.[0]?.status
   }
 
   async createLikeStatus(newLikeStatus: Like) {

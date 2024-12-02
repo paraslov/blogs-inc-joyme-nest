@@ -148,7 +148,7 @@ async function createLikesTable(dataSource: DataSource) {
             created_at timestamp without time zone NOT NULL,
             user_id uuid NOT NULL,
             user_login character varying(10) NOT NULL,
-            PRIMARY KEY (parent_id)
+            PRIMARY KEY (parent_id, user_id)
         );
 
       ALTER TABLE IF EXISTS public.likes

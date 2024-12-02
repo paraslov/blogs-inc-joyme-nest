@@ -28,7 +28,7 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
     const { updateLikeStatusDto, userLogin, userId, parentId } = command
     const newLikeStatus = updateLikeStatusDto.likeStatus
 
-    const currentLikeStatus = await this.likesRepository.getLikeStatus(userId, parentId)
+    const currentLikeStatus = await this.likesRepository.getLikeStatusData(userId, parentId)
     let likesCountChange: number
     let dislikesCountChange: number
 

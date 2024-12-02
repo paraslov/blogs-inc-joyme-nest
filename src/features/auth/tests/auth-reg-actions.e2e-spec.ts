@@ -6,7 +6,7 @@ import { HttpStatusCodes } from '../../../common/models'
 import { AuthTestManager } from './utils/auth-test.manager'
 import { EmailSendManager } from '../../../common/manager'
 import { EmailSendManagerMock } from './mocks/EmailSendManagerMock'
-import { AuthSqlRepository } from '../infrastructure/auth.sql-repository'
+import { AuthRepository } from '../infrastructure/auth.repository.service'
 
 aDescribe(skipSettings.for('auth_reg_actions'))('>> auth_reg_actions <<', () => {
   let app: INestApplication
@@ -21,7 +21,7 @@ aDescribe(skipSettings.for('auth_reg_actions'))('>> auth_reg_actions <<', () => 
       app = result.app
       httpServer = result.httpServer
 
-      authTestManager = new AuthTestManager(app, new AuthSqlRepository(result.dataSource))
+      authTestManager = new AuthTestManager(app, new AuthRepository(result.dataSource))
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }

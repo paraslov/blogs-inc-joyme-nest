@@ -4,7 +4,7 @@ import { HttpStatusCodes } from '../../../../common/models'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { UserInfo, UsersSqlRepository } from '../../../users'
-import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class RegistrationEmailResendingCommand {
   constructor(public readonly email: string) {}
@@ -13,7 +13,7 @@ export class RegistrationEmailResendingCommand {
 @CommandHandler(RegistrationEmailResendingCommand)
 export class RegistrationEmailResendingHandler implements ICommandHandler<RegistrationEmailResendingCommand> {
   constructor(
-    private readonly authRepository: AuthSqlRepository,
+    private readonly authRepository: AuthRepository,
     private readonly usersRepository: UsersSqlRepository,
     private readonly emailSendManager: EmailSendManager,
   ) {}

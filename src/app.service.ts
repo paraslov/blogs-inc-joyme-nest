@@ -10,7 +10,7 @@ export class AppService {
     return 'Welcome to JoymeStudios Blogs App!'
   }
   getVersion(): string {
-    return 'blogs-inc-joyme: v5.3.1'
+    return 'blogs-inc-joyme: v5.4.0'
   }
   async deleteAllData() {
     try {

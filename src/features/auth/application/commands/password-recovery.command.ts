@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { HttpStatusCodes } from '../../../../common/models'
 import { UsersSqlRepository } from '../../../users'
-import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class PasswordRecoveryCommand {
   constructor(public readonly email: string) {}
@@ -14,7 +14,7 @@ export class PasswordRecoveryCommand {
 export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecoveryCommand> {
   constructor(
     private readonly emailSendManager: EmailSendManager,
-    private readonly authRepository: AuthSqlRepository,
+    private readonly authRepository: AuthRepository,
     private readonly usersRepository: UsersSqlRepository,
   ) {}
 

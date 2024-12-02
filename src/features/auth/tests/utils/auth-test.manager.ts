@@ -2,13 +2,13 @@ import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../../common/models'
 import { MeViewModelDto } from '../../api/models/output/me-view-model.dto'
-import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { AuthRepository } from '../../infrastructure/auth.repository.service'
 import { CreateUserDto } from '../../../users'
 
 export class AuthTestManager {
   constructor(
     protected readonly app: INestApplication,
-    private authSqlRepository?: AuthSqlRepository,
+    private authSqlRepository?: AuthRepository,
   ) {}
   httpServer = this.app.getHttpServer()
   userIndex = 0

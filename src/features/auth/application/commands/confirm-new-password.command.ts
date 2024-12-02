@@ -4,7 +4,7 @@ import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { UserInfo, UsersSqlRepository } from '../../../users'
 import { CryptService } from '../../../../common/services'
-import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class ConfirmNewPasswordCommand {
   constructor(public readonly passwordRecoveryDto: PasswordRecoveryDto) {}
@@ -13,7 +13,7 @@ export class ConfirmNewPasswordCommand {
 @CommandHandler(ConfirmNewPasswordCommand)
 export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPasswordCommand> {
   constructor(
-    private readonly authRepository: AuthSqlRepository,
+    private readonly authRepository: AuthRepository,
     private readonly cryptService: CryptService,
     private readonly usersRepository: UsersSqlRepository,
   ) {}

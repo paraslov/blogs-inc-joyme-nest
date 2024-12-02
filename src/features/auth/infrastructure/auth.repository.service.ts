@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm'
 import { UserInfo, UserSql } from '../../users'
 
 @Injectable()
-export class AuthSqlRepository {
+export class AuthRepository {
   constructor(protected dataSource: DataSource) {}
 
   async getUserByLoginOrEmail(loginOrEmail: string): Promise<{ user: UserSql; userInfo: UserInfo } | null> {

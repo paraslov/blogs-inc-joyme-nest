@@ -159,8 +159,11 @@ aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', ()
     const updatedPost = await postsTestManager.getPostById(postResponseBody.id, { accessToken })
 
     expect(postResponseBody.extendedLikesInfo.likesCount).toBe(0)
+    expect(postResponseBody.extendedLikesInfo.newestLikes.length).toBe(0)
     expect(updatedPost.extendedLikesInfo.likesCount).toBe(1)
     expect(updatedPost.extendedLikesInfo.myStatus).toBe(LikeStatus.LIKE)
+    expect(updatedPost.extendedLikesInfo.newestLikes.length).toBe(1)
+    expect(updatedPost.extendedLikesInfo.newestLikes?.[0].userId).toBe(userResponseBody.id)
   })
 
   it('should throw 400 if passed body is incorrect', async () => {

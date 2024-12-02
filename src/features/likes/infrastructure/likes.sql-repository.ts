@@ -48,7 +48,7 @@ export class LikesSqlRepository {
         FROM public.likes
         WHERE parent_id=$1 AND status=$3
         ORDER BY created_at DESC
-        LIMIT $2 OFFSET 10;
+        LIMIT $2 OFFSET 0;
     `,
       [parentId, likesCount, LikeStatus.LIKE],
     )

@@ -139,4 +139,47 @@ aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', ()
     expect(newComment.commentatorInfo.userLogin).toBe(userResponseBody.login)
     expect(newComment.likesInfo.myStatus).toBe(LikeStatus.NONE)
   })
+
+  it('should add like to post', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    await request(httpServer)
+      .put(`/api/posts/${postResponseBody.id}/like-status`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({ likeStatus: LikeStatus.LIKE })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const updatedPost = await postsTestManager.getPostById(postResponseBody.id, { accessToken })
+
+    expect(postResponseBody.extendedLikesInfo.likesCount).toBe(0)
+    expect(updatedPost.extendedLikesInfo.likesCount).toBe(1)
+    expect(updatedPost.extendedLikesInfo.myStatus).toBe(LikeStatus.LIKE)
+  })
+
+  it('should throw 400 if passed body is incorrect', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const postBody = {
+      title: 'valid',
+      content: 'valid',
+      blogId: '63189b06003380064c4193be',
+      shortDescription:
+        'length_101-DnZlTI1khUHpqOqCzftIYiSHCV8fKjYFQOoCIwmUczzW9V5K8cqY3aPKo3XKwbfrmeWOJyQgGnlX5sP3aW3RlaRSQx',
+    }
+    await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost<any>(
+      { username, password },
+      { blogId: postBody.blogId, createPostModel: postBody },
+      HttpStatusCodes.BAD_REQUEST_400,
+    )
+
+    expect(postResponseBody.errorsMessages.some((message: any) => message.field === 'shortDescription')).toBeTruthy()
+  })
 })

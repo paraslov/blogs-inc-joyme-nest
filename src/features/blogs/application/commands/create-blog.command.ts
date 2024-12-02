@@ -1,4 +1,4 @@
-import { Blog } from '../../domain/mongoose/blogs.entity'
+import { Blog } from '../../domain/business_entities/blogs.entity'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CreateBlogDto } from '../../api/models/input/create-blog.dto'
 import { BlogsRepository } from '../../infrastructure/blogs.repository.service'

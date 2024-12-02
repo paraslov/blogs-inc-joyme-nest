@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { CommentDto } from '../domain/mongoose/comment.entity'
-import { Model } from 'mongoose'
 import { CommentsMappers } from './comments.mappers'
 import { DataSource } from 'typeorm'
 import { CommentSql } from '../domain/postgres/comment-sql'
@@ -13,7 +10,6 @@ import { LikesSqlRepository } from '../../likes/infrastructure/likes.sql-reposit
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    @InjectModel(CommentDto.name) private commentsModel: Model<CommentDto>,
     private likesRepository: LikesSqlRepository,
     private commentsMappers: CommentsMappers,
     private dataSource: DataSource,

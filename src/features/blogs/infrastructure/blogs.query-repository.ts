@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { Blog } from '../domain/mongoose/blogs.entity'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
 import { BlogsMappers } from './blogs.mappers'
 import { DataSource } from 'typeorm'
 import { BlogSql } from '../domain/postgres/blog.sql'
@@ -18,7 +15,6 @@ import { PostSql } from '../domain/postgres/post.sql'
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
-    @InjectModel(Blog.name) private blogsModel: Model<Blog>,
     private likesRepository: LikesSqlRepository,
     private dataSource: DataSource,
     private blogsMappers: BlogsMappers,

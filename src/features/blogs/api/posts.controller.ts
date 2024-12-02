@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Query, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common'
 import { StandardInputFilters } from '../../../common/models/input/QueryInputParams'
 import { CurrentUserId, PossibleUserId } from '../../../base/decorators'
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
@@ -6,11 +6,15 @@ import { UUIDValidationPipe } from '../../../base/pipes'
 import { JwtAuthGuard } from '../../auth'
 import { CommentsCommandService, CommentsQueryRepository, CreateUpdateCommentDto } from '../../comments'
 import { UsersSqlQueryRepository } from '../../users'
+import { HttpStatusCodes } from '../../../common/models'
+import { UpdateLikeStatusDto } from '../../likes'
+import { BlogsCommandService } from '../application/blogs.command.service'
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private blogsQueryRepository: BlogsQueryRepository,
+    private blogsCommandService: BlogsCommandService,
     private usersQueryRepository: UsersSqlQueryRepository,
     private commentsCommandService: CommentsCommandService,
     private commentsQueryRepository: CommentsQueryRepository,
@@ -72,5 +76,30 @@ export class PostsController {
     )
 
     return this.commentsQueryRepository.getCommentById(createdCommentId, user.id)
+  }
+
+  @HttpCode(HttpStatusCodes.NO_CONTENT_204)
+  @UseGuards(JwtAuthGuard)
+  @Put(':postId/like-status')
+  async updateCommentLikeStatus(
+    @Param('postId', UUIDValidationPipe) postId: string,
+    @Body() updateLikeStatusDto: UpdateLikeStatusDto,
+    @CurrentUserId() currentUserId: string,
+  ) {
+    const post = await this.blogsQueryRepository.getPostById(postId)
+    const user = await this.usersQueryRepository.getUser(currentUserId)
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`)
+    }
+    if (!user) {
+      throw new NotFoundException(`User with ID ${currentUserId} not found`)
+    }
+
+    const updateNotice = await this.blogsCommandService.updatePostLikeStatus(post, updateLikeStatusDto, postId, user.id)
+
+    if (updateNotice.hasError()) {
+      throw new NotFoundException(updateNotice.extensions)
+    }
   }
 }

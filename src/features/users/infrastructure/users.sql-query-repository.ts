@@ -26,7 +26,7 @@ export class UsersSqlQueryRepository {
       [userId],
     )
 
-    return this.usersMappers.mapSqlToOutputDto(res[0])
+    return this.usersMappers.mapSqlToOutputDto(res?.[0])
   }
 
   async getUsers(query: FilterUsersDto) {

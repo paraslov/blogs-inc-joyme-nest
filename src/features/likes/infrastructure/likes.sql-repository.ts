@@ -3,10 +3,14 @@ import { DataSource } from 'typeorm'
 import { LikesSql } from '../domain/postgres/likes-sql'
 import { Like } from '../domain/mongoose/likes.entity'
 import { LikeStatus } from '../api/models/enums/like-status'
+import { LikesMappers } from './likes.mappers'
 
 @Injectable()
 export class LikesSqlRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    private likesMappers: LikesMappers,
+  ) {}
 
   async getLikeStatusData(userId: string, parentId: string) {
     const likeStatus = await this.dataSource.query<LikesSql[]>(
@@ -35,6 +39,21 @@ export class LikesSqlRepository {
     )
 
     return userLikeData?.[0]?.status
+  }
+
+  async getLatestLikes(parentId: string, likesCount: number = 3) {
+    const latestLikeData = await this.dataSource.query<LikesSql[]>(
+      `
+      SELECT parent_id, status, created_at, user_id, user_login
+        FROM public.likes
+        WHERE parent_id = $1 AND status="Like"
+        ORDER BY created_at DESC
+        LIMIT $2 OFFSET 10;
+    `,
+      [parentId, likesCount],
+    )
+
+    return latestLikeData?.map(this.likesMappers.mapDtoToView) ?? []
   }
 
   async createLikeStatus(newLikeStatus: Like) {

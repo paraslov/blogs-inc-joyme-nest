@@ -19,7 +19,7 @@ export class PostsQueryRepository {
     const threeLatestLikes = await this.likesRepository.getLatestLikes(postId)
     const post = await this.postsModel.findById(postId)
 
-    return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes, likeStatus)
+    return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes as any, likeStatus)
   }
 
   async getPostsList(queryFilter: StandardInputFilters, options: { blogId?: string; userId?: string }) {
@@ -42,7 +42,7 @@ export class PostsQueryRepository {
       const likeStatus = await this.likesRepository.getUserLikeStatus(post.id, userId)
       const threeLatestLikes = await this.likesRepository.getLatestLikes(post.id)
 
-      return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes, likeStatus)
+      return this.postsMappers.mapPostToOutputDto(post, threeLatestLikes as any, likeStatus)
     })
     const mappedPosts = await Promise.all(mappedPostsPromises)
 

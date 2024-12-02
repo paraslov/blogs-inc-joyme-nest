@@ -39,6 +39,6 @@ export class LikesRepository {
       .sort({ createdAt: -1 })
       .limit(likesCount)
 
-    return likes?.map(this.likesMappers.mapDtoToView) ?? []
+    return likes?.map(this.likesMappers.mapDtoToView as any) ?? []
   }
 }

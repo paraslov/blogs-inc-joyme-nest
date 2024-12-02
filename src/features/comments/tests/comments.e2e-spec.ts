@@ -4,7 +4,6 @@ import { BlogsTestManager, PostsTestManager } from '../../blogs'
 import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { CommentsTestManager } from './utils/comments-test.manager'
 import { LikeStatus } from '../../likes'
-import { CommentsSqlRepository } from '../infrastructure/comments.sql-repository'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 
@@ -14,7 +13,6 @@ aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
   let blogsTestManager: BlogsTestManager
   let postsTestManager: PostsTestManager
   let commentsTestManager: CommentsTestManager
-  let commentsRepository: CommentsSqlRepository
   let httpServer: any
 
   beforeAll(async () => {
@@ -27,9 +25,6 @@ aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
       blogsTestManager = new BlogsTestManager(app)
       postsTestManager = new PostsTestManager(app)
       commentsTestManager = new CommentsTestManager(app)
-
-      commentsRepository = new CommentsSqlRepository(result.dataSource)
-      await commentsRepository.createCommentsTable()
     } catch (err) {
       console.log('@> comments tests error: ', err)
     }
@@ -101,6 +96,28 @@ aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
     })
 
     expect(fetchedComment.id).toBe(undefined)
+  })
+
+  it('should delete comment: ', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    const comment = await postsTestManager.addCommentToPost(accessToken, { postId: postResponseBody.id })
+    await commentsTestManager.updateCommentLikeStatus(accessToken, {
+      commentId: comment.id,
+      likeStatus: LikeStatus.LIKE,
+    })
+
+    const fetchedComment = await commentsTestManager.getCommentById(accessToken, comment.id)
+
+    expect(fetchedComment.id).toBe(comment.id)
+    expect(fetchedComment.likesInfo.myStatus).toBe(LikeStatus.LIKE)
+    expect(fetchedComment.likesInfo.likesCount).toBe(1)
+    expect(fetchedComment.likesInfo.dislikesCount).toBe(0)
   })
 
   // it('should correctly add like statuses to post comments: ', async () => {

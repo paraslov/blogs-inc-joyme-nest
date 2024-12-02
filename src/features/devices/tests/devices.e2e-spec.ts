@@ -7,7 +7,6 @@ import { HttpStatusCodes } from '../../../common/models'
 import { DevicesTestManager } from './utils/devices.test-manager'
 import { JwtService } from '@nestjs/jwt'
 import { JwtOperationsService } from '../../../common/services'
-import { DevicesSqlRepository } from '../infrastructure/devices.sql-repository'
 
 aDescribe(skipSettings.for('devices'))('>> devices <<', () => {
   let app: INestApplication
@@ -15,7 +14,6 @@ aDescribe(skipSettings.for('devices'))('>> devices <<', () => {
   let authTestManager: AuthTestManager
   let devicesTestManager: DevicesTestManager
   let jwtOperationsService: JwtOperationsService
-  let devicesSqlRepository: DevicesSqlRepository
   let httpServer: any
 
   beforeAll(async () => {
@@ -28,9 +26,6 @@ aDescribe(skipSettings.for('devices'))('>> devices <<', () => {
       devicesTestManager = new DevicesTestManager(app)
       jwtOperationsService = new JwtOperationsService(new JwtService())
       authTestManager = new AuthTestManager(app)
-
-      devicesSqlRepository = new DevicesSqlRepository(result.dataSource)
-      await devicesSqlRepository.createDevicesTable()
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }

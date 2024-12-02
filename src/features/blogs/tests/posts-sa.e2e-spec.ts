@@ -2,8 +2,6 @@ import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
 import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { BlogsTestManager } from './utils/blogs-test.manager'
-import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
-import { DataSource } from 'typeorm'
 import { PostsTestManager } from './utils/posts-test.manager'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
@@ -14,8 +12,6 @@ aDescribe(skipSettings.for('posts_sa'))('>> posts_sa <<', () => {
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager
   let postsTestManager: PostsTestManager
-  let blogsSqlRepository: BlogsSqlRepository
-  let dataSource: DataSource
   let httpSever: any
 
   beforeAll(async () => {
@@ -23,14 +19,10 @@ aDescribe(skipSettings.for('posts_sa'))('>> posts_sa <<', () => {
       const result = await initTestsSettings()
       app = result.app
       userTestManger = result.userTestManger
-      dataSource = result.dataSource
       httpSever = result.httpServer
 
       blogsTestManager = new BlogsTestManager(app)
       postsTestManager = new PostsTestManager(app)
-
-      blogsSqlRepository = new BlogsSqlRepository(dataSource)
-      await blogsSqlRepository.createBlogsTable()
     } catch (err) {
       console.log('@> posts tests error: ', err)
     }

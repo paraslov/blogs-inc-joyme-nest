@@ -9,7 +9,7 @@ import { LikesSqlRepository } from './infrastructure/likes.sql-repository'
 
 @Module({
   imports: [CqrsModule, LikesMongooseModule],
-  exports: [LikesMongooseModule, LikesCommandService, LikesRepository],
+  exports: [LikesMongooseModule, LikesCommandService, LikesRepository, LikesSqlRepository],
   providers: [LikesCommandService, LikesRepository, LikesSqlRepository, LikesMappers, ...likesCommandHandlers],
 })
 export class LikesModule {}

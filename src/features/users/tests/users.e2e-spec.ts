@@ -4,14 +4,12 @@ import { UsersTestManager } from './utils/users-test.manager'
 import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { HttpStatusCodes } from '../../../common/models'
 import { DataSource } from 'typeorm'
-import { UsersSqlRepository } from '../infrastructure/users.sql-repository'
 
 aDescribe(skipSettings.for('users'))('>> users <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let httpServer: any
   let dataSource: DataSource
-  let usersSqlRepository: UsersSqlRepository
 
   beforeAll(async () => {
     try {
@@ -20,9 +18,6 @@ aDescribe(skipSettings.for('users'))('>> users <<', () => {
       userTestManger = result.userTestManger
       httpServer = result.httpServer
       dataSource = result.dataSource
-
-      usersSqlRepository = new UsersSqlRepository(dataSource)
-      await usersSqlRepository.createUsersTable()
     } catch (err) {
       console.log('@> users tests error: ', err)
     }

@@ -5,10 +5,11 @@ import { LikesRepository } from './infrastructure/likes.repository'
 import { likesCommandHandlers } from './application/commands'
 import { LikesCommandService } from './application/likes.command.service'
 import { LikesMappers } from './infrastructure/likes.mappers'
+import { LikesSqlRepository } from './infrastructure/likes.sql-repository'
 
 @Module({
   imports: [CqrsModule, LikesMongooseModule],
-  exports: [LikesMongooseModule, LikesCommandService, LikesRepository],
-  providers: [LikesCommandService, LikesRepository, LikesMappers, ...likesCommandHandlers],
+  exports: [LikesMongooseModule, LikesCommandService, LikesRepository, LikesSqlRepository],
+  providers: [LikesCommandService, LikesRepository, LikesSqlRepository, LikesMappers, ...likesCommandHandlers],
 })
 export class LikesModule {}

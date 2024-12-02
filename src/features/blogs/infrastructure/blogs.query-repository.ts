@@ -8,16 +8,18 @@ import { BlogSql } from '../domain/postgres/blog.sql'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { FilterBlogDto } from '../api/models/input/filter.blog.dto'
-import { PostSql } from '../../posts/domain/postgres/post.sql'
-import { PostViewDto } from '../../posts/api/models/output/post.view.dto'
 import { PaginatedOutputEntity } from '../../../common/models/output/Pagination'
 import { BlogViewDto } from '../api/models/output/blog-view.dto'
 import { PostFilterDto } from '../api/models/input/posts.filter.dto'
+import { LikesSqlRepository } from '../../likes/infrastructure/likes.sql-repository'
+import { PostViewDto } from '../api/models/output/post.view.dto'
+import { PostSql } from '../domain/postgres/post.sql'
 
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
     @InjectModel(Blog.name) private blogsModel: Model<Blog>,
+    private likesRepository: LikesSqlRepository,
     private dataSource: DataSource,
     private blogsMappers: BlogsMappers,
   ) {}
@@ -72,6 +74,8 @@ export class BlogsQueryRepository {
   }
 
   async getPostById(postId: string, currentUserId?: string): Promise<PostViewDto | null> {
+    const likeStatus = await this.likesRepository.getUserLikeStatus(postId, currentUserId)
+    const threeLatestLikes = await this.likesRepository.getLatestLikes(postId)
     const postResult = await this.dataSource.query<PostSql[]>(
       `
         SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
@@ -81,7 +85,7 @@ export class BlogsQueryRepository {
       [postId],
     )
 
-    return this.blogsMappers.mapPostToOutputDto(postResult?.[0])
+    return this.blogsMappers.mapPostToOutputDto(postResult?.[0], threeLatestLikes, likeStatus)
   }
 
   async getPostsList(
@@ -89,7 +93,7 @@ export class BlogsQueryRepository {
     options: { blogId?: string; userId?: string },
   ): Promise<PaginatedOutputEntity<PostViewDto[]>> {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryFilter
-    const { blogId } = options
+    const { blogId, userId } = options
 
     const offset = (pageNumber - 1) * pageSize
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
@@ -113,7 +117,13 @@ export class BlogsQueryRepository {
     )
 
     const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
-    const mappedPosts = posts.map((post) => this.blogsMappers.mapPostToOutputDto(post))
+    const mappedPostsPromises = posts.map(async (post) => {
+      const likeStatus = await this.likesRepository.getUserLikeStatus(post.id, userId)
+      const threeLatestLikes = await this.likesRepository.getLatestLikes(post.id)
+
+      return this.blogsMappers.mapPostToOutputDto(post, threeLatestLikes, likeStatus)
+    })
+    const mappedPosts = await Promise.all(mappedPostsPromises)
     const pagesCount = Math.ceil(totalCount / pageSize)
 
     return {

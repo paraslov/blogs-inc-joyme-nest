@@ -9,6 +9,7 @@ import { CommentsCommandHandlers } from './application/commands'
 import { CqrsModule } from '@nestjs/cqrs'
 import { LikesModule } from '../likes/likes.module'
 import { UsersModule } from '../users/users.module'
+import { CommentsSqlRepository } from './infrastructure/comments.sql-repository'
 
 @Module({
   imports: [CommentsMongooseModule, CqrsModule, LikesModule, UsersModule],
@@ -18,6 +19,7 @@ import { UsersModule } from '../users/users.module'
     CommentsQueryRepository,
     CommentsMappers,
     CommentsRepository,
+    CommentsSqlRepository,
     CommentsCommandService,
     ...CommentsCommandHandlers,
   ],

@@ -1,7 +1,7 @@
 export const skipSettings = {
   run_all_tests: false,
 
-  comments: true,
+  comments: false,
   likes: true,
   posts: true,
   users: false,

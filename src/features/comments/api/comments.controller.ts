@@ -11,27 +11,27 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common'
-import { ObjectIdValidationPipe } from '../../../base/pipes/object.id.validation.pipe'
 import { CommentsQueryRepository } from '../infrastructure/comments.query-repository'
 import { JwtAuthGuard } from '../../auth'
 import { CreateUpdateCommentDto } from './models/input/create-update-comment.dto'
 import { CurrentUserId, PossibleUserId } from '../../../base/decorators'
 import { CommentsCommandService } from '../application/comments.command.service'
 import { HttpStatusCodes } from '../../../common/models'
-import { UsersQueryRepository } from '../../users'
+import { UsersSqlQueryRepository } from '../../users'
 import { UpdateLikeStatusDto } from '../../likes'
+import { UUIDValidationPipe } from '../../../base/pipes'
 
 @Controller('comments')
 export class CommentsController {
   constructor(
     private commentsQueryRepository: CommentsQueryRepository,
     private commentsCommandService: CommentsCommandService,
-    private usersQueryRepository: UsersQueryRepository,
+    private usersQueryRepository: UsersSqlQueryRepository,
   ) {}
 
   @Get(':commentId')
   async getOne(
-    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Param('commentId', UUIDValidationPipe) commentId: string,
     @PossibleUserId() currentUserId: string | null,
   ) {
     const foundComment = await this.commentsQueryRepository.getCommentById(commentId, currentUserId)
@@ -46,7 +46,7 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @Put(':commentId')
   async updateComment(
-    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Param('commentId', UUIDValidationPipe) commentId: string,
     @CurrentUserId() currentUserId: string,
     @Body() updateCommentDto: CreateUpdateCommentDto,
   ) {
@@ -70,7 +70,7 @@ export class CommentsController {
   @Put(':commentId/like-status')
   async updateLikeStatus(
     @CurrentUserId() currentUserId: string,
-    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Param('commentId', UUIDValidationPipe) commentId: string,
     @Body() updateLikeStatus: UpdateLikeStatusDto,
   ) {
     const foundComment = await this.commentsQueryRepository.getCommentById(commentId)
@@ -99,7 +99,7 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':commentId')
   async deleteComment(
-    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Param('commentId', UUIDValidationPipe) commentId: string,
     @CurrentUserId() currentUserId: string,
   ) {
     const foundComment = await this.commentsQueryRepository.getCommentById(commentId, currentUserId)

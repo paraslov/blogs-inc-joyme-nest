@@ -42,12 +42,9 @@ export class PostsTestManager {
 
   async getPostById(
     postId: string,
-    options: { accessToken?: string | null; expectedStatus?: HttpStatusCodes } = {
-      accessToken: null,
-      expectedStatus: HttpStatusCodes.OK_200,
-    },
+    options: { accessToken?: string | null; expectedStatus?: HttpStatusCodes } = {},
   ): Promise<PostViewDto> {
-    const { accessToken, expectedStatus } = options
+    const { accessToken = null, expectedStatus = HttpStatusCodes.OK_200 } = options
     const requestBuilder = request(this.httpServer).get(`/api/posts/${postId}`)
 
     if (accessToken) {

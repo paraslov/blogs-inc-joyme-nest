@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UpdateLikeStatusDto } from '../../api/models/input/update-like-status.dto'
-import { LikesRepository } from '../../infrastructure/likes.repository'
 import { LikeStatus } from '../../api/models/enums/like-status'
 import { Like } from '../../domain/mongoose/likes.entity'
 import { InterlayerDataManager } from '../../../../common/manager'
+import { LikesSqlRepository } from '../../infrastructure/likes.sql-repository'
 
 export class LikesInfoChangeDto {
   likesCountChange: number
@@ -21,24 +21,24 @@ export class UpdateLikeStatusCommand {
 
 @CommandHandler(UpdateLikeStatusCommand)
 export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatusCommand> {
-  constructor(private readonly likesRepository: LikesRepository) {}
+  constructor(private readonly likesRepository: LikesSqlRepository) {}
 
   async execute(command: UpdateLikeStatusCommand) {
     const notice = new InterlayerDataManager<LikesInfoChangeDto>()
     const { updateLikeStatusDto, userLogin, userId, parentId } = command
     const newLikeStatus = updateLikeStatusDto.likeStatus
 
-    const currentLikeStatus = await this.likesRepository.getLikeStatus(userId, parentId)
+    const currentLikeStatus = await this.likesRepository.getLikeStatusData(userId, parentId)
     let likesCountChange: number
     let dislikesCountChange: number
 
     if (currentLikeStatus) {
       const updatedLikeStatusEntityDto: Like = {
-        userId: currentLikeStatus.userId,
-        userLogin: currentLikeStatus.userLogin,
-        parentId: currentLikeStatus.parentId,
+        userId: currentLikeStatus.user_id,
+        userLogin: currentLikeStatus.user_login,
+        parentId: currentLikeStatus.parent_id,
         status: newLikeStatus,
-        createdAt: currentLikeStatus.status === newLikeStatus ? currentLikeStatus.createdAt : new Date(),
+        createdAt: currentLikeStatus.status === newLikeStatus ? currentLikeStatus.created_at : new Date(),
       }
       await this.likesRepository.updateLikeStatus(updatedLikeStatusEntityDto, parentId)
 
@@ -54,7 +54,7 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
         createdAt: new Date(),
       }
 
-      await this.likesRepository.saveLikeStatus(createLikeStatusEntityDto)
+      await this.likesRepository.createLikeStatus(createLikeStatusEntityDto)
 
       likesCountChange = newLikeStatus === LikeStatus.LIKE ? 1 : 0
       dislikesCountChange = newLikeStatus === LikeStatus.DISLIKE ? 1 : 0

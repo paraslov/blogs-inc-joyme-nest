@@ -9,6 +9,10 @@ import { DeleteBlogCommand } from './commands/delete-blog.command'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
 import { UpdatePostCommand } from './commands/update-post.command'
 import { DeletePostCommand } from './commands/delete-post.command'
+import { UpdateLikeStatusDto } from '../../likes'
+import { InterlayerDataManager } from '../../../common/manager'
+import { UpdatePostLikeStatusCommand } from './commands/update-post-like-status.command'
+import { PostViewDto } from '../api/models/output/post.view.dto'
 
 @Injectable()
 export class BlogsCommandService {
@@ -42,6 +46,12 @@ export class BlogsCommandService {
     const command = new UpdatePostCommand(postId, updatePostDto)
 
     return this.commandBus.execute<UpdatePostCommand, boolean>(command)
+  }
+
+  updatePostLikeStatus(post: PostViewDto, updateLikeStatusDto: UpdateLikeStatusDto, userId: string, userLogin: string) {
+    const command = new UpdatePostLikeStatusCommand(post, updateLikeStatusDto, userId, userLogin)
+
+    return this.commandBus.execute<UpdatePostLikeStatusCommand, InterlayerDataManager>(command)
   }
 
   deletePost(postId: string) {

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common'
-import { LikeDocument } from '../domain/mongoose/likes.entity'
 import { LikeDetailsViewDto } from '../api/models/output/like-details-view.dto'
+import { LikesSql } from '../domain/postgres/likes-sql'
 
 @Injectable()
 export class LikesMappers {
-  mapDtoToView(like: LikeDocument) {
+  mapDtoToView(like: LikesSql) {
     const mappedLike = new LikeDetailsViewDto()
 
-    mappedLike.addedAt = like.createdAt.toISOString()
-    mappedLike.login = like.userLogin
-    mappedLike.userId = like.userId
+    mappedLike.addedAt = like.created_at.toISOString()
+    mappedLike.login = like.user_login
+    mappedLike.userId = like.user_id
 
     return mappedLike
   }

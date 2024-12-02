@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { LikesCommandService, UpdateLikeStatusDto } from '../../../likes'
 import { InterlayerDataManager } from '../../../../common/manager'
-import { CommentsRepository } from '../../infrastructure/comments.repository'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CommentDto } from '../../domain/mongoose/comment.entity'
+import { CommentsSqlRepository } from '../../infrastructure/comments.sql-repository'
 
 export class UpdateCommentLikeStatusCommand {
   constructor(
@@ -18,7 +18,7 @@ export class UpdateCommentLikeStatusCommand {
 export class UpdateCommentLikeStatusHandler implements ICommandHandler<UpdateCommentLikeStatusCommand> {
   constructor(
     private likesCommandService: LikesCommandService,
-    private commentsRepository: CommentsRepository,
+    private commentsRepository: CommentsSqlRepository,
   ) {}
 
   async execute(command: UpdateCommentLikeStatusCommand) {
@@ -30,14 +30,17 @@ export class UpdateCommentLikeStatusHandler implements ICommandHandler<UpdateCom
 
       const commentToUpdate = await this.commentsRepository.getCommentDBModelById(commentId)
 
-      const likesCount = commentToUpdate.likesCount + likesCountChange
-      const dislikesCount = commentToUpdate.dislikesCount + dislikesCountChange
+      const likesCount = commentToUpdate.likes_count + likesCountChange
+      const dislikesCount = commentToUpdate.dislikes_count + dislikesCountChange
 
       const updatedComment: CommentDto = {
-        parentId: commentToUpdate.parentId,
+        parentId: commentToUpdate.parent_id,
         content: commentToUpdate.content,
-        commentatorInfo: commentToUpdate.commentatorInfo,
-        createdAt: commentToUpdate.createdAt,
+        commentatorInfo: {
+          userId: commentToUpdate.user_id,
+          userLogin: commentToUpdate.user_login,
+        },
+        createdAt: commentToUpdate.created_at,
         likesCount: likesCount >= 0 ? likesCount : 0,
         dislikesCount: dislikesCount >= 0 ? dislikesCount : 0,
       }

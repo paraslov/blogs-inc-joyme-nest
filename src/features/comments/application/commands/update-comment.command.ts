@@ -1,8 +1,8 @@
 import { CreateUpdateCommentDto } from '../../api/models/input/create-update-comment.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
-import { CommentsRepository } from '../../infrastructure/comments.repository'
 import { HttpStatusCodes } from '../../../../common/models'
+import { CommentsSqlRepository } from '../../infrastructure/comments.sql-repository'
 
 export class UpdateCommentCommand {
   constructor(
@@ -13,7 +13,7 @@ export class UpdateCommentCommand {
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentHandler implements ICommandHandler<UpdateCommentCommand> {
-  constructor(private readonly commentsRepository: CommentsRepository) {}
+  constructor(private readonly commentsRepository: CommentsSqlRepository) {}
 
   async execute(command: UpdateCommentCommand) {
     const notice = new InterlayerDataManager()

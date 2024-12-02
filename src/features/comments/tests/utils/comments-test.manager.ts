@@ -18,13 +18,17 @@ export class CommentsTestManager {
       .expect(HttpStatusCodes.NO_CONTENT_204)
   }
 
-  async getCommentById(accessToken: string, commentId: string): Promise<CommentViewDto> {
+  async getCommentById(
+    accessToken: string,
+    commentId: string,
+    options: { expectedStatus: HttpStatusCodes } = { expectedStatus: HttpStatusCodes.OK_200 },
+  ): Promise<CommentViewDto> {
     const response = await request(this.httpSever)
       .get(`/api/comments/${commentId}`)
       .auth(accessToken, {
         type: 'bearer',
       })
-      .expect(HttpStatusCodes.OK_200)
+      .expect(options.expectedStatus)
 
     return response.body
   }

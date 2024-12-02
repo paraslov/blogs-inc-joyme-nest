@@ -46,5 +46,23 @@ export const deleteAllData = async (databaseConnection: Connection | null, dataS
         END IF;
     END $$;
   `)
+    await dataSource.query(`
+    DO $$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'comments') 
+        THEN
+          DELETE FROM public.comments;
+        END IF;
+    END $$;
+  `)
+    await dataSource.query(`
+    DO $$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'likes') 
+        THEN
+          DELETE FROM public.likes;
+        END IF;
+    END $$;
+  `)
   }
 }

@@ -2,18 +2,17 @@ import { INestApplication } from '@nestjs/common'
 import { UsersTestManager } from '../../users'
 import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import { BlogsTestManager } from './utils/blogs-test.manager'
-import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
 import { DataSource } from 'typeorm'
 import { PostsTestManager } from './utils/posts-test.manager'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
+import { LikeStatus } from '../../likes'
 
 aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager
   let postsTestManager: PostsTestManager
-  let blogsSqlRepository: BlogsSqlRepository
   let dataSource: DataSource
   let httpServer: any
 
@@ -27,9 +26,6 @@ aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', ()
 
       blogsTestManager = new BlogsTestManager(app)
       postsTestManager = new PostsTestManager(app)
-
-      blogsSqlRepository = new BlogsSqlRepository(dataSource)
-      await blogsSqlRepository.createBlogsTable()
     } catch (err) {
       console.log('@> posts tests error: ', err)
     }
@@ -108,5 +104,82 @@ aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', ()
     expect(response.body.totalCount).toBe(5)
     expect(response.body.items?.length).toBe(5)
     expect(response.body.items?.some((item: any) => item.id === postResponseBody.id)).toBeTruthy()
+  })
+
+  it('should create comment to post: ', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    const comment = await postsTestManager.addCommentToPost(accessToken, { postId: postResponseBody.id })
+
+    expect(comment.id).toStrictEqual(expect.any(String))
+    expect(comment.commentatorInfo.userId).toBe(userResponseBody.id)
+    expect(comment.commentatorInfo.userLogin).toBe(userResponseBody.login)
+    expect(comment.likesInfo.myStatus).toBe(LikeStatus.NONE)
+  })
+
+  it('should get post comment: ', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    const comment = await postsTestManager.addCommentToPost(accessToken, { postId: postResponseBody.id })
+    const fetchComments = await postsTestManager.getPostsComments(accessToken, postResponseBody.id)
+    const newComment = fetchComments.items?.[0]
+
+    expect(newComment.id).toBe(comment.id)
+    expect(newComment.commentatorInfo.userId).toBe(userResponseBody.id)
+    expect(newComment.commentatorInfo.userLogin).toBe(userResponseBody.login)
+    expect(newComment.likesInfo.myStatus).toBe(LikeStatus.NONE)
+  })
+
+  it('should add like to post', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const { userRequestBody, userResponseBody } = await userTestManger.createUser()
+    const { accessToken } = await UsersTestManager.login(app, userResponseBody.login, userRequestBody.password)
+    const { blogResponse } = await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost({ username, password }, { blogId: blogResponse.id })
+
+    await request(httpServer)
+      .put(`/api/posts/${postResponseBody.id}/like-status`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({ likeStatus: LikeStatus.LIKE })
+      .expect(HttpStatusCodes.NO_CONTENT_204)
+
+    const updatedPost = await postsTestManager.getPostById(postResponseBody.id, { accessToken })
+
+    expect(postResponseBody.extendedLikesInfo.likesCount).toBe(0)
+    expect(updatedPost.extendedLikesInfo.likesCount).toBe(1)
+    expect(updatedPost.extendedLikesInfo.myStatus).toBe(LikeStatus.LIKE)
+  })
+
+  it('should throw 400 if passed body is incorrect', async () => {
+    const { username, password } = userTestManger.getSaCredits
+    const postBody = {
+      title: 'valid',
+      content: 'valid',
+      blogId: '63189b06003380064c4193be',
+      shortDescription:
+        'length_101-DnZlTI1khUHpqOqCzftIYiSHCV8fKjYFQOoCIwmUczzW9V5K8cqY3aPKo3XKwbfrmeWOJyQgGnlX5sP3aW3RlaRSQx',
+    }
+    await blogsTestManager.createBlog({ username, password })
+
+    const { postResponseBody } = await postsTestManager.createPost<any>(
+      { username, password },
+      { blogId: postBody.blogId, createPostModel: postBody },
+      HttpStatusCodes.BAD_REQUEST_400,
+    )
+
+    expect(postResponseBody.errorsMessages.some((message: any) => message.field === 'shortDescription')).toBeTruthy()
   })
 })

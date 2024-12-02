@@ -4,7 +4,6 @@ import { aDescribe, initTestsSettings, skipSettings } from '../../../common/test
 import { BlogsTestManager } from './utils/blogs-test.manager'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { HttpStatusCodes } from '../../../common/models'
-import { BlogsSqlRepository } from '../infrastructure/blogs.sql-repository'
 import { DataSource } from 'typeorm'
 import request from 'supertest'
 
@@ -12,7 +11,6 @@ aDescribe(skipSettings.for('blogs_sa'))('>> blogs_sa <<', () => {
   let app: INestApplication
   let userTestManger: UsersTestManager
   let blogsTestManager: BlogsTestManager
-  let blogsSqlRepository: BlogsSqlRepository
   let dataSource: DataSource
   let httpSever: any
 
@@ -25,9 +23,6 @@ aDescribe(skipSettings.for('blogs_sa'))('>> blogs_sa <<', () => {
       httpSever = result.httpServer
 
       blogsTestManager = new BlogsTestManager(app)
-
-      blogsSqlRepository = new BlogsSqlRepository(dataSource)
-      await blogsSqlRepository.createBlogsTable()
     } catch (err) {
       console.log('@> blogs tests error: ', err)
     }

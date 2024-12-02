@@ -2,8 +2,8 @@ import { BlogViewDto } from '../api/models/output/blog-view.dto'
 import { Injectable } from '@nestjs/common'
 import { BlogSql } from '../domain/postgres/blog.sql'
 import { LikeDetailsViewDto, LikeStatus } from '../../likes'
-import { PostViewDto } from '../../posts/api/models/output/post.view.dto'
-import { PostSql } from '../../posts/domain/postgres/post.sql'
+import { PostSql } from '../domain/postgres/post.sql'
+import { PostViewDto } from '../api/models/output/post.view.dto'
 
 @Injectable()
 export class BlogsMappers {

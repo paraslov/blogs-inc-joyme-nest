@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CreateBlogPostDto } from '../../api/models/input/create-blog-post.dto'
-import { PostEntity } from '../../../posts'
 import { BlogsSqlRepository } from '../../infrastructure/blogs.sql-repository'
+import { PostEntity } from '../../domain/mongoose/posts.entity'
 
 export class CreatePostForBlogCommand {
   constructor(

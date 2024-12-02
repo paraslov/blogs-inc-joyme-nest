@@ -8,12 +8,12 @@ import { BlogSql } from '../domain/postgres/blog.sql'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { FilterBlogDto } from '../api/models/input/filter.blog.dto'
-import { PostSql } from '../../posts/domain/postgres/post.sql'
-import { PostViewDto } from '../../posts/api/models/output/post.view.dto'
 import { PaginatedOutputEntity } from '../../../common/models/output/Pagination'
 import { BlogViewDto } from '../api/models/output/blog-view.dto'
 import { PostFilterDto } from '../api/models/input/posts.filter.dto'
 import { LikesSqlRepository } from '../../likes/infrastructure/likes.sql-repository'
+import { PostViewDto } from '../api/models/output/post.view.dto'
+import { PostSql } from '../domain/postgres/post.sql'
 
 @Injectable()
 export class BlogsQueryRepository {

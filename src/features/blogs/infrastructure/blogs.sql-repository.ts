@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { Blog } from '../domain/mongoose/blogs.entity'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
-import { PostEntity } from '../../posts'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
 import { CreatePostDto } from '../api/models/input/create-post.dto'
+import { PostEntity } from '../domain/mongoose/posts.entity'
 
 @Injectable()
 export class BlogsSqlRepository {

@@ -38,7 +38,7 @@ export class UpdatePostLikeStatusHandler implements ICommandHandler<UpdatePostLi
     const likesCount = (post.extendedLikesInfo?.likesCount ?? 0) + likesCountChange
     const dislikesCount = (post.extendedLikesInfo?.dislikesCount ?? 0) + dislikesCountChange
 
-    const updatePostData: CreatePostDto = {
+    const updatePostData: Required<CreatePostDto> = {
       title: post.title,
       shortDescription: post.shortDescription,
       content: post.content,
@@ -47,7 +47,7 @@ export class UpdatePostLikeStatusHandler implements ICommandHandler<UpdatePostLi
       dislikesCount: dislikesCount >= 0 ? dislikesCount : 0,
     }
 
-    const updateResult = await this.blogsRepository.updatePostForBlog(post.id, updatePostData)
+    const updateResult = await this.blogsRepository.updateLikesInfo(post.id, updatePostData)
     if (!updateResult) {
       notice.addError(`Post with ID ${post.id} not found`, undefined, HttpStatusCodes.NOT_FOUND_404)
     }

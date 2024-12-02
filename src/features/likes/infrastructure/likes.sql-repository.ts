@@ -46,11 +46,11 @@ export class LikesSqlRepository {
       `
       SELECT parent_id, status, created_at, user_id, user_login
         FROM public.likes
-        WHERE parent_id = $1 AND status="Like"
+        WHERE parent_id=$1 AND status=$3
         ORDER BY created_at DESC
         LIMIT $2 OFFSET 10;
     `,
-      [parentId, likesCount],
+      [parentId, likesCount, LikeStatus.LIKE],
     )
 
     return latestLikeData?.map(this.likesMappers.mapDtoToView) ?? []

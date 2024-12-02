@@ -96,7 +96,12 @@ export class PostsController {
       throw new NotFoundException(`User with ID ${currentUserId} not found`)
     }
 
-    const updateNotice = await this.blogsCommandService.updatePostLikeStatus(post, updateLikeStatusDto, postId, user.id)
+    const updateNotice = await this.blogsCommandService.updatePostLikeStatus(
+      post,
+      updateLikeStatusDto,
+      user.id,
+      user.login,
+    )
 
     if (updateNotice.hasError()) {
       throw new NotFoundException(updateNotice.extensions)

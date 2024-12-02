@@ -4,6 +4,7 @@ import { Blog } from '../domain/mongoose/blogs.entity'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { PostEntity } from '../../posts'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
+import { CreatePostDto } from '../api/models/input/create-post.dto'
 
 @Injectable()
 export class BlogsSqlRepository {
@@ -73,6 +74,20 @@ export class BlogsSqlRepository {
             WHERE id=$1;
     `,
       [postId, title, shortDescription, content],
+    )
+
+    return Boolean(updateResult?.[1])
+  }
+
+  async updateLikesInfo(postId: string, updateDto: Required<CreatePostDto>) {
+    const { title, shortDescription, content, likesCount, dislikesCount } = updateDto
+    const updateResult = await this.dataSource.query(
+      `
+        UPDATE public.posts
+            SET title=$2, short_description=$3, content=$4, likes_count=$5, dislikes_count=$6
+            WHERE id=$1;
+    `,
+      [postId, title, shortDescription, content, likesCount, dislikesCount],
     )
 
     return Boolean(updateResult?.[1])

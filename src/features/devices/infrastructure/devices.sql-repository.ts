@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
-import { Device } from '../domain/mongoose/device.entity'
+import { Device } from '../domain/business_entity/device.entity'
 import { DeviceEntitySql } from '../domain/postgres/device.entity'
 
 @Injectable()

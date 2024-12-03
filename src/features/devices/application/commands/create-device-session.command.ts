@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { Device } from '../../domain/mongoose/device.entity'
+import { Device } from '../../domain/business_entity/device.entity'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreateDeviceSessionDto } from '../../api/models/input/create-device-session.dto'

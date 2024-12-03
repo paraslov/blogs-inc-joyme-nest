@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectDataSource } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
-import { User } from '../domain/mongoose/users.entity'
+import { User } from '../domain/business_entity/users.entity'
 import { UserSql } from '../domain/postgres/user.sql'
 import { UserInfo } from '../domain/postgres/user-info.entity'
 

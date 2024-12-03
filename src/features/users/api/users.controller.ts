@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common'
 import { CreateUserDto } from './models/input/create-user.dto'
 import { FilterUsersDto } from './models/input/filter-users.dto'
-import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { HttpStatusCodes } from '../../../common/models'
 import { UsersCommandService } from '../application/users.command.service'
 import { SaAuthGuard } from '../../auth'
@@ -25,7 +24,6 @@ import { UUIDValidationPipe } from '../../../base/pipes'
 export class UsersController {
   constructor(
     private usersCommandService: UsersCommandService,
-    private usersQueryRepository: UsersQueryRepository,
     private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
 
@@ -51,7 +49,7 @@ export class UsersController {
     query.searchLoginTerm = createUserDto.login
     query.searchEmailTerm = createUserDto.email
 
-    const foundUsers = await this.usersQueryRepository.getUsers(query)
+    const foundUsers = await this.usersSqlQueryRepository.getUsers(query)
 
     if (foundUsers.totalCount) {
       throw new BadRequestException('User with this login or email is already exists')

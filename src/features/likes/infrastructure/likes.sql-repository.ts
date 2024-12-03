@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { LikesSql } from '../domain/postgres/likes-sql'
-import { Like } from '../domain/mongoose/likes.entity'
+import { Like } from '../domain/business_entity/likes.entity'
 import { LikeStatus } from '../api/models/enums/like-status'
 import { LikesMappers } from './likes.mappers'
 

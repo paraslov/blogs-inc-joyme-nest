@@ -2,7 +2,6 @@ import { InternalServerErrorException, MiddlewareConsumer, Module, RequestMethod
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { BlogsModule } from './features/blogs/blogs.module'
-import { MongooseModule } from '@nestjs/mongoose'
 import { UsersModule } from './features/users/users.module'
 import { CommentsModule } from './features/comments'
 import { AuthModule } from './features/auth/auth.module'
@@ -37,22 +36,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
             limit: environmentSettings.isTesting ? 10000 : 5,
           },
         ]
-      },
-      inject: [ConfigService],
-    }),
-    MongooseModule.forRootAsync({
-      useFactory: (configService: ConfigService<ConfigurationType>) => {
-        const databaseSettings = configService.get('databaseSettings', {
-          infer: true,
-        })!
-
-        const uri = databaseSettings.MONGO_CONNECTION_URI
-        const dbName = databaseSettings.DB_NAME
-
-        return {
-          uri,
-          dbName,
-        }
       },
       inject: [ConfigService],
     }),

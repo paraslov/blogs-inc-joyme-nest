@@ -1,15 +1,6 @@
-import { Connection } from 'mongoose'
 import { DataSource } from 'typeorm'
 
-export const deleteAllData = async (databaseConnection: Connection | null, dataSource: DataSource | null) => {
-  if (databaseConnection) {
-    await databaseConnection.collection('users').deleteMany({})
-    await databaseConnection.collection('blogs').deleteMany({})
-    await databaseConnection.collection('posts').deleteMany({})
-    await databaseConnection.collection('comments').deleteMany({})
-    await databaseConnection.collection('likes').deleteMany({})
-  }
-
+export const deleteAllData = async (dataSource: DataSource | null) => {
   if (dataSource) {
     await dataSource.query(`
     DO $$

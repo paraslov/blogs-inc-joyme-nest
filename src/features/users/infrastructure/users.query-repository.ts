@@ -26,7 +26,7 @@ export class UsersQueryRepository {
       [userId],
     )
 
-    return this.usersMappers.mapSqlToOutputDto(res?.[0])
+    return this.usersMappers.mapToOutputDto(res?.[0])
   }
 
   async getUsers(query: FilterUsersDto) {
@@ -55,7 +55,7 @@ export class UsersQueryRepository {
       [query.pageSize, offset, query.searchLoginTerm, query.searchEmailTerm],
     )
 
-    const mappedUsers = res.map(this.usersMappers.mapSqlToOutputDto)
+    const mappedUsers = res.map(this.usersMappers.mapToOutputDto)
     const pagesCount = Math.ceil(totalCount / query.pageSize)
 
     return {

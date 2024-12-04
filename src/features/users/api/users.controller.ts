@@ -24,17 +24,17 @@ import { UUIDValidationPipe } from '../../../base/pipes'
 export class UsersController {
   constructor(
     private usersCommandService: UsersCommandService,
-    private usersSqlQueryRepository: UsersQueryRepository,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @Get()
   getAll(@Query() query: FilterUsersDto) {
-    return this.usersSqlQueryRepository.getUsers(query)
+    return this.usersQueryRepository.getUsers(query)
   }
 
   @Get(':userId')
   async getUser(@Param('userId', UUIDValidationPipe) userId: string) {
-    const user = await this.usersSqlQueryRepository.getUser(userId)
+    const user = await this.usersQueryRepository.getUser(userId)
 
     if (!user) {
       throw new NotFoundException('User not found')
@@ -49,7 +49,7 @@ export class UsersController {
     query.searchLoginTerm = createUserDto.login
     query.searchEmailTerm = createUserDto.email
 
-    const foundUsers = await this.usersSqlQueryRepository.getUsers(query)
+    const foundUsers = await this.usersQueryRepository.getUsers(query)
 
     if (foundUsers.totalCount) {
       throw new BadRequestException('User with this login or email is already exists')

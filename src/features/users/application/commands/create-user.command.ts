@@ -13,8 +13,8 @@ export class CreateUserCommand {
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
     private cryptService: CryptService,
-    private usersSqlRepository: UsersRepository,
-    private usersSqlQueryRepository: UsersQueryRepository,
+    private usersRepository: UsersRepository,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   async execute(command: CreateUserCommand) {
@@ -35,8 +35,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       },
     }
 
-    const createdUserId = await this.usersSqlRepository.createUser(newUser)
+    const createdUserId = await this.usersRepository.createUser(newUser)
 
-    return this.usersSqlQueryRepository.getUser(createdUserId)
+    return this.usersQueryRepository.getUser(createdUserId)
   }
 }

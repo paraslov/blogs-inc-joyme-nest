@@ -1,6 +1,6 @@
 import { LikeStatus } from '../../api/models/enums/like-status'
 
-export class LikesSql {
+export class LikesDbModel {
   parent_id: string
   status: LikeStatus
   created_at: Date

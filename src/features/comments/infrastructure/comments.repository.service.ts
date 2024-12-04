@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { CommentDto } from '../domain/business_entity/comment.entity'
 import { CreateUpdateCommentDto } from '../api/models/input/create-update-comment.dto'
-import { CommentSql } from '../domain/postgres/comment-sql'
+import { CommentDbModel } from '../domain/postgres/comment-db-model'
 
 @Injectable()
 export class CommentsRepository {
@@ -72,7 +72,7 @@ export class CommentsRepository {
   }
 
   async getCommentDBModelById(commentId: string) {
-    const foundComment = await this.dataSource.query<CommentSql[]>(
+    const foundComment = await this.dataSource.query<CommentDbModel[]>(
       `
       SELECT id, parent_id, content, created_at, user_id, user_login, likes_count, dislikes_count
         FROM public.comments

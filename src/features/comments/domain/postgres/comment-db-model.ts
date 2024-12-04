@@ -1,4 +1,4 @@
-export class CommentSql {
+export class CommentDbModel {
   id: string
   parent_id: string
   content: string

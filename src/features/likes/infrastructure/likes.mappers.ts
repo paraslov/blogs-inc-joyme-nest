@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { LikeDetailsViewDto } from '../api/models/output/like-details-view.dto'
-import { LikesSql } from '../domain/postgres/likes-sql'
+import { LikesDbModel } from '../domain/postgres/likes-db-model'
 
 @Injectable()
 export class LikesMappers {
-  mapDtoToView(like: LikesSql) {
+  mapDtoToView(like: LikesDbModel) {
     const mappedLike = new LikeDetailsViewDto()
 
     mappedLike.addedAt = like.created_at.toISOString()

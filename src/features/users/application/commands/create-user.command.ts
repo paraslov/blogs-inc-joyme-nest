@@ -2,8 +2,8 @@ import { CreateUserDto } from '../../api/models/input/create-user.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { User } from '../../domain/business_entity/users.entity'
 import { CryptService } from '../../../../common/services'
-import { UsersSqlRepository } from '../../infrastructure/users.sql-repository'
-import { UsersSqlQueryRepository } from '../../infrastructure/users.sql-query-repository'
+import { UsersRepository } from '../../infrastructure/users.repository.service'
+import { UsersQueryRepository } from '../../infrastructure/users.query-repository'
 
 export class CreateUserCommand {
   constructor(public readonly createUserDto: CreateUserDto) {}
@@ -13,8 +13,8 @@ export class CreateUserCommand {
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
     private cryptService: CryptService,
-    private usersSqlRepository: UsersSqlRepository,
-    private usersSqlQueryRepository: UsersSqlQueryRepository,
+    private usersSqlRepository: UsersRepository,
+    private usersSqlQueryRepository: UsersQueryRepository,
   ) {}
 
   async execute(command: CreateUserCommand) {

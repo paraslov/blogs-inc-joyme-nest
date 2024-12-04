@@ -1,4 +1,4 @@
-export class PostSql {
+export class PostDbModel {
   id: string
   title: string
   short_description: string

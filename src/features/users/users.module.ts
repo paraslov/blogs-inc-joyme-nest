@@ -5,18 +5,18 @@ import { CryptService } from '../../common/services'
 import { usersCommandHandlers } from './application/commands'
 import { UsersCommandService } from './application/users.command.service'
 import { CqrsModule } from '@nestjs/cqrs'
-import { UsersSqlQueryRepository } from './infrastructure/users.sql-query-repository'
-import { UsersSqlRepository } from './infrastructure/users.sql-repository'
+import { UsersQueryRepository } from './infrastructure/users.query-repository'
+import { UsersRepository } from './infrastructure/users.repository.service'
 
 @Module({
   imports: [CqrsModule],
-  exports: [UsersSqlRepository, UsersSqlQueryRepository],
+  exports: [UsersRepository, UsersQueryRepository],
   controllers: [UsersController],
   providers: [
     UsersCommandService,
     UsersMappers,
-    UsersSqlQueryRepository,
-    UsersSqlRepository,
+    UsersQueryRepository,
+    UsersRepository,
     CryptService,
     ...usersCommandHandlers,
   ],

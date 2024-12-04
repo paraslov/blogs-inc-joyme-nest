@@ -3,7 +3,7 @@ import { EmailSendManager, InterlayerDataManager } from '../../../../common/mana
 import { HttpStatusCodes } from '../../../../common/models'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
-import { UserInfo, UsersSqlRepository } from '../../../users'
+import { UserInfo, UsersRepository } from '../../../users'
 import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class RegistrationEmailResendingCommand {
@@ -14,7 +14,7 @@ export class RegistrationEmailResendingCommand {
 export class RegistrationEmailResendingHandler implements ICommandHandler<RegistrationEmailResendingCommand> {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly usersRepository: UsersSqlRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly emailSendManager: EmailSendManager,
   ) {}
 

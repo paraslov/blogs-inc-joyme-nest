@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common'
 import { BlogsMappers } from './blogs.mappers'
 import { DataSource } from 'typeorm'
-import { BlogSql } from '../domain/postgres/blog.sql'
+import { BlogDbModel } from '../domain/postgres/blog-db-model'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { FilterBlogDto } from '../api/models/input/filter.blog.dto'
 import { PaginatedOutputEntity } from '../../../common/models/output/Pagination'
 import { BlogViewDto } from '../api/models/output/blog-view.dto'
 import { PostFilterDto } from '../api/models/input/posts.filter.dto'
-import { LikesSqlRepository } from '../../likes/infrastructure/likes.sql-repository'
+import { LikesRepository } from '../../likes/infrastructure/likes.repository'
 import { PostViewDto } from '../api/models/output/post.view.dto'
-import { PostSql } from '../domain/postgres/post.sql'
+import { PostDbModel } from '../domain/postgres/post-db-model'
 
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
-    private likesRepository: LikesSqlRepository,
+    private likesRepository: LikesRepository,
     private dataSource: DataSource,
     private blogsMappers: BlogsMappers,
   ) {}
@@ -26,7 +26,7 @@ export class BlogsQueryRepository {
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
 
-    const blogs = await this.dataSource.query<BlogSql[]>(
+    const blogs = await this.dataSource.query<BlogDbModel[]>(
       `
       SELECT id, name, description, website_url, created_at, is_membership
         FROM public.blogs
@@ -57,7 +57,7 @@ export class BlogsQueryRepository {
   }
 
   async getBlogById(blogId: string) {
-    const blogResult = await this.dataSource.query<BlogSql[]>(
+    const blogResult = await this.dataSource.query<BlogDbModel[]>(
       `
       SELECT id, name, description, website_url, created_at, is_membership
       FROM public.blogs
@@ -72,7 +72,7 @@ export class BlogsQueryRepository {
   async getPostById(postId: string, currentUserId?: string): Promise<PostViewDto | null> {
     const likeStatus = await this.likesRepository.getUserLikeStatus(postId, currentUserId)
     const threeLatestLikes = await this.likesRepository.getLatestLikes(postId)
-    const postResult = await this.dataSource.query<PostSql[]>(
+    const postResult = await this.dataSource.query<PostDbModel[]>(
       `
         SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
             FROM public.posts
@@ -95,7 +95,7 @@ export class BlogsQueryRepository {
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
 
-    const posts = await this.dataSource.query<PostSql[]>(
+    const posts = await this.dataSource.query<PostDbModel[]>(
       `
       SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
         FROM public.posts

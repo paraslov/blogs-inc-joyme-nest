@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { DeviceViewDto } from '../api/models/output/device-view.dto'
-import { DeviceEntitySql } from '../domain/postgres/device.entity'
+import { DevicesDbModel } from '../domain/postgres/device-db-model'
 
 @Injectable()
 export class DevicesMappers {
-  mapDtoToView(device: DeviceEntitySql) {
+  mapDtoToView(device: DevicesDbModel) {
     const deviceView = new DeviceViewDto()
 
     deviceView.deviceId = device.device_id

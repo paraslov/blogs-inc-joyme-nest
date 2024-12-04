@@ -1,4 +1,4 @@
-export class BlogSql {
+export class BlogDbModel {
   id: string
   name: string
   description: string

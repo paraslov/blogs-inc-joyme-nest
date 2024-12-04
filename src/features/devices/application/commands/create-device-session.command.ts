@@ -4,7 +4,7 @@ import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreateDeviceSessionDto } from '../../api/models/input/create-device-session.dto'
 import { JwtOperationsService } from '../../../../common/services'
-import { DevicesSqlRepository } from '../../infrastructure/devices.sql-repository'
+import { DevicesRepository } from '../../infrastructure/devices.repository'
 
 export class CreateDeviceSessionCommand {
   constructor(public readonly payload: CreateDeviceSessionDto) {}
@@ -14,7 +14,7 @@ export class CreateDeviceSessionCommand {
 export class CreateDeviceSessionCommandHandler implements ICommandHandler<CreateDeviceSessionCommand> {
   constructor(
     private jwtOperationsService: JwtOperationsService,
-    private devicesRepository: DevicesSqlRepository,
+    private devicesRepository: DevicesRepository,
   ) {}
 
   async execute({ payload }: CreateDeviceSessionCommand) {

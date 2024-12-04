@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import { CommentsMappers } from './comments.mappers'
 import { DataSource } from 'typeorm'
-import { CommentSql } from '../domain/postgres/comment-sql'
+import { CommentDbModel } from '../domain/postgres/comment-db-model'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { CommentsFilterDto } from '../api/models/input/comments.filter.dto'
-import { LikesSqlRepository } from '../../likes/infrastructure/likes.sql-repository'
+import { LikesRepository } from '../../likes/infrastructure/likes.repository'
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    private likesRepository: LikesSqlRepository,
+    private likesRepository: LikesRepository,
     private commentsMappers: CommentsMappers,
     private dataSource: DataSource,
   ) {}
 
   async getCommentById(commentId: string, userId?: string) {
-    const foundComment = await this.dataSource.query<CommentSql[]>(
+    const foundComment = await this.dataSource.query<CommentDbModel[]>(
       `
       SELECT id, parent_id, content, created_at, user_id, user_login, likes_count, dislikes_count
         FROM public.comments
@@ -34,7 +34,7 @@ export class CommentsQueryRepository {
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
 
-    const comments = await this.dataSource.query<CommentSql[]>(
+    const comments = await this.dataSource.query<CommentDbModel[]>(
       `
       SELECT id, parent_id, content, created_at, user_id, user_login, likes_count, dislikes_count
         FROM public.comments

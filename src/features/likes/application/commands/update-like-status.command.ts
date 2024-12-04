@@ -3,7 +3,7 @@ import { UpdateLikeStatusDto } from '../../api/models/input/update-like-status.d
 import { LikeStatus } from '../../api/models/enums/like-status'
 import { Like } from '../../domain/business_entity/likes.entity'
 import { InterlayerDataManager } from '../../../../common/manager'
-import { LikesSqlRepository } from '../../infrastructure/likes.sql-repository'
+import { LikesRepository } from '../../infrastructure/likes.repository'
 
 export class LikesInfoChangeDto {
   likesCountChange: number
@@ -21,7 +21,7 @@ export class UpdateLikeStatusCommand {
 
 @CommandHandler(UpdateLikeStatusCommand)
 export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatusCommand> {
-  constructor(private readonly likesRepository: LikesSqlRepository) {}
+  constructor(private readonly likesRepository: LikesRepository) {}
 
   async execute(command: UpdateLikeStatusCommand) {
     const notice = new InterlayerDataManager<LikesInfoChangeDto>()

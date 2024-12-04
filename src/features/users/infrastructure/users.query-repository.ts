@@ -7,7 +7,7 @@ import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 
 @Injectable()
-export class UsersSqlQueryRepository {
+export class UsersQueryRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
     protected usersMappers: UsersMappers,

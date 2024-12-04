@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
 import { Device } from '../domain/business_entity/device.entity'
-import { DeviceEntitySql } from '../domain/postgres/device.entity'
+import { DevicesDbModel } from '../domain/postgres/device-db-model'
 
 @Injectable()
-export class DevicesSqlRepository {
+export class DevicesRepository {
   constructor(protected dataSource: DataSource) {}
-  async getDeviceById(deviceId: string): Promise<DeviceEntitySql> {
+  async getDeviceById(deviceId: string): Promise<DevicesDbModel> {
     const result = await this.dataSource.query(
       `
       SELECT device_id, device_name, user_id, ip, iat, exp
@@ -57,7 +57,7 @@ export class DevicesSqlRepository {
     return deleteResult?.[1]
   }
 
-  async updateDeviceSession(device: DeviceEntitySql) {
+  async updateDeviceSession(device: DevicesDbModel) {
     const updateResult = await this.dataSource.query(
       `
       UPDATE public.devices

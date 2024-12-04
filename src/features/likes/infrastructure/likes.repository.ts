@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
-import { LikesSql } from '../domain/postgres/likes-sql'
+import { LikesDbModel } from '../domain/postgres/likes-db-model'
 import { Like } from '../domain/business_entity/likes.entity'
 import { LikeStatus } from '../api/models/enums/like-status'
 import { LikesMappers } from './likes.mappers'
 
 @Injectable()
-export class LikesSqlRepository {
+export class LikesRepository {
   constructor(
     private dataSource: DataSource,
     private likesMappers: LikesMappers,
   ) {}
 
   async getLikeStatusData(userId: string, parentId: string) {
-    const likeStatus = await this.dataSource.query<LikesSql[]>(
+    const likeStatus = await this.dataSource.query<LikesDbModel[]>(
       `
       SELECT parent_id, status, created_at, user_id, user_login
         FROM public.likes
@@ -42,7 +42,7 @@ export class LikesSqlRepository {
   }
 
   async getLatestLikes(parentId: string, likesCount: number = 3) {
-    const latestLikeData = await this.dataSource.query<LikesSql[]>(
+    const latestLikeData = await this.dataSource.query<LikesDbModel[]>(
       `
       SELECT parent_id, status, created_at, user_id, user_login
         FROM public.likes

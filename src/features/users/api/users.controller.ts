@@ -16,7 +16,7 @@ import { FilterUsersDto } from './models/input/filter-users.dto'
 import { HttpStatusCodes } from '../../../common/models'
 import { UsersCommandService } from '../application/users.command.service'
 import { SaAuthGuard } from '../../auth'
-import { UsersSqlQueryRepository } from '../infrastructure/users.sql-query-repository'
+import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { UUIDValidationPipe } from '../../../base/pipes'
 
 @UseGuards(SaAuthGuard)
@@ -24,7 +24,7 @@ import { UUIDValidationPipe } from '../../../base/pipes'
 export class UsersController {
   constructor(
     private usersCommandService: UsersCommandService,
-    private usersSqlQueryRepository: UsersSqlQueryRepository,
+    private usersSqlQueryRepository: UsersQueryRepository,
   ) {}
 
   @Get()

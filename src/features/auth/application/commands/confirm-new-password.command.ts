@@ -2,7 +2,7 @@ import { PasswordRecoveryDto } from '../../api/models/input/password-recovery.dt
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { UserInfo, UsersSqlRepository } from '../../../users'
+import { UserInfo, UsersRepository } from '../../../users'
 import { CryptService } from '../../../../common/services'
 import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
@@ -15,7 +15,7 @@ export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPass
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly cryptService: CryptService,
-    private readonly usersRepository: UsersSqlRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   async execute(command: ConfirmNewPasswordCommand) {

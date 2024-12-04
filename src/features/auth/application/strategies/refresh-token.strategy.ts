@@ -6,13 +6,13 @@ import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../../settings/configuration'
 import { AuthStrategiesDto } from '../../api/models/utility/auth-strategies-dto'
 import { JwtOperationsService } from '../../../../common/services'
-import { DevicesSqlRepository } from '../../../devices'
+import { DevicesRepository } from '../../../devices'
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(
     private configService: ConfigService<ConfigurationType>,
-    private devicesRepository: DevicesSqlRepository,
+    private devicesRepository: DevicesRepository,
     private jwtOperationsService: JwtOperationsService,
   ) {
     super({

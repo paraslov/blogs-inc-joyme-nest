@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { InjectDataSource } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
-import { User } from '../domain/mongoose/users.entity'
-import { UserSql } from '../domain/postgres/user.sql'
+import { User } from '../domain/business_entity/users.entity'
+import { UserDbModel } from '../domain/postgres/user-db-model'
 import { UserInfo } from '../domain/postgres/user-info.entity'
 
 @Injectable()
-export class UsersSqlRepository {
+export class UsersRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async getUserById(userId: string): Promise<UserSql | null> {
+  async getUserById(userId: string): Promise<UserDbModel | null> {
     const user = await this.dataSource.query(
       `
       SELECT id, login, email, password_hash, created_at
@@ -70,7 +70,7 @@ export class UsersSqlRepository {
 
     return updateResult?.[1] === 1
   }
-  async updateUserAndInfo(user: UserSql, userInfo: UserInfo) {
+  async updateUserAndInfo(user: UserDbModel, userInfo: UserInfo) {
     const userUpdateResult = await this.dataSource.query(
       `
         UPDATE public.users

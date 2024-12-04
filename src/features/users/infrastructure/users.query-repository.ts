@@ -1,55 +1,68 @@
 import { Injectable } from '@nestjs/common'
-import { FilterUsersDto } from '../api/models/input/filter-users.dto'
-import { InjectModel } from '@nestjs/mongoose'
-import { User } from '../domain/mongoose/users.entity'
-import { Model } from 'mongoose'
+import { InjectDataSource } from '@nestjs/typeorm'
+import { DataSource } from 'typeorm'
 import { UsersMappers } from './users.mappers'
+import { FilterUsersDto } from '../api/models/input/filter-users.dto'
+import { SortDirection } from '../../../common/models/enums/sort-direction'
+import { camelToSnakeUtil } from '../../../common/utils'
 
 @Injectable()
 export class UsersQueryRepository {
   constructor(
-    @InjectModel(User.name) private usersModel: Model<User>,
-    private usersMappers: UsersMappers,
+    @InjectDataSource() protected dataSource: DataSource,
+    protected usersMappers: UsersMappers,
   ) {}
 
   async getUser(userId: string) {
-    const userDocument = await this.usersModel.findById(userId)
+    const res = await this.dataSource.query(
+      `SELECT u.id, u.login, u.email, u.password_hash, u.created_at,
+                uci.confirmation_code, uci.confirmation_code_expiration_date, uci.is_confirmed,
+                uci.password_recovery_code, uci.password_recovery_code_expiration_date,
+                uci.is_password_recovery_confirmed
+      FROM public.users u
+      LEFT JOIN public.users_confirmation_info uci
+      ON u.id = uci.user_id
+      WHERE u.id=$1;`,
+      [userId],
+    )
 
-    return this.usersMappers.mapDbToOutputDto(userDocument)
+    return this.usersMappers.mapToOutputDto(res?.[0])
   }
 
   async getUsers(query: FilterUsersDto) {
-    const { pageNumber, pageSize, sortDirection, sortBy, searchLoginTerm, searchEmailTerm } = query
+    const offset = (query.pageNumber - 1) * query.pageSize
+    const direction = query.sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
+    const sortBySnakeCase = camelToSnakeUtil(query.sortBy)
 
-    const filter: any = {}
+    const totalCountResult = await this.dataSource.query(
+      `SELECT COUNT(*) AS "totalCount"
+     FROM public.users
+     WHERE 
+       login ILIKE '%' || $1 || '%' OR
+       email ILIKE '%' || $2 || '%'`,
+      [query.searchLoginTerm, query.searchEmailTerm],
+    )
+    const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
 
-    if (searchEmailTerm || searchLoginTerm) {
-      filter.$or = []
+    const res = await this.dataSource.query(
+      `SELECT id, login, email, password_hash, created_at
+              FROM public.users
+              WHERE 
+                login ILIKE '%' || $3 || '%' OR
+                email ILIKE '%' || $4 || '%'
+              ORDER BY "${sortBySnakeCase}" ${direction}
+              LIMIT $1 OFFSET $2;`,
+      [query.pageSize, offset, query.searchLoginTerm, query.searchEmailTerm],
+    )
 
-      if (searchLoginTerm) {
-        filter.$or.push({ 'userData.login': { $regex: searchLoginTerm, $options: 'i' } })
-      }
-      if (searchEmailTerm) {
-        filter.$or.push({ 'userData.email': { $regex: searchEmailTerm, $options: 'i' } })
-      }
-    }
-
-    const users = await this.usersModel
-      .find(filter)
-      .sort({ [`userData.${sortBy}`]: sortDirection === 'asc' ? 1 : -1 })
-      .skip(pageSize * (pageNumber - 1))
-      .limit(pageSize)
-      .exec()
-
-    const totalCount = await this.usersModel.countDocuments(filter)
-    const pagesCount = Math.ceil(totalCount / pageSize)
-    const mappedUsers = users.map(this.usersMappers.mapDbToOutputDto)
+    const mappedUsers = res.map(this.usersMappers.mapToOutputDto)
+    const pagesCount = Math.ceil(totalCount / query.pageSize)
 
     return {
       pagesCount,
       totalCount,
-      pageSize,
-      page: pageNumber,
+      pageSize: query.pageSize,
+      page: query.pageNumber,
       items: mappedUsers,
     }
   }

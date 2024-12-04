@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { CreateUserDto, User, UsersSqlRepository } from '../../../users'
+import { CreateUserDto, User, UsersRepository } from '../../../users'
 import { CryptService } from '../../../../common/services'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
@@ -15,7 +15,7 @@ export class RegisterUserCommand {
 export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand> {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly usersRepository: UsersSqlRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly cryptService: CryptService,
     private readonly emailSendManager: EmailSendManager,
   ) {}

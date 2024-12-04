@@ -8,7 +8,7 @@ import { CreateUserDto } from '../../../users'
 export class AuthTestManager {
   constructor(
     protected readonly app: INestApplication,
-    private authSqlRepository?: AuthRepository,
+    private authRepository?: AuthRepository,
   ) {}
   httpServer = this.app.getHttpServer()
   userIndex = 0
@@ -59,7 +59,7 @@ export class AuthTestManager {
   }
 
   async getUserByLogin(userLogin: string) {
-    const response = await this.authSqlRepository.getUserByLoginOrEmail(userLogin)
+    const response = await this.authRepository.getUserByLoginOrEmail(userLogin)
 
     return response
   }

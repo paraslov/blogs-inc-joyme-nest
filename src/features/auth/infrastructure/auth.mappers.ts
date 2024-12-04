@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { UserSql } from '../../users'
+import { UserDbModel } from '../../users'
 import { MeViewModelDto } from '../api/models/output/me-view-model.dto'
 
 @Injectable()
 export class AuthMappers {
-  mapDbToOutputDto(user: UserSql) {
+  mapDbToOutputDto(user: UserDbModel) {
     if (!user) {
       return null
     }

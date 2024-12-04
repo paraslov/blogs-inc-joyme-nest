@@ -1,4 +1,4 @@
-export class UserSql {
+export class UserDbModel {
   id: string
   login: string
   email: string

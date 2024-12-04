@@ -5,10 +5,6 @@ export class DatabaseSettings {
   constructor(private environmentVariables: EnvironmentVariable) {}
 
   @TrimmedString()
-  public readonly MONGO_CONNECTION_URI: string = this.environmentVariables.MONGO_CONNECTION_URI
-  @TrimmedString()
-  public readonly DB_NAME: string = this.environmentVariables.MONGO_DB_NAME
-  @TrimmedString()
   public readonly POSTGRES_DATABASE: string = this.environmentVariables.POSTGRES_DATABASE
   @TrimmedString()
   public readonly POSTGRES_USER_NAME: string = this.environmentVariables.POSTGRES_USER_NAME

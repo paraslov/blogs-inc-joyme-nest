@@ -5,7 +5,7 @@ import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository'
 import { UUIDValidationPipe } from '../../../base/pipes'
 import { JwtAuthGuard } from '../../auth'
 import { CommentsCommandService, CommentsQueryRepository, CreateUpdateCommentDto } from '../../comments'
-import { UsersSqlQueryRepository } from '../../users'
+import { UsersQueryRepository } from '../../users'
 import { HttpStatusCodes } from '../../../common/models'
 import { UpdateLikeStatusDto } from '../../likes'
 import { BlogsCommandService } from '../application/blogs.command.service'
@@ -15,7 +15,7 @@ export class PostsController {
   constructor(
     private blogsQueryRepository: BlogsQueryRepository,
     private blogsCommandService: BlogsCommandService,
-    private usersQueryRepository: UsersSqlQueryRepository,
+    private usersQueryRepository: UsersQueryRepository,
     private commentsCommandService: CommentsCommandService,
     private commentsQueryRepository: CommentsQueryRepository,
   ) {}

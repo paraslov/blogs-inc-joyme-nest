@@ -17,7 +17,7 @@ import { CreateUpdateCommentDto } from './models/input/create-update-comment.dto
 import { CurrentUserId, PossibleUserId } from '../../../base/decorators'
 import { CommentsCommandService } from '../application/comments.command.service'
 import { HttpStatusCodes } from '../../../common/models'
-import { UsersSqlQueryRepository } from '../../users'
+import { UsersQueryRepository } from '../../users'
 import { UpdateLikeStatusDto } from '../../likes'
 import { UUIDValidationPipe } from '../../../base/pipes'
 
@@ -26,7 +26,7 @@ export class CommentsController {
   constructor(
     private commentsQueryRepository: CommentsQueryRepository,
     private commentsCommandService: CommentsCommandService,
-    private usersQueryRepository: UsersSqlQueryRepository,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @Get(':commentId')

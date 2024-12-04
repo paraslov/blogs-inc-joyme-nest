@@ -14,7 +14,7 @@ export class AppService {
   }
   async deleteAllData() {
     try {
-      await deleteAllData(null, this.dataSource)
+      await deleteAllData(this.dataSource)
     } catch (err) {
       throw new NotFoundException(`Failed to clear data: ${err.message}`)
     }

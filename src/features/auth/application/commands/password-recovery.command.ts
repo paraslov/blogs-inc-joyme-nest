@@ -3,7 +3,7 @@ import { EmailSendManager, InterlayerDataManager } from '../../../../common/mana
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { HttpStatusCodes } from '../../../../common/models'
-import { UsersSqlRepository } from '../../../users'
+import { UsersRepository } from '../../../users'
 import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class PasswordRecoveryCommand {
@@ -15,7 +15,7 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
   constructor(
     private readonly emailSendManager: EmailSendManager,
     private readonly authRepository: AuthRepository,
-    private readonly usersRepository: UsersSqlRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   async execute(command: PasswordRecoveryCommand) {

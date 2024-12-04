@@ -3,8 +3,8 @@ import { EmailSendManager, InterlayerDataManager } from '../../../../common/mana
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { HttpStatusCodes } from '../../../../common/models'
-import { UsersSqlRepository } from '../../../users'
-import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { UsersRepository } from '../../../users'
+import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class PasswordRecoveryCommand {
   constructor(public readonly email: string) {}
@@ -14,8 +14,8 @@ export class PasswordRecoveryCommand {
 export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecoveryCommand> {
   constructor(
     private readonly emailSendManager: EmailSendManager,
-    private readonly authRepository: AuthSqlRepository,
-    private readonly usersRepository: UsersSqlRepository,
+    private readonly authRepository: AuthRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   async execute(command: PasswordRecoveryCommand) {
@@ -37,7 +37,7 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
     userData.userInfo.is_password_recovery_confirmed = false
 
     try {
-      const mailInfo = await this.emailSendManager.sendPasswordRecoveryEmail(email, recoveryCode)
+      const mailInfo = this.emailSendManager.sendPasswordRecoveryEmail(email, recoveryCode)
       console.log('@> Information::mailInfo: ', mailInfo)
     } catch (err) {
       console.error('@> Error::emailManager: ', err)

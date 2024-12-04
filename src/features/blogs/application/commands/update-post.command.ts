@@ -1,6 +1,6 @@
 import { UpdatePostDto } from '../../api/models/input/update-post.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { BlogsSqlRepository } from '../../infrastructure/blogs.sql-repository'
+import { BlogsRepository } from '../../infrastructure/blogs.repository.service'
 
 export class UpdatePostCommand {
   constructor(
@@ -11,7 +11,7 @@ export class UpdatePostCommand {
 
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostCommandHandler implements ICommandHandler<UpdatePostCommand> {
-  constructor(private readonly blogsRepository: BlogsSqlRepository) {}
+  constructor(private readonly blogsRepository: BlogsRepository) {}
 
   async execute(command: UpdatePostCommand) {
     const { postId, updatePostDto } = command

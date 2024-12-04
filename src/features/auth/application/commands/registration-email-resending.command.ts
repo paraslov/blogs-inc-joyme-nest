@@ -3,8 +3,8 @@ import { EmailSendManager, InterlayerDataManager } from '../../../../common/mana
 import { HttpStatusCodes } from '../../../../common/models'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
-import { UserInfo, UsersSqlRepository } from '../../../users'
-import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { UserInfo, UsersRepository } from '../../../users'
+import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class RegistrationEmailResendingCommand {
   constructor(public readonly email: string) {}
@@ -13,8 +13,8 @@ export class RegistrationEmailResendingCommand {
 @CommandHandler(RegistrationEmailResendingCommand)
 export class RegistrationEmailResendingHandler implements ICommandHandler<RegistrationEmailResendingCommand> {
   constructor(
-    private readonly authRepository: AuthSqlRepository,
-    private readonly usersRepository: UsersSqlRepository,
+    private readonly authRepository: AuthRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly emailSendManager: EmailSendManager,
   ) {}
 
@@ -37,7 +37,7 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
     await this.usersRepository.updateUserAndInfo(userData.user, userData.userInfo)
 
     try {
-      const mailInfo = await this.emailSendManager.resendRegistrationEmail(email, confirmationCode)
+      const mailInfo = this.emailSendManager.resendRegistrationEmail(email, confirmationCode)
       console.log('@> Information::mailInfo: ', mailInfo)
     } catch (err) {
       console.error('@> Error::emailManager: ', err)

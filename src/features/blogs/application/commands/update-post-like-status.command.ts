@@ -3,7 +3,7 @@ import { LikesCommandService, UpdateLikeStatusDto } from '../../../likes'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreatePostDto } from '../../api/models/input/create-post.dto'
-import { BlogsSqlRepository } from '../../infrastructure/blogs.sql-repository'
+import { BlogsRepository } from '../../infrastructure/blogs.repository.service'
 import { PostViewDto } from '../../api/models/output/post.view.dto'
 
 export class UpdatePostLikeStatusCommand {
@@ -19,7 +19,7 @@ export class UpdatePostLikeStatusCommand {
 export class UpdatePostLikeStatusHandler implements ICommandHandler<UpdatePostLikeStatusCommand> {
   constructor(
     private readonly likesCommandService: LikesCommandService,
-    private readonly blogsRepository: BlogsSqlRepository,
+    private readonly blogsRepository: BlogsRepository,
   ) {}
 
   async execute(command: UpdatePostLikeStatusCommand) {

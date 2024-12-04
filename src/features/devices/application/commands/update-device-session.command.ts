@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { DevicesSqlRepository } from '../../infrastructure/devices.sql-repository'
+import { DevicesRepository } from '../../infrastructure/devices.repository'
 
 export class UpdateDeviceSessionCommand {
   constructor(
@@ -12,7 +12,7 @@ export class UpdateDeviceSessionCommand {
 
 @CommandHandler(UpdateDeviceSessionCommand)
 export class UpdateDeviceSessionCommandHandler implements ICommandHandler<UpdateDeviceSessionCommand> {
-  constructor(private devicesRepository: DevicesSqlRepository) {}
+  constructor(private devicesRepository: DevicesRepository) {}
 
   async execute({ deviceId, iat }: UpdateDeviceSessionCommand) {
     const notice = new InterlayerDataManager()

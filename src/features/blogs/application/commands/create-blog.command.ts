@@ -1,7 +1,7 @@
-import { Blog } from '../../domain/mongoose/blogs.entity'
+import { Blog } from '../../domain/business_entities/blogs.entity'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CreateBlogDto } from '../../api/models/input/create-blog.dto'
-import { BlogsSqlRepository } from '../../infrastructure/blogs.sql-repository'
+import { BlogsRepository } from '../../infrastructure/blogs.repository.service'
 
 export class CreateBlogCommand {
   constructor(public readonly createBlogDto: CreateBlogDto) {}
@@ -9,7 +9,7 @@ export class CreateBlogCommand {
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
-  constructor(private readonly blogsRepository: BlogsSqlRepository) {}
+  constructor(private readonly blogsRepository: BlogsRepository) {}
 
   async execute(command: CreateBlogCommand) {
     const { createBlogDto } = command

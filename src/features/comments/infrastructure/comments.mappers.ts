@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { CommentViewDto } from '../api/models/output/comment.view.dto'
 import { LikeStatus } from '../../likes'
-import { CommentSql } from '../domain/postgres/comment-sql'
+import { CommentDbModel } from '../domain/postgres/comment-db-model'
 
 @Injectable()
 export class CommentsMappers {
-  mapEntityToOutputDto(comment: CommentSql, likeStatus?: LikeStatus) {
+  mapEntityToOutputDto(comment: CommentDbModel, likeStatus?: LikeStatus) {
     if (!comment) {
       return null
     }

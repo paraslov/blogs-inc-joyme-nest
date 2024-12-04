@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { DataSource } from 'typeorm'
-import { Blog } from '../domain/mongoose/blogs.entity'
+import { Blog } from '../domain/business_entities/blogs.entity'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
 import { CreatePostDto } from '../api/models/input/create-post.dto'
-import { PostEntity } from '../domain/mongoose/posts.entity'
+import { PostEntity } from '../domain/business_entities/posts.entity'
 
 @Injectable()
-export class BlogsSqlRepository {
+export class BlogsRepository {
   constructor(private dataSource: DataSource) {}
   async createBlog(newBlog: Blog) {
     const { name, description, websiteUrl, createdAt, isMembership } = newBlog

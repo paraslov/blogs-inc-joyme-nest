@@ -10,11 +10,11 @@ export class AppService {
     return 'Welcome to JoymeStudios Blogs App!'
   }
   getVersion(): string {
-    return 'blogs-inc-joyme: v5.3.1'
+    return 'blogs-inc-joyme: v5.4.0'
   }
   async deleteAllData() {
     try {
-      await deleteAllData(null, this.dataSource)
+      await deleteAllData(this.dataSource)
     } catch (err) {
       throw new NotFoundException(`Failed to clear data: ${err.message}`)
     }

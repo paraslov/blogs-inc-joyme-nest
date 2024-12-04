@@ -1,7 +1,5 @@
 import { Test, TestingModuleBuilder } from '@nestjs/testing'
 
-import { Connection } from 'mongoose'
-import { getConnectionToken } from '@nestjs/mongoose'
 import { deleteAllData } from './delete-all-data'
 import { UsersTestManager } from '../../../features/users'
 import configuration, { ConfigurationType } from '../../../settings/configuration'
@@ -29,18 +27,16 @@ export const initTestsSettings = async (addSettingsToModuleBuilder?: (moduleBuil
 
   await app.init()
 
-  const databaseConnection = app.get<Connection>(getConnectionToken())
   const dataSource = app.get<DataSource>(DataSource)
   const httpServer = app.getHttpServer()
   const configService = app.get<ConfigService<ConfigurationType>>(ConfigService)
   await createTablesIfNeeded(dataSource)
   const userTestManger = new UsersTestManager(app, configService)
 
-  await deleteAllData(databaseConnection, dataSource)
+  await deleteAllData(dataSource)
 
   return {
     app,
-    databaseConnection,
     dataSource,
     httpServer,
     userTestManger,

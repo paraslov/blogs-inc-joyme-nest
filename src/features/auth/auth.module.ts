@@ -12,11 +12,10 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { EmailSendManager, EmailTemplatesManager } from '../../common/manager'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../settings/configuration'
-import { AuthRepository } from './infrastructure/auth.repository'
 import { AuthQueryRepository } from './infrastructure/auth.query-repository'
 import { AuthMappers } from './infrastructure/auth.mappers'
 import { DevicesModule } from '../devices'
-import { AuthSqlRepository } from './infrastructure/auth.sql-repository'
+import { AuthRepository } from './infrastructure/auth.repository.service'
 
 @Module({
   imports: [
@@ -43,7 +42,6 @@ import { AuthSqlRepository } from './infrastructure/auth.sql-repository'
     EmailTemplatesManager,
     JwtOperationsService,
     AuthRepository,
-    AuthSqlRepository,
     AuthQueryRepository,
     AuthMappers,
     ...strategies,

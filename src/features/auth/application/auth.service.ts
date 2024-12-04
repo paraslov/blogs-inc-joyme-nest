@@ -4,12 +4,12 @@ import { JwtService } from '@nestjs/jwt'
 import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../settings/configuration'
-import { AuthSqlRepository } from '../infrastructure/auth.sql-repository'
+import { AuthRepository } from '../infrastructure/auth.repository.service'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private authRepository: AuthSqlRepository,
+    private authRepository: AuthRepository,
     private cryptService: CryptService,
     private jwtService: JwtService,
     private readonly configService: ConfigService<ConfigurationType>,

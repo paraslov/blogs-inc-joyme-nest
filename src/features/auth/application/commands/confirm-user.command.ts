@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { UserInfo, UsersSqlRepository } from '../../../users'
+import { UserInfo, UsersRepository } from '../../../users'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { AuthSqlRepository } from '../../infrastructure/auth.sql-repository'
+import { AuthRepository } from '../../infrastructure/auth.repository.service'
 
 export class ConfirmUserCommand {
   constructor(public readonly confirmationCode: string) {}
@@ -11,8 +11,8 @@ export class ConfirmUserCommand {
 @CommandHandler(ConfirmUserCommand)
 export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
   constructor(
-    private readonly authRepository: AuthSqlRepository,
-    private readonly usersRepository: UsersSqlRepository,
+    private readonly authRepository: AuthRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
   async execute(command: ConfirmUserCommand) {
     const { confirmationCode } = command

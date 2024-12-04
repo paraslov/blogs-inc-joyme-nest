@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { LikesCommandService, UpdateLikeStatusDto } from '../../../likes'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { CommentDto } from '../../domain/mongoose/comment.entity'
-import { CommentsSqlRepository } from '../../infrastructure/comments.sql-repository'
+import { CommentDto } from '../../domain/business_entity/comment.entity'
+import { CommentsRepository } from '../../infrastructure/comments.repository.service'
 
 export class UpdateCommentLikeStatusCommand {
   constructor(
@@ -18,7 +18,7 @@ export class UpdateCommentLikeStatusCommand {
 export class UpdateCommentLikeStatusHandler implements ICommandHandler<UpdateCommentLikeStatusCommand> {
   constructor(
     private likesCommandService: LikesCommandService,
-    private commentsRepository: CommentsSqlRepository,
+    private commentsRepository: CommentsRepository,
   ) {}
 
   async execute(command: UpdateCommentLikeStatusCommand) {

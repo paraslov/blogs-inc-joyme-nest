@@ -13,11 +13,10 @@ import {
 } from '@nestjs/common'
 import { CreateUserDto } from './models/input/create-user.dto'
 import { FilterUsersDto } from './models/input/filter-users.dto'
-import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { HttpStatusCodes } from '../../../common/models'
 import { UsersCommandService } from '../application/users.command.service'
 import { SaAuthGuard } from '../../auth'
-import { UsersSqlQueryRepository } from '../infrastructure/users.sql-query-repository'
+import { UsersQueryRepository } from '../infrastructure/users.query-repository'
 import { UUIDValidationPipe } from '../../../base/pipes'
 
 @UseGuards(SaAuthGuard)
@@ -26,17 +25,16 @@ export class UsersController {
   constructor(
     private usersCommandService: UsersCommandService,
     private usersQueryRepository: UsersQueryRepository,
-    private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
 
   @Get()
   getAll(@Query() query: FilterUsersDto) {
-    return this.usersSqlQueryRepository.getUsers(query)
+    return this.usersQueryRepository.getUsers(query)
   }
 
   @Get(':userId')
   async getUser(@Param('userId', UUIDValidationPipe) userId: string) {
-    const user = await this.usersSqlQueryRepository.getUser(userId)
+    const user = await this.usersQueryRepository.getUser(userId)
 
     if (!user) {
       throw new NotFoundException('User not found')

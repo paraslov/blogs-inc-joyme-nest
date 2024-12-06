@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common'
-import { InjectDataSource } from '@nestjs/typeorm'
-import { DataSource } from 'typeorm'
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
+import { DataSource, Repository } from 'typeorm'
 import { User } from '../domain/business_entity/users.entity'
-import { UserDbModel } from '../domain/postgres/user-db-model'
-import { UserInfo } from '../domain/postgres/user-info.entity'
+import { UserDbModel, Users } from '../domain/postgres/user-db-model'
+import { UserInfo, UsersConfirmationInfo } from '../domain/postgres/users-confirmation.info'
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() protected dataSource: DataSource,
+    @InjectRepository(Users) private usersOrmRepository: Repository<Users>,
+    @InjectRepository(UsersConfirmationInfo)
+    private usersConfirmationInfoOrmRepository: Repository<UsersConfirmationInfo>,
+  ) {}
+
   async getUserById(userId: string): Promise<UserDbModel | null> {
     const user = await this.dataSource.query(
       `
@@ -22,30 +28,21 @@ export class UsersRepository {
   }
 
   async createUser(user: User) {
-    const res = await this.dataSource.query(
-      `
-      INSERT INTO public.users(login, email, password_hash, created_at)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id;
-    `,
-      [user.userData.login, user.userData.email, user.userData.passwordHash, user.userData.createdAt],
-    )
+    const { userConfirmationData, userData } = user
+    const newUser: Users = new Users()
+    newUser.email = userData.email
+    newUser.login = userData.login
+    newUser.password_hash = userData.passwordHash
+    const { id: userId } = await this.usersOrmRepository.save(newUser)
 
-    await this.dataSource.query(
-      `
-      INSERT INTO public.users_confirmation_info(
-      user_id, confirmation_code, is_confirmed, confirmation_code_expiration_date)
-      VALUES ($4, $1, $2, $3);
-    `,
-      [
-        user.userConfirmationData.confirmationCode,
-        user.userConfirmationData.isConfirmed,
-        user.userConfirmationData.confirmationCodeExpirationDate,
-        res[0].id,
-      ],
-    )
+    const newUserInfo: UsersConfirmationInfo = new UsersConfirmationInfo()
+    newUserInfo.user_id = userId
+    newUserInfo.confirmation_code = userConfirmationData.confirmationCode
+    newUserInfo.is_confirmed = userConfirmationData.isConfirmed
+    newUserInfo.confirmation_code_expiration_date = userConfirmationData.confirmationCodeExpirationDate
+    await this.usersConfirmationInfoOrmRepository.save(newUserInfo)
 
-    return res[0].id
+    return userId
   }
   async deleteUser(userId: string) {
     const deleteResult = await this.dataSource.query(

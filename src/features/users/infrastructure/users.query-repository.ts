@@ -1,32 +1,24 @@
 import { Injectable } from '@nestjs/common'
-import { InjectDataSource } from '@nestjs/typeorm'
-import { DataSource } from 'typeorm'
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
+import { DataSource, Repository } from 'typeorm'
 import { UsersMappers } from './users.mappers'
 import { FilterUsersDto } from '../api/models/input/filter-users.dto'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
+import { Users } from '../domain/postgres/user-db-model'
 
 @Injectable()
 export class UsersQueryRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
+    @InjectRepository(Users) private usersOrmRepository: Repository<Users>,
     protected usersMappers: UsersMappers,
   ) {}
 
   async getUser(userId: string) {
-    const res = await this.dataSource.query(
-      `SELECT u.id, u.login, u.email, u.password_hash, u.created_at,
-                uci.confirmation_code, uci.confirmation_code_expiration_date, uci.is_confirmed,
-                uci.password_recovery_code, uci.password_recovery_code_expiration_date,
-                uci.is_password_recovery_confirmed
-      FROM public.users u
-      LEFT JOIN public.users_confirmation_info uci
-      ON u.id = uci.user_id
-      WHERE u.id=$1;`,
-      [userId],
-    )
+    const user = await this.usersOrmRepository.findOneBy({ id: userId })
 
-    return this.usersMappers.mapToOutputDto(res?.[0])
+    return this.usersMappers.mapToOutputDto(user)
   }
 
   async getUsers(query: FilterUsersDto) {
@@ -34,28 +26,22 @@ export class UsersQueryRepository {
     const direction = query.sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(query.sortBy)
 
-    const totalCountResult = await this.dataSource.query(
-      `SELECT COUNT(*) AS "totalCount"
-     FROM public.users
-     WHERE 
-       login ILIKE '%' || $1 || '%' OR
-       email ILIKE '%' || $2 || '%'`,
-      [query.searchLoginTerm, query.searchEmailTerm],
-    )
-    const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
+    const [users, totalCount] = await this.usersOrmRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.login',
+        'user.email',
+        'user.created_at',
+      ])
+      .where('user.login ILIKE :searchLoginTerm', { searchLoginTerm: `%${query.searchLoginTerm || ''}%` })
+      .orWhere('user.email ILIKE :searchEmailTerm', { searchEmailTerm: `%${query.searchEmailTerm || ''}%` })
+      .orderBy(`user.${sortBySnakeCase}`, direction)
+      .skip(offset)
+      .take(query.pageSize)
+      .getManyAndCount();
 
-    const res = await this.dataSource.query(
-      `SELECT id, login, email, password_hash, created_at
-              FROM public.users
-              WHERE 
-                login ILIKE '%' || $3 || '%' OR
-                email ILIKE '%' || $4 || '%'
-              ORDER BY "${sortBySnakeCase}" ${direction}
-              LIMIT $1 OFFSET $2;`,
-      [query.pageSize, offset, query.searchLoginTerm, query.searchEmailTerm],
-    )
-
-    const mappedUsers = res.map(this.usersMappers.mapToOutputDto)
+    const mappedUsers = users.map(this.usersMappers.mapToOutputDto)
     const pagesCount = Math.ceil(totalCount / query.pageSize)
 
     return {

@@ -28,18 +28,13 @@ export class UsersQueryRepository {
 
     const [users, totalCount] = await this.usersOrmRepository
       .createQueryBuilder('user')
-      .select([
-        'user.id',
-        'user.login',
-        'user.email',
-        'user.created_at',
-      ])
+      .select(['user.id', 'user.login', 'user.email', 'user.created_at'])
       .where('user.login ILIKE :searchLoginTerm', { searchLoginTerm: `%${query.searchLoginTerm || ''}%` })
       .orWhere('user.email ILIKE :searchEmailTerm', { searchEmailTerm: `%${query.searchEmailTerm || ''}%` })
       .orderBy(`user.${sortBySnakeCase}`, direction)
       .skip(offset)
       .take(query.pageSize)
-      .getManyAndCount();
+      .getManyAndCount()
 
     const mappedUsers = users.map(this.usersMappers.mapToOutputDto)
     const pagesCount = Math.ceil(totalCount / query.pageSize)

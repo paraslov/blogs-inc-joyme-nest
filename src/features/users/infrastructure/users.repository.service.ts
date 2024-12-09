@@ -15,16 +15,9 @@ export class UsersRepository {
   ) {}
 
   async getUserById(userId: string): Promise<UserDbModel | null> {
-    const user = await this.dataSource.query(
-      `
-      SELECT id, login, email, password_hash, created_at
-              FROM public.users
-              WHERE id=$1
-    `,
-      [userId],
-    )
+    const foundUser = await this.usersOrmRepository.createQueryBuilder('u').select('*').where(`id=${userId}`).getOne()
 
-    return user?.[0] ?? null
+    return foundUser ?? null
   }
 
   async createUser(user: User) {
@@ -45,56 +38,31 @@ export class UsersRepository {
     return userId
   }
   async deleteUser(userId: string) {
-    const deleteResult = await this.dataSource.query(
-      `
-      DELETE FROM public.users
-      WHERE id=$1;
-    `,
-      [userId],
-    )
+    const deleteRes = await this.usersOrmRepository.delete(userId)
 
-    return Boolean(deleteResult[1])
+    return Boolean(deleteRes.affected)
   }
   async confirmUser(confirmationCode: string) {
-    const updateResult = await this.dataSource.query(
-      `
-      UPDATE public.users_confirmation_info
-        SET is_confirmed=true
-        WHERE confirmation_code=$1;
-    `,
-      [confirmationCode],
-    )
+    const updateRes = await this.usersConfirmationInfoOrmRepository.update(confirmationCode, { is_confirmed: true })
 
-    return updateResult?.[1] === 1
+    return updateRes.affected
   }
   async updateUserAndInfo(user: UserDbModel, userInfo: UserInfo) {
-    const userUpdateResult = await this.dataSource.query(
-      `
-        UPDATE public.users
-          SET email=$2, login=$3, password_hash=$4
-          WHERE id=$1;
-    `,
-      [user.id, user.email, user.login, user.password_hash],
-    )
+    const userUpdateRes = await this.usersOrmRepository.update(user.id, {
+      email: user.email,
+      login: user.login,
+      password_hash: user.password_hash,
+    })
 
-    const userInfoUpdateResult = await this.dataSource.query(
-      `
-        UPDATE public.users_confirmation_info
-        SET confirmation_code=$2, confirmation_code_expiration_date=$3, is_confirmed=$4,
-          password_recovery_code=$5, password_recovery_code_expiration_date=$6, is_password_recovery_confirmed=$7
-        WHERE user_id=$1;
-    `,
-      [
-        user.id,
-        userInfo.confirmation_code,
-        userInfo.confirmation_code_expiration_date,
-        userInfo.is_confirmed,
-        userInfo.password_recovery_code,
-        userInfo.password_recovery_code_expiration_date,
-        userInfo.is_password_recovery_confirmed,
-      ],
-    )
+    const userInfoUpdateRes = await this.usersConfirmationInfoOrmRepository.update(user.id, {
+      confirmation_code: userInfo.confirmation_code,
+      confirmation_code_expiration_date: userInfo.confirmation_code_expiration_date,
+      is_confirmed: userInfo.is_confirmed,
+      password_recovery_code: userInfo.password_recovery_code,
+      password_recovery_code_expiration_date: userInfo.password_recovery_code_expiration_date,
+      is_password_recovery_confirmed: userInfo.is_password_recovery_confirmed,
+    })
 
-    return Boolean(userUpdateResult?.[1] && userInfoUpdateResult?.[1])
+    return Boolean(userUpdateRes.affected && userInfoUpdateRes.affected)
   }
 }

@@ -14,10 +14,10 @@ export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column()
+  @Column({ type: 'varchar', unique: true, length: 10 })
   login: string
 
-  @Column()
+  @Column({ unique: true })
   email: string
 
   @Column()
@@ -25,7 +25,4 @@ export class Users {
 
   @CreateDateColumn()
   created_at: Date
-
-  @OneToOne(() => UsersConfirmationInfo, (userConfirmationInfo) => userConfirmationInfo.user)
-  user_confirmation_info: UsersConfirmationInfo
 }

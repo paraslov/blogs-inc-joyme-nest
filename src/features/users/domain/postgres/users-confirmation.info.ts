@@ -34,7 +34,7 @@ export class UsersConfirmationInfo {
   @Column({ nullable: true })
   is_password_recovery_confirmed: boolean | null
 
-  @OneToOne(() => Users, (user) => user.user_confirmation_info,  { onDelete: 'CASCADE' })
+  @OneToOne(() => Users, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: Users
 }

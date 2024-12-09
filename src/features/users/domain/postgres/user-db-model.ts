@@ -1,5 +1,4 @@
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { UsersConfirmationInfo } from './users-confirmation.info'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 export class UserDbModel {
   id: string

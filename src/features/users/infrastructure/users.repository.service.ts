@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common'
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
 import { User } from '../domain/business_entity/users.entity'
-import { UserDbModel, Users } from '../domain/postgres/user-db-model'
-import { UserInfo, UsersConfirmationInfo } from '../domain/postgres/users-confirmation.info'
+import { UserDbModel } from '../domain/postgres/user-db-model'
+import { UserInfo } from '../domain/postgres/user.info'
 
 @Injectable()
 export class UsersRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
-    @InjectRepository(Users) private usersOrmRepository: Repository<Users>,
-    @InjectRepository(UsersConfirmationInfo)
-    private usersConfirmationInfoOrmRepository: Repository<UsersConfirmationInfo>,
+    @InjectRepository(UserDbModel) private usersOrmRepository: Repository<UserDbModel>,
+    @InjectRepository(UserInfo)
+    private usersConfirmationInfoOrmRepository: Repository<UserInfo>,
   ) {}
 
   async getUserById(userId: string): Promise<UserDbModel | null> {
@@ -29,13 +29,13 @@ export class UsersRepository {
 
   async createUser(user: User) {
     const { userConfirmationData, userData } = user
-    const newUser: Users = new Users()
+    const newUser: UserDbModel = new UserDbModel()
     newUser.email = userData.email
     newUser.login = userData.login
     newUser.password_hash = userData.passwordHash
     const { id: userId } = await this.usersOrmRepository.save(newUser)
 
-    const newUserInfo: UsersConfirmationInfo = new UsersConfirmationInfo()
+    const newUserInfo: UserInfo = new UserInfo()
     newUserInfo.user_id = userId
     newUserInfo.confirmation_code = userConfirmationData.confirmationCode
     newUserInfo.is_confirmed = userConfirmationData.isConfirmed

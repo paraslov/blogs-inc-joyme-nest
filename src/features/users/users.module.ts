@@ -7,12 +7,12 @@ import { UsersCommandService } from './application/users.command.service'
 import { CqrsModule } from '@nestjs/cqrs'
 import { UsersQueryRepository } from './infrastructure/users.query-repository'
 import { UsersRepository } from './infrastructure/users.repository.service'
-import { Users } from './domain/postgres/user-db-model'
-import { UsersConfirmationInfo } from './domain/postgres/users-confirmation.info'
+import { UserDbModel } from './domain/postgres/user-db-model'
+import { UserInfo } from './domain/postgres/user.info'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
-  imports: [CqrsModule, TypeOrmModule.forFeature([UsersConfirmationInfo, Users])],
+  imports: [CqrsModule, TypeOrmModule.forFeature([UserInfo, UserDbModel])],
   exports: [UsersRepository, UsersQueryRepository],
   controllers: [UsersController],
   providers: [
@@ -21,8 +21,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
     UsersQueryRepository,
     UsersRepository,
     CryptService,
-    Users,
-    UsersConfirmationInfo,
+    UserDbModel,
+    UserInfo,
     ...usersCommandHandlers,
   ],
 })

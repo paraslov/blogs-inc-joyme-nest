@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { UserViewDto } from '../api/models/output/userViewDto'
-import { Users } from '../domain/postgres/user-db-model'
+import { UserDbModel } from '../domain/postgres/user-db-model'
 
 @Injectable()
 export class UsersMappers {
-  mapToOutputDto(user: Users) {
+  mapToOutputDto(user: UserDbModel) {
     if (!user?.id) {
       return null
     }

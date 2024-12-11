@@ -5,13 +5,13 @@ import { UsersMappers } from './users.mappers'
 import { FilterUsersDto } from '../api/models/input/filter-users.dto'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
-import { Users } from '../domain/postgres/user-db-model'
+import { UserDbModel } from '../domain/postgres/user-db-model'
 
 @Injectable()
 export class UsersQueryRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
-    @InjectRepository(Users) private usersOrmRepository: Repository<Users>,
+    @InjectRepository(UserDbModel) private usersOrmRepository: Repository<UserDbModel>,
     protected usersMappers: UsersMappers,
   ) {}
 

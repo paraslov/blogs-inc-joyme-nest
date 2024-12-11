@@ -1,107 +1,90 @@
 import { Injectable } from '@nestjs/common'
-import { DataSource } from 'typeorm'
+import { Repository } from 'typeorm'
 import { Blog } from '../domain/business_entities/blogs.entity'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
-import { CreatePostDto } from '../api/models/input/create-post.dto'
 import { PostEntity } from '../domain/business_entities/posts.entity'
+import { InjectRepository } from '@nestjs/typeorm'
+import { BlogDbModel } from '../domain/postgres/blog-db-model'
+import { PostDbModel } from '../domain/postgres/post-db-model'
 
 @Injectable()
 export class BlogsRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(BlogDbModel) private blogsOrmRepository: Repository<BlogDbModel>,
+    @InjectRepository(PostDbModel) private postsOrmRepository: Repository<PostDbModel>,
+  ) {}
+
   async createBlog(newBlog: Blog) {
     const { name, description, websiteUrl, createdAt, isMembership } = newBlog
-    const createBlogResult = await this.dataSource.query(
-      `
-      INSERT INTO public.blogs(
-        name, description, website_url, created_at, is_membership)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id;
-    `,
-      [name, description, websiteUrl, createdAt, isMembership],
-    )
+    const createBlogDto = new BlogDbModel()
+    createBlogDto.name = name
+    createBlogDto.description = description
+    createBlogDto.website_url = websiteUrl
+    createBlogDto.created_at = createdAt
+    createBlogDto.is_membership = isMembership
 
-    return createBlogResult?.[0]?.id ?? null
+    const createBlogRes = await this.blogsOrmRepository.save(createBlogDto)
+    return createBlogRes?.id ?? null
   }
 
   async createPostForBlog(newPost: PostEntity) {
     const { title, shortDescription, content, blogId, blogName, createdAt, likesCount, dislikesCount } = newPost
-    const createPostResult = await this.dataSource.query(
-      `
-      INSERT INTO public.posts(
-        title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id;
-    `,
-      [title, shortDescription, content, blogId, blogName, createdAt, likesCount, dislikesCount],
-    )
 
-    return createPostResult?.[0]?.id ?? null
+    const createPostDto = new PostDbModel()
+    createPostDto.title = title
+    createPostDto.short_description = shortDescription
+    createPostDto.content = content
+    createPostDto.blog_id = blogId
+    createPostDto.blog_name = blogName
+    createPostDto.created_at = createdAt
+    createPostDto.likes_count = likesCount
+    createPostDto.dislikes_count = dislikesCount
+
+    const createPostResult = await this.postsOrmRepository.save(createPostDto)
+    return createPostResult?.id ?? null
   }
 
-  async updateBlog(id: string, updateBlog: CreateBlogDto) {
+  async updateBlog(blogId: string, updateBlog: CreateBlogDto) {
     const { name, description, websiteUrl } = updateBlog
-    const updateResult = await this.dataSource.query(
-      `
-      UPDATE public.blogs
-        SET name=$2, description=$3, website_url=$4
-        WHERE id=$1;
-    `,
-      [id, name, description, websiteUrl],
-    )
+    const updateBlogDto = new BlogDbModel()
+    updateBlogDto.name = name
+    updateBlogDto.description = description
+    updateBlogDto.website_url = websiteUrl
 
-    return Boolean(updateResult?.[1])
+    const updateResult = await this.blogsOrmRepository.update(blogId, updateBlogDto)
+    return Boolean(updateResult?.affected)
   }
 
   async deleteBlog(blogId: string) {
-    const deleteResult = await this.dataSource.query(
-      `
-        DELETE FROM public.blogs
-            WHERE id=$1;    
-    `,
-      [blogId],
-    )
+    const deleteResult = await this.blogsOrmRepository.delete(blogId)
 
-    return Boolean(deleteResult?.[1])
+    return Boolean(deleteResult?.affected)
   }
 
   async updatePostForBlog(postId: string, updateDto: UpdatePostDto) {
     const { title, shortDescription, content } = updateDto
-    const updateResult = await this.dataSource.query(
-      `
-        UPDATE public.posts
-            SET title=$2, short_description=$3, content=$4
-            WHERE id=$1;
-    `,
-      [postId, title, shortDescription, content],
-    )
+    const updatePostDto = new PostDbModel()
+    updatePostDto.title = title
+    updatePostDto.short_description = shortDescription
+    updatePostDto.content = content
 
-    return Boolean(updateResult?.[1])
+    const updateResult = await this.postsOrmRepository.update(postId, updatePostDto)
+    return Boolean(updateResult?.affected)
   }
 
-  async updateLikesInfo(postId: string, updateDto: Required<CreatePostDto>) {
-    const { title, shortDescription, content, likesCount, dislikesCount } = updateDto
-    const updateResult = await this.dataSource.query(
-      `
-        UPDATE public.posts
-            SET title=$2, short_description=$3, content=$4, likes_count=$5, dislikes_count=$6
-            WHERE id=$1;
-    `,
-      [postId, title, shortDescription, content, likesCount, dislikesCount],
-    )
+  async updateLikesInfo(postId: string, likesCount: number, dislikesCount: number) {
+    const updatePostDto = new PostDbModel()
+    updatePostDto.likes_count = likesCount
+    updatePostDto.dislikes_count = dislikesCount
 
-    return Boolean(updateResult?.[1])
+    const updateResult = await this.postsOrmRepository.update(postId, updatePostDto)
+    return Boolean(updateResult?.affected)
   }
 
   async deletePostForBlog(postId: string) {
-    const deleteResult = await this.dataSource.query(
-      `
-      DELETE FROM public.posts
-        WHERE id=$1;
-    `,
-      [postId],
-    )
+    const deleteResult = await this.postsOrmRepository.delete(postId)
 
-    return Boolean(deleteResult?.[1])
+    return Boolean(deleteResult?.affected)
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { BlogsMappers } from './blogs.mappers'
-import { DataSource, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { BlogDbModel } from '../domain/postgres/blog-db-model'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'

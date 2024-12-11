@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { BlogsMappers } from './blogs.mappers'
-import { DataSource } from 'typeorm'
+import { DataSource, Repository } from 'typeorm'
 import { BlogDbModel } from '../domain/postgres/blog-db-model'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
@@ -11,12 +11,14 @@ import { PostFilterDto } from '../api/models/input/posts.filter.dto'
 import { LikesRepository } from '../../likes/infrastructure/likes.repository'
 import { PostViewDto } from '../api/models/output/post.view.dto'
 import { PostDbModel } from '../domain/postgres/post-db-model'
+import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
+    @InjectRepository(BlogDbModel) private blogsOrmRepository: Repository<BlogDbModel>,
+    @InjectRepository(PostDbModel) private postsOrmRepository: Repository<PostDbModel>,
     private likesRepository: LikesRepository,
-    private dataSource: DataSource,
     private blogsMappers: BlogsMappers,
   ) {}
 
@@ -26,24 +28,15 @@ export class BlogsQueryRepository {
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
 
-    const blogs = await this.dataSource.query<BlogDbModel[]>(
-      `
-      SELECT id, name, description, website_url, created_at, is_membership
-        FROM public.blogs
-        WHERE name ILIKE '%' || $3 || '%'
-        ORDER BY "${sortBySnakeCase}" ${direction}
-        LIMIT $1 OFFSET $2;
-    `,
-      [pageSize, offset, searchNameTerm || ''],
-    )
-    const totalCountResult = await this.dataSource.query(
-      `SELECT COUNT(*) AS "totalCount"
-         FROM public.blogs
-         WHERE name ILIKE '%' || $1 || '%';`,
-      [searchNameTerm],
-    )
+    const [blogs, totalCount] = await this.blogsOrmRepository
+      .createQueryBuilder('b')
+      .select(['b.id', 'b.name', 'b.description', 'b.website_url', 'b.created_at', 'b.is_membership'])
+      .where('b.name ILIKE :searchNameTerm', { searchNameTerm: `%${searchNameTerm || ''}%` })
+      .orderBy(`b.${sortBySnakeCase}`, direction)
+      .skip(offset)
+      .limit(pageSize)
+      .getManyAndCount()
 
-    const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
     const mappedBlogs = blogs.map(this.blogsMappers.mapBlogToOutput)
     const pagesCount = Math.ceil(totalCount / pageSize)
 
@@ -57,31 +50,36 @@ export class BlogsQueryRepository {
   }
 
   async getBlogById(blogId: string) {
-    const blogResult = await this.dataSource.query<BlogDbModel[]>(
-      `
-      SELECT id, name, description, website_url, created_at, is_membership
-      FROM public.blogs
-      WHERE id=$1;
-    `,
-      [blogId],
-    )
+    const foundBlog = await this.blogsOrmRepository
+      .createQueryBuilder('b')
+      .select(['b.id', 'b.name', 'b.description', 'b.website_url', 'b.created_at', 'b.is_membership'])
+      .where('b.id = :blogId', { blogId })
+      .getOne()
 
-    return this.blogsMappers.mapBlogToOutput(blogResult?.[0])
+    return this.blogsMappers.mapBlogToOutput(foundBlog)
   }
 
   async getPostById(postId: string, currentUserId?: string): Promise<PostViewDto | null> {
     const likeStatus = await this.likesRepository.getUserLikeStatus(postId, currentUserId)
     const threeLatestLikes = await this.likesRepository.getLatestLikes(postId)
-    const postResult = await this.dataSource.query<PostDbModel[]>(
-      `
-        SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
-            FROM public.posts
-            WHERE id=$1;
-    `,
-      [postId],
-    )
 
-    return this.blogsMappers.mapPostToOutputDto(postResult?.[0], threeLatestLikes, likeStatus)
+    const foundPost = await this.postsOrmRepository
+      .createQueryBuilder('p')
+      .select([
+        'p.id',
+        'p.title',
+        'p.short_description',
+        'p.content',
+        'p.blog_id',
+        'p.blog_name',
+        'p.created_at',
+        'p.likes_count',
+        'p.dislikes_count',
+      ])
+      .where('id = :postId', { postId })
+      .getOne()
+
+    return this.blogsMappers.mapPostToOutputDto(foundPost, threeLatestLikes, likeStatus)
   }
 
   async getPostsList(
@@ -95,24 +93,25 @@ export class BlogsQueryRepository {
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
 
-    const posts = await this.dataSource.query<PostDbModel[]>(
-      `
-      SELECT id, title, short_description, content, blog_id, blog_name, created_at, likes_count, dislikes_count
-        FROM public.posts
-        ${blogId ? 'WHERE blog_id=$3' : ''}
-        ORDER BY "${sortBySnakeCase}" ${direction}
-        LIMIT $1 OFFSET $2;
-    `,
-      blogId ? [pageSize, offset, blogId] : [pageSize, offset],
-    )
-    const totalCountResult = await this.dataSource.query(
-      `SELECT COUNT(*) AS "totalCount"
-         FROM public.posts
-         ${blogId ? 'WHERE blog_id=$1' : ''};`,
-      blogId ? [blogId] : [],
-    )
+    const [posts, totalCount] = await this.postsOrmRepository
+      .createQueryBuilder('p')
+      .select([
+        'p.id',
+        'p.title',
+        'p.short_description',
+        'p.content',
+        'p.blog_id',
+        'p.blog_name',
+        'p.created_at',
+        'p.likes_count',
+        'p.dislikes_count',
+      ])
+      .where(blogId ? 'blog_id = :blogId' : '', blogId ? { blogId } : {})
+      .orderBy(`p.${sortBySnakeCase}`, direction)
+      .skip(offset)
+      .limit(pageSize)
+      .getManyAndCount()
 
-    const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
     const mappedPostsPromises = posts.map(async (post) => {
       const likeStatus = await this.likesRepository.getUserLikeStatus(post.id, userId)
       const threeLatestLikes = await this.likesRepository.getLatestLikes(post.id)

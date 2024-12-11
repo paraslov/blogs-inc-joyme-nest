@@ -24,7 +24,7 @@ export class UserInfo {
   @Column({ nullable: true })
   is_password_recovery_confirmed: boolean | null
 
-  @OneToOne(() => Users, { onDelete: 'CASCADE' })
+  @OneToOne(() => UserDbModel, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: UserDbModel
 }

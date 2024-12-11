@@ -1,6 +1,6 @@
 import { UpdatePostDto } from '../../api/models/input/update-post.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { BlogsRepository } from '../../infrastructure/blogs.repository.service'
+import { BlogsRepository } from '../../infrastructure/blogs.repository'
 
 export class UpdatePostCommand {
   constructor(

@@ -2,7 +2,7 @@ import { CreateUserDto } from '../../api/models/input/create-user.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { User } from '../../domain/business_entity/users.entity'
 import { CryptService } from '../../../../common/services'
-import { UsersRepository } from '../../infrastructure/users.repository.service'
+import { UsersRepository } from '../../infrastructure/users.repository'
 import { UsersQueryRepository } from '../../infrastructure/users.query-repository'
 import { v4 as uuidv4 } from 'uuid'
 

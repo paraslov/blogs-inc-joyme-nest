@@ -15,7 +15,11 @@ export class UsersRepository {
   ) {}
 
   async getUserById(userId: string): Promise<UserDbModel | null> {
-    const foundUser = await this.usersOrmRepository.createQueryBuilder('u').select('*').where(`id=${userId}`).getOne()
+    const foundUser = await this.usersOrmRepository
+      .createQueryBuilder('u')
+      .select(['u.id', 'u.email', 'u.login', 'u.created_at'])
+      .where(`id = :userId`, { userId })
+      .getOne()
 
     return foundUser ?? null
   }
@@ -43,7 +47,10 @@ export class UsersRepository {
     return Boolean(deleteRes.affected)
   }
   async confirmUser(confirmationCode: string) {
-    const updateRes = await this.usersConfirmationInfoOrmRepository.update(confirmationCode, { is_confirmed: true })
+    const updateRes = await this.usersConfirmationInfoOrmRepository.update(
+      { confirmation_code: confirmationCode },
+      { is_confirmed: true },
+    )
 
     return updateRes.affected
   }

@@ -1,15 +1,9 @@
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { UserInfo } from './user.info'
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
+@Entity('users')
 export class UserDbModel {
-  id: string
-  login: string
-  email: string
-  password_hash: string
-  created_at: Date
-}
-
-@Entity()
-export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string
 

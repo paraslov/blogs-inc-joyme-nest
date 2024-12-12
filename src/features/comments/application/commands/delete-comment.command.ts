@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { CommentsRepository } from '../../infrastructure/comments.repository.service'
+import { CommentsRepository } from '../../infrastructure/comments.repository'
 
 export class DeleteCommentCommand {
   constructor(public readonly commentId: string) {}

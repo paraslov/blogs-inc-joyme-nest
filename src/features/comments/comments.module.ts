@@ -7,7 +7,7 @@ import { CommentsCommandHandlers } from './application/commands'
 import { CqrsModule } from '@nestjs/cqrs'
 import { LikesModule } from '../likes/likes.module'
 import { UsersModule } from '../users/users.module'
-import { CommentsRepository } from './infrastructure/comments.repository.service'
+import { CommentsRepository } from './infrastructure/comments.repository'
 import { CommentDbModel } from './domain/postgres/comment-db-model'
 import { TypeOrmModule } from '@nestjs/typeorm'
 

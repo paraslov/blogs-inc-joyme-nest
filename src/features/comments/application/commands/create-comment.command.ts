@@ -1,7 +1,7 @@
 import { CreateUpdateCommentDto } from '../../api/models/input/create-update-comment.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CommentDto } from '../../domain/business_entity/comment.entity'
-import { CommentsRepository } from '../../infrastructure/comments.repository.service'
+import { CommentsRepository } from '../../infrastructure/comments.repository'
 
 export class CreateCommentCommand {
   constructor(

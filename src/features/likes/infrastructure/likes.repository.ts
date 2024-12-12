@@ -1,84 +1,80 @@
 import { Injectable } from '@nestjs/common'
-import { DataSource } from 'typeorm'
+import { Repository } from 'typeorm'
 import { LikesDbModel } from '../domain/postgres/likes-db-model'
 import { Like } from '../domain/business_entity/likes.entity'
 import { LikeStatus } from '../api/models/enums/like-status'
 import { LikesMappers } from './likes.mappers'
+import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()
 export class LikesRepository {
   constructor(
-    private dataSource: DataSource,
+    @InjectRepository(LikesDbModel) private likesOrmRepository: Repository<LikesDbModel>,
     private likesMappers: LikesMappers,
   ) {}
 
   async getLikeStatusData(userId: string, parentId: string) {
-    const likeStatus = await this.dataSource.query<LikesDbModel[]>(
-      `
-      SELECT parent_id, status, created_at, user_id, user_login
-        FROM public.likes
-        WHERE user_id = $1 AND parent_id = $2;
-    `,
-      [userId, parentId],
-    )
+    const likeStatusData = await this.likesOrmRepository
+      .createQueryBuilder('l')
+      .select(['l.parent_id', 'l.status', 'l.created_at', 'l.user_id', 'l.user_login'])
+      .where('l.user_id = :userId', { userId })
+      .andWhere('l.parent_id = :parentId', { parentId })
+      .getOne()
 
-    return likeStatus?.[0]
+    return likeStatusData ?? null
   }
 
   async getUserLikeStatus(parentId: string, userId?: string) {
     if (!userId) {
-      return
+      return null
     }
-    const userLikeData = await this.dataSource.query<{ status: LikeStatus }[]>(
-      `
-      SELECT status
-        FROM public.likes
-        WHERE user_id = $1 AND parent_id = $2;
-    `,
-      [userId, parentId],
-    )
 
-    return userLikeData?.[0]?.status
+    const userLikeStatus = await this.likesOrmRepository
+      .createQueryBuilder('l')
+      .select('l.status', 'status')
+      .where('l.user_id = :userId', { userId })
+      .andWhere('l.parent_id = :parentId', { parentId })
+      .getRawOne()
+
+    return userLikeStatus?.status ?? null
   }
 
   async getLatestLikes(parentId: string, likesCount: number = 3) {
-    const latestLikeData = await this.dataSource.query<LikesDbModel[]>(
-      `
-      SELECT parent_id, status, created_at, user_id, user_login
-        FROM public.likes
-        WHERE parent_id=$1 AND status=$3
-        ORDER BY created_at DESC
-        LIMIT $2 OFFSET 0;
-    `,
-      [parentId, likesCount, LikeStatus.LIKE],
-    )
+    const latestLikesData = await this.likesOrmRepository
+      .createQueryBuilder('l')
+      .select(['l.parent_id', 'l.status', 'l.created_at', 'l.user_id', 'l.user_login'])
+      .where('l.status = :status', { status: LikeStatus.LIKE })
+      .andWhere('l.parent_id = :parentId', { parentId })
+      .orderBy('created_at', 'DESC')
+      .skip(0)
+      .limit(likesCount)
+      .getMany()
 
-    return latestLikeData?.map(this.likesMappers.mapDtoToView) ?? []
+    return latestLikesData?.map(this.likesMappers.mapDtoToView) ?? []
   }
 
   async createLikeStatus(newLikeStatus: Like) {
     const { parentId, status, userId, userLogin, createdAt } = newLikeStatus
-    await this.dataSource.query(
-      `
-        INSERT INTO public.likes(
-            parent_id, status, created_at, user_id, user_login)
-            VALUES ($1, $2, $3, $4, $5);
-    `,
-      [parentId, status, createdAt, userId, userLogin],
-    )
+    const newLike = new LikesDbModel()
+    newLike.status = status
+    newLike.parent_id = parentId
+    newLike.user_id = userId
+    newLike.user_login = userLogin
+    newLike.created_at = createdAt
+
+    await this.likesOrmRepository.save(newLike)
   }
 
   async updateLikeStatus(likeStatusDto: Like, parentId: string) {
     const { status, userId, userLogin, createdAt } = likeStatusDto
-    const updateResult = await this.dataSource.query(
-      `
-        UPDATE public.likes
-            SET status=$2, created_at=$3, user_id=$4, user_login=$5
-            WHERE parent_id=$1;
-    `,
-      [parentId, status, createdAt, userId, userLogin],
-    )
+    const updateLike = new LikesDbModel()
+    updateLike.status = status
+    updateLike.user_id = userId
+    updateLike.user_login = userLogin
+    updateLike.created_at = createdAt
 
-    return Boolean(updateResult?.[1])
+    const updateResult = await this.likesOrmRepository.update({ parent_id: parentId }, updateLike)
+
+    return Boolean(updateResult?.affected)
   }
 }

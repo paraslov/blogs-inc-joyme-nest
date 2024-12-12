@@ -6,7 +6,7 @@ export class LikesDbModel {
   @PrimaryColumn()
   parent_id: string
 
-  @Column({ type: 'varchar', length: 30 })
+  @Column({ type: 'enum', enum: LikeStatus })
   status: LikeStatus
 
   @CreateDateColumn()

@@ -1,56 +1,65 @@
 import { Injectable } from '@nestjs/common'
 import { CommentsMappers } from './comments.mappers'
-import { DataSource } from 'typeorm'
+import { Repository } from 'typeorm'
 import { CommentDbModel } from '../domain/postgres/comment-db-model'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { CommentsFilterDto } from '../api/models/input/comments.filter.dto'
 import { LikesRepository } from '../../likes/infrastructure/likes.repository'
+import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
+    @InjectRepository(CommentDbModel) private commentsOrmRepository: Repository<CommentDbModel>,
     private likesRepository: LikesRepository,
     private commentsMappers: CommentsMappers,
-    private dataSource: DataSource,
   ) {}
 
   async getCommentById(commentId: string, userId?: string) {
-    const foundComment = await this.dataSource.query<CommentDbModel[]>(
-      `
-      SELECT id, parent_id, content, created_at, user_id, user_login, likes_count, dislikes_count
-        FROM public.comments
-        WHERE id=$1;
-    `,
-      [commentId],
-    )
+    const foundComment = await this.commentsOrmRepository
+      .createQueryBuilder('c')
+      .select([
+        'c.id',
+        'c.parent_id',
+        'c.content',
+        'c.created_at',
+        'c.user_id',
+        'c.user_login',
+        'c.likes_count',
+        'c.dislikes_count',
+      ])
+      .where('c.id = :commentId', { commentId })
+      .getOne()
+
     const likeStatus = await this.likesRepository.getUserLikeStatus(commentId, userId)
 
-    return this.commentsMappers.mapEntityToOutputDto(foundComment?.[0], likeStatus)
+    return this.commentsMappers.mapEntityToOutputDto(foundComment, likeStatus)
   }
+
   async getCommentsList(query: CommentsFilterDto, parentId?: string, userId?: string) {
     const { pageNumber, pageSize, sortBy, sortDirection } = query
     const offset = (pageNumber - 1) * pageSize
     const direction = sortDirection === SortDirection.DESC ? 'DESC' : 'ASC'
     const sortBySnakeCase = camelToSnakeUtil(sortBy)
 
-    const comments = await this.dataSource.query<CommentDbModel[]>(
-      `
-      SELECT id, parent_id, content, created_at, user_id, user_login, likes_count, dislikes_count
-        FROM public.comments
-        WHERE parent_id=$1
-        ORDER BY "${sortBySnakeCase}" ${direction}
-        LIMIT $2 OFFSET $3;
-    `,
-      [parentId, pageSize, offset],
-    )
-    const totalCountResult = await this.dataSource.query(
-      `SELECT COUNT(*) AS "totalCount"
-         FROM public.comments
-         WHERE parent_id=$1`,
-      [parentId],
-    )
-    const totalCount = parseInt(totalCountResult?.[0]?.totalCount, 10)
+    const [comments, totalCount] = await this.commentsOrmRepository
+      .createQueryBuilder('c')
+      .select([
+        'c.id',
+        'c.parent_id',
+        'c.content',
+        'c.created_at',
+        'c.user_id',
+        'c.user_login',
+        'c.likes_count',
+        'c.dislikes_count',
+      ])
+      .where('c.parent_id = :parentId', { parentId })
+      .orderBy(`c.${sortBySnakeCase}`, direction)
+      .skip(offset)
+      .limit(pageSize)
+      .getManyAndCount()
 
     const mappedCommentsPromises = comments.map(async (comment) => {
       const likeStatus = await this.likesRepository.getUserLikeStatus(comment.id, userId)

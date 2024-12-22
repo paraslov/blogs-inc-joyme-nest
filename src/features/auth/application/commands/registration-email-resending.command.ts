@@ -4,7 +4,7 @@ import { HttpStatusCodes } from '../../../../common/models'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { UserInfo, UsersRepository } from '../../../users'
-import { AuthRepository } from '../../infrastructure/auth.repository.service'
+import { AuthRepository } from '../../infrastructure/auth.repository'
 
 export class RegistrationEmailResendingCommand {
   constructor(public readonly email: string) {}

@@ -13,7 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
   imports: [CqrsModule, TypeOrmModule.forFeature([UserInfo, UserDbModel])],
-  exports: [UsersRepository, UsersQueryRepository],
+  exports: [UsersRepository, UsersQueryRepository, UserDbModel, UserInfo],
   controllers: [UsersController],
   providers: [
     UsersCommandService,

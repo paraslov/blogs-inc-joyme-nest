@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../../common/models'
 import { MeViewModelDto } from '../../api/models/output/me-view-model.dto'
-import { AuthRepository } from '../../infrastructure/auth.repository.service'
+import { AuthRepository } from '../../infrastructure/auth.repository'
 import { CreateUserDto } from '../../../users'
 
 export class AuthTestManager {

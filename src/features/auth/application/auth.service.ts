@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt'
 import { AuthStrategiesDto } from '../api/models/utility/auth-strategies-dto'
 import { ConfigService } from '@nestjs/config'
 import { ConfigurationType } from '../../../settings/configuration'
-import { AuthRepository } from '../infrastructure/auth.repository.service'
+import { AuthRepository } from '../infrastructure/auth.repository'
 
 @Injectable()
 export class AuthService {

@@ -53,28 +53,16 @@ export class LikesRepository {
     return latestLikesData?.map(this.likesMappers.mapDtoToView) ?? []
   }
 
-  async createLikeStatus(newLikeStatus: Like) {
-    const { parentId, status, userId, userLogin, createdAt } = newLikeStatus
-    const newLike = new LikesDbModel()
-    newLike.status = status
-    newLike.parent_id = parentId
-    newLike.user_id = userId
-    newLike.user_login = userLogin
-    newLike.created_at = createdAt
+  async createLikeInfo(newLikeInfo: Like) {
+    const newLikeModel = LikesDbModel.createLikeModel(newLikeInfo)
 
-    await this.likesOrmRepository.save(newLike)
+    await this.likesOrmRepository.save(newLikeModel)
   }
 
   async updateLikeStatus(likeStatusDto: Like, parentId: string) {
-    const { status, userId, userLogin, createdAt } = likeStatusDto
-    const updateLike = new LikesDbModel()
-    updateLike.status = status
-    updateLike.user_id = userId
-    updateLike.user_login = userLogin
-    updateLike.created_at = createdAt
+    const updateLikeModel = LikesDbModel.createLikeModel(likeStatusDto)
 
-    const updateResult = await this.likesOrmRepository.update({ parent_id: parentId }, updateLike)
-
+    const updateResult = await this.likesOrmRepository.update({ parent_id: parentId }, updateLikeModel)
     return Boolean(updateResult?.affected)
   }
 }

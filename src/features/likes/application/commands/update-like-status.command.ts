@@ -54,7 +54,7 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
         createdAt: new Date(),
       }
 
-      await this.likesRepository.createLikeStatus(createLikeStatusEntityDto)
+      await this.likesRepository.createLikeInfo(createLikeStatusEntityDto)
 
       likesCountChange = newLikeStatus === LikeStatus.LIKE ? 1 : 0
       dislikesCountChange = newLikeStatus === LikeStatus.DISLIKE ? 1 : 0

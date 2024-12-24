@@ -2,8 +2,9 @@ import { CreateUserDto } from '../../api/models/input/create-user.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { User } from '../../domain/business_entity/users.entity'
 import { CryptService } from '../../../../common/services'
-import { UsersRepository } from '../../infrastructure/users.repository.service'
+import { UsersRepository } from '../../infrastructure/users.repository'
 import { UsersQueryRepository } from '../../infrastructure/users.query-repository'
+import { v4 as uuidv4 } from 'uuid'
 
 export class CreateUserCommand {
   constructor(public readonly createUserDto: CreateUserDto) {}
@@ -29,7 +30,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         createdAt: new Date().toISOString(),
       },
       userConfirmationData: {
-        confirmationCode: '44444444-4444-4444-4444-444444444444',
+        confirmationCode: uuidv4(),
         confirmationCodeExpirationDate: new Date(),
         isConfirmed: true,
       },

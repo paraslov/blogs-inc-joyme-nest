@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import { HttpStatusCodes } from '../../../../common/models'
 import { UsersRepository } from '../../../users'
-import { AuthRepository } from '../../infrastructure/auth.repository.service'
+import { AuthRepository } from '../../infrastructure/auth.repository'
 
 export class PasswordRecoveryCommand {
   constructor(public readonly email: string) {}

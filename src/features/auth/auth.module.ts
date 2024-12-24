@@ -15,7 +15,9 @@ import { ConfigurationType } from '../../settings/configuration'
 import { AuthQueryRepository } from './infrastructure/auth.query-repository'
 import { AuthMappers } from './infrastructure/auth.mappers'
 import { DevicesModule } from '../devices'
-import { AuthRepository } from './infrastructure/auth.repository.service'
+import { AuthRepository } from './infrastructure/auth.repository'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { UserDbModel, UserInfo } from '../users'
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { AuthRepository } from './infrastructure/auth.repository.service'
     UsersModule,
     DevicesModule,
     CqrsModule,
+    TypeOrmModule.forFeature([UserDbModel, UserInfo]),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService<ConfigurationType>) => ({
         secret: configService.get('jwtSettings').ACCESS_JWT_SECRET,

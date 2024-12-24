@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UserInfo, UsersRepository } from '../../../users'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { AuthRepository } from '../../infrastructure/auth.repository.service'
+import { AuthRepository } from '../../infrastructure/auth.repository'
 
 export class ConfirmUserCommand {
   constructor(public readonly confirmationCode: string) {}

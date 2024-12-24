@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { Device } from '../../domain/business_entity/device.entity'
+import { DeviceEntity } from '../../domain/business_entity/device.entity'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { CreateDeviceSessionDto } from '../../api/models/input/create-device-session.dto'
@@ -25,7 +25,7 @@ export class CreateDeviceSessionCommandHandler implements ICommandHandler<Create
       return notice
     }
 
-    const newDeviceSession: Device = {
+    const newDeviceSession: DeviceEntity = {
       ip,
       deviceName,
       userId,

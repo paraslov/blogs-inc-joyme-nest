@@ -70,8 +70,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
           host,
           port,
           type: 'postgres',
-          autoLoadEntities: false,
-          synchronize: false,
+          autoLoadEntities: true,
+          synchronize: true,
           ssl,
         }
       },

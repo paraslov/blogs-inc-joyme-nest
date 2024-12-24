@@ -4,7 +4,7 @@ import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { UserInfo, UsersRepository } from '../../../users'
 import { CryptService } from '../../../../common/services'
-import { AuthRepository } from '../../infrastructure/auth.repository.service'
+import { AuthRepository } from '../../infrastructure/auth.repository'
 
 export class ConfirmNewPasswordCommand {
   constructor(public readonly passwordRecoveryDto: PasswordRecoveryDto) {}
@@ -21,6 +21,7 @@ export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPass
   async execute(command: ConfirmNewPasswordCommand) {
     const { passwordRecoveryDto } = command
     const userInfo = await this.authRepository.getUserInfoByRecoveryCode(passwordRecoveryDto.recoveryCode)
+    console.log('@> userInfo: ', userInfo)
 
     const resultNotice = this.validateUser(userInfo)
     if (resultNotice.hasError()) {

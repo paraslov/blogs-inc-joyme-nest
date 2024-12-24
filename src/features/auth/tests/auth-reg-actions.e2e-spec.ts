@@ -1,12 +1,14 @@
 import { INestApplication } from '@nestjs/common'
-import { UsersTestManager } from '../../users'
+import { UserDbModel, UserInfo, UsersTestManager } from '../../users'
 import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
 import { AuthTestManager } from './utils/auth-test.manager'
 import { EmailSendManager } from '../../../common/manager'
 import { EmailSendManagerMock } from './mocks/EmailSendManagerMock'
-import { AuthRepository } from '../infrastructure/auth.repository.service'
+import { AuthRepository } from '../infrastructure/auth.repository'
+import { Repository } from 'typeorm'
+import { getRepositoryToken } from '@nestjs/typeorm'
 
 aDescribe(skipSettings.for('auth_reg_actions'))('>> auth_reg_actions <<', () => {
   let app: INestApplication
@@ -21,7 +23,9 @@ aDescribe(skipSettings.for('auth_reg_actions'))('>> auth_reg_actions <<', () => 
       app = result.app
       httpServer = result.httpServer
 
-      authTestManager = new AuthTestManager(app, new AuthRepository(result.dataSource))
+      const userRepository = app.get<Repository<UserDbModel>>(getRepositoryToken(UserDbModel))
+      const userInfoRepository = app.get<Repository<UserInfo>>(getRepositoryToken(UserInfo))
+      authTestManager = new AuthTestManager(app, new AuthRepository(userRepository, userInfoRepository))
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }

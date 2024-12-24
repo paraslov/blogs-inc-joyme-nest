@@ -119,7 +119,6 @@ export class BlogsSaController {
     @Param('postId', UUIDValidationPipe) postId: string,
   ) {
     const blog = await this.blogsQueryRepository.getBlogById(blogId)
-    console.log('@> blog: ', blog)
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${blogId} not found`)
     }

@@ -2,7 +2,7 @@ import { CreateUpdateCommentDto } from '../../api/models/input/create-update-com
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { CommentsRepository } from '../../infrastructure/comments.repository.service'
+import { CommentsRepository } from '../../infrastructure/comments.repository'
 
 export class UpdateCommentCommand {
   constructor(

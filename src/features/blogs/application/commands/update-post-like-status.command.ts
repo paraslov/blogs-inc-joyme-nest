@@ -2,8 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { LikesCommandService, UpdateLikeStatusDto } from '../../../likes'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { CreatePostDto } from '../../api/models/input/create-post.dto'
-import { BlogsRepository } from '../../infrastructure/blogs.repository.service'
+import { BlogsRepository } from '../../infrastructure/blogs.repository'
 import { PostViewDto } from '../../api/models/output/post.view.dto'
 
 export class UpdatePostLikeStatusCommand {
@@ -38,16 +37,7 @@ export class UpdatePostLikeStatusHandler implements ICommandHandler<UpdatePostLi
     const likesCount = (post.extendedLikesInfo?.likesCount ?? 0) + likesCountChange
     const dislikesCount = (post.extendedLikesInfo?.dislikesCount ?? 0) + dislikesCountChange
 
-    const updatePostData: Required<CreatePostDto> = {
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      likesCount: likesCount >= 0 ? likesCount : 0,
-      dislikesCount: dislikesCount >= 0 ? dislikesCount : 0,
-    }
-
-    const updateResult = await this.blogsRepository.updateLikesInfo(post.id, updatePostData)
+    const updateResult = await this.blogsRepository.updateLikesInfo(post.id, likesCount, dislikesCount)
     if (!updateResult) {
       notice.addError(`Post with ID ${post.id} not found`, undefined, HttpStatusCodes.NOT_FOUND_404)
     }

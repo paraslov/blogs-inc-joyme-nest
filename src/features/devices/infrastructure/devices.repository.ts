@@ -1,72 +1,43 @@
 import { Injectable } from '@nestjs/common'
-import { DataSource } from 'typeorm'
-import { Device } from '../domain/business_entity/device.entity'
-import { DevicesDbModel } from '../domain/postgres/device-db-model'
+import { Repository } from 'typeorm'
+import { DeviceEntity } from '../domain/business_entity/device.entity'
+import { Devices } from '../domain/postgres/device-db-model'
+import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()
 export class DevicesRepository {
-  constructor(protected dataSource: DataSource) {}
-  async getDeviceById(deviceId: string): Promise<DevicesDbModel> {
-    const result = await this.dataSource.query(
-      `
-      SELECT device_id, device_name, user_id, ip, iat, exp
-        FROM public.devices
-        WHERE device_id=$1;
-    `,
-      [deviceId],
-    )
+  constructor(@InjectRepository(Devices) private devicesOrmRepository: Repository<Devices>) {}
 
-    return result?.[0]
+  getDeviceById(deviceId: string): Promise<Devices> {
+    return this.devicesOrmRepository
+      .createQueryBuilder('d')
+      .select(['d.device_id', 'd.device_name', 'd.user_id', 'd.ip', 'd.iat', 'd.exp'])
+      .where('d.device_id = :deviceId', { deviceId })
+      .getOne()
   }
 
-  async createDeviceSession(device: Device) {
-    const createResult = await this.dataSource.query(
-      `
-      INSERT INTO public.devices(
-        device_id, device_name, user_id, ip, iat, exp)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING device_id;
-    `,
-      [device.deviceId, device.deviceName, device.userId, device.ip, device.iat, device.exp],
-    )
+  async createDeviceSession(device: DeviceEntity) {
+    const newDevice = Devices.createDeviceModel(device)
 
-    return createResult?.[0]
+    const createResult = await this.devicesOrmRepository.save(newDevice)
+    return createResult.device_id
   }
 
   async deleteDeviceByDeviceId(deviceId: string) {
-    const deleteResult = await this.dataSource.query(
-      `
-      DELETE FROM public.devices
-        WHERE device_id=$1;
-    `,
-      [deviceId],
-    )
+    const deleteResult = await this.devicesOrmRepository.delete(deviceId)
 
-    return Boolean(deleteResult?.[1])
+    return Boolean(deleteResult.affected)
   }
 
   async deleteOtherDevices(devicesIds: string[]) {
-    const deleteResult = await this.dataSource.query(
-      `
-        DELETE FROM public.devices
-          WHERE device_id = ANY($1);
-    `,
-      [devicesIds],
-    )
+    const deleteResult = await this.devicesOrmRepository.delete(devicesIds)
 
-    return deleteResult?.[1]
+    return deleteResult.affected
   }
 
-  async updateDeviceSession(device: DevicesDbModel) {
-    const updateResult = await this.dataSource.query(
-      `
-      UPDATE public.devices
-        SET device_name=$2, user_id=$3, ip=$4, iat=$5, exp=$6
-        WHERE device_id=$1;
-    `,
-      [device.device_id, device.device_name, device.user_id, device.ip, device.iat, device.exp],
-    )
+  async updateDeviceSession(device: Devices) {
+    const updateResult = await this.devicesOrmRepository.update(device.device_id, device)
 
-    return Boolean(updateResult?.[1])
+    return Boolean(updateResult.affected)
   }
 }

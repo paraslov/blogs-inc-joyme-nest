@@ -10,18 +10,9 @@ export class CommentsRepository {
   constructor(@InjectRepository(CommentDbModel) private commentsOrmRepository: Repository<CommentDbModel>) {}
 
   async createComment(comment: CommentDto): Promise<string | null> {
-    const { parentId, content, createdAt, commentatorInfo, likesCount, dislikesCount } = comment
-    const newComment = new CommentDbModel()
-    newComment.parent_id = parentId
-    newComment.content = content
-    newComment.created_at = createdAt
-    newComment.likes_count = likesCount
-    newComment.dislikes_count = dislikesCount
-    newComment.user_id = commentatorInfo.userId
-    newComment.user_login = commentatorInfo.userLogin
+    const newComment = CommentDbModel.createCommentModel(comment)
 
     const createdCommentResult = await this.commentsOrmRepository.save(newComment)
-
     return createdCommentResult?.id ?? null
   }
 
@@ -30,23 +21,13 @@ export class CommentsRepository {
     updatedComment.content = updateCommentDto.content
 
     const updateResult = await this.commentsOrmRepository.update({ id: commentId }, updatedComment)
-
     return Boolean(updateResult?.affected)
   }
 
   async updateComment(commentId: string, commentDto: CommentDto) {
-    const { commentatorInfo, likesCount, dislikesCount, createdAt, parentId, content } = commentDto
-    const updatedComment = new CommentDbModel()
-    updatedComment.parent_id = parentId
-    updatedComment.content = content
-    updatedComment.created_at = createdAt
-    updatedComment.likes_count = likesCount
-    updatedComment.dislikes_count = dislikesCount
-    updatedComment.user_id = commentatorInfo.userId
-    updatedComment.user_login = commentatorInfo.userLogin
+    const updatedComment = CommentDbModel.createCommentModel(commentDto)
 
     const updateResult = await this.commentsOrmRepository.update({ id: commentId }, updatedComment)
-
     return Boolean(updateResult?.affected)
   }
 

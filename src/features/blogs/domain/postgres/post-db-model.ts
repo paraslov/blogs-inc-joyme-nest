@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { BlogDbModel } from './blog-db-model'
+import { PostEntity } from '../business_entities/posts.entity'
 
 @Entity('posts')
 export class PostDbModel {
@@ -33,4 +34,19 @@ export class PostDbModel {
   @ManyToOne(() => BlogDbModel)
   @JoinColumn({ name: 'blog_id' })
   blog: BlogDbModel
+
+  static createPostModel(newPost: PostEntity) {
+    const createdPostDto = new PostDbModel()
+
+    createdPostDto.title = newPost.title
+    createdPostDto.short_description = newPost.shortDescription
+    createdPostDto.content = newPost.content
+    createdPostDto.blog_id = newPost.blogId
+    createdPostDto.blog_name = newPost.blogName
+    createdPostDto.created_at = newPost.createdAt
+    createdPostDto.likes_count = newPost.likesCount
+    createdPostDto.dislikes_count = newPost.dislikesCount
+
+    return createdPostDto
+  }
 }

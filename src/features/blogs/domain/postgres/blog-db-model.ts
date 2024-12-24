@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Blog } from '../business_entities/blogs.entity'
 
 @Entity('blogs')
 export class BlogDbModel {
@@ -19,4 +20,16 @@ export class BlogDbModel {
 
   @Column({ type: 'boolean', nullable: true })
   is_membership: boolean
+
+  static createBlogModel(newBlog: Blog) {
+    const createdBlogDto = new BlogDbModel()
+
+    createdBlogDto.name = newBlog.name
+    createdBlogDto.description = newBlog.description
+    createdBlogDto.website_url = newBlog.websiteUrl
+    createdBlogDto.created_at = newBlog.createdAt
+    createdBlogDto.is_membership = newBlog.isMembership
+
+    return createdBlogDto
+  }
 }

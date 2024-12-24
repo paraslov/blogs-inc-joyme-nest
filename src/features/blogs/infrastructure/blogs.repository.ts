@@ -16,30 +16,14 @@ export class BlogsRepository {
   ) {}
 
   async createBlog(newBlog: Blog) {
-    const { name, description, websiteUrl, createdAt, isMembership } = newBlog
-    const createBlogDto = new BlogDbModel()
-    createBlogDto.name = name
-    createBlogDto.description = description
-    createBlogDto.website_url = websiteUrl
-    createBlogDto.created_at = createdAt
-    createBlogDto.is_membership = isMembership
+    const createBlogDto = BlogDbModel.createBlogModel(newBlog)
 
     const createBlogRes = await this.blogsOrmRepository.save(createBlogDto)
     return createBlogRes?.id ?? null
   }
 
   async createPostForBlog(newPost: PostEntity) {
-    const { title, shortDescription, content, blogId, blogName, createdAt, likesCount, dislikesCount } = newPost
-
-    const createPostDto = new PostDbModel()
-    createPostDto.title = title
-    createPostDto.short_description = shortDescription
-    createPostDto.content = content
-    createPostDto.blog_id = blogId
-    createPostDto.blog_name = blogName
-    createPostDto.created_at = createdAt
-    createPostDto.likes_count = likesCount
-    createPostDto.dislikes_count = dislikesCount
+    const createPostDto = PostDbModel.createPostModel(newPost)
 
     const createPostResult = await this.postsOrmRepository.save(createPostDto)
     return createPostResult?.id ?? null

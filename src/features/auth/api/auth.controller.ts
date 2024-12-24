@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpException,
+  Injectable,
   Post,
   Request,
   Response,
@@ -25,7 +26,16 @@ import { RefreshTokenGuard } from '../application/guards/refresh-auth.guard'
 import { AuthRequestDto } from './models/utility/auth-request.dto'
 import { DevicesCommandService } from '../../devices'
 
-@UseGuards(ThrottlerGuard)
+@Injectable()
+class CustomThrottlerGuard extends ThrottlerGuard {
+  protected getTracker(req: Record<string, any>) {
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+    console.log(`Throttler: Tracking IP: ${ip}`)
+    return ip
+  }
+}
+
+@UseGuards(CustomThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(

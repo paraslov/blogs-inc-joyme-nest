@@ -17,16 +17,9 @@ export class DevicesRepository {
   }
 
   async createDeviceSession(device: DeviceEntity) {
-    const newDevice = new Devices()
-    newDevice.device_id = device.deviceId
-    newDevice.device_name = device.deviceName
-    newDevice.user_id = device.userId
-    newDevice.ip = device.ip
-    newDevice.iat = device.iat
-    newDevice.exp = device.exp
+    const newDevice = Devices.createDeviceModel(device)
 
     const createResult = await this.devicesOrmRepository.save(newDevice)
-
     return createResult.device_id
   }
 

@@ -25,10 +25,7 @@ aDescribe(skipSettings.for('auth_reg_actions'))('>> auth_reg_actions <<', () => 
 
       const userRepository = app.get<Repository<UserDbModel>>(getRepositoryToken(UserDbModel))
       const userInfoRepository = app.get<Repository<UserInfo>>(getRepositoryToken(UserInfo))
-      authTestManager = new AuthTestManager(
-        app,
-        new AuthRepository(result.dataSource, userRepository, userInfoRepository),
-      )
+      authTestManager = new AuthTestManager(app, new AuthRepository(userRepository, userInfoRepository))
     } catch (err) {
       console.log('@> auth tests error: ', err)
     }

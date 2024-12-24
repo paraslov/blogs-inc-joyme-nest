@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
-import { DataSource, Repository } from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 import { UsersMappers } from './users.mappers'
 import { FilterUsersDto } from '../api/models/input/filter-users.dto'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
@@ -10,7 +10,6 @@ import { UserDbModel } from '../domain/postgres/user-db-model'
 @Injectable()
 export class UsersQueryRepository {
   constructor(
-    @InjectDataSource() protected dataSource: DataSource,
     @InjectRepository(UserDbModel) private usersOrmRepository: Repository<UserDbModel>,
     protected usersMappers: UsersMappers,
   ) {}

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
-import { DataSource, Repository } from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 import { User } from '../domain/business_entity/users.entity'
 import { UserDbModel } from '../domain/postgres/user-db-model'
 import { UserInfo } from '../domain/postgres/user.info'
@@ -8,7 +8,6 @@ import { UserInfo } from '../domain/postgres/user.info'
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectDataSource() protected dataSource: DataSource,
     @InjectRepository(UserDbModel) private usersOrmRepository: Repository<UserDbModel>,
     @InjectRepository(UserInfo)
     private usersConfirmationInfoOrmRepository: Repository<UserInfo>,

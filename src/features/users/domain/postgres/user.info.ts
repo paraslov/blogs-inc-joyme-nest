@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm'
 import { UserDbModel } from './user-db-model'
+import { UserConfirmationData } from '../business_entity/users.entity'
 
 @Entity('users_confirmation_info')
 export class UserInfo {
@@ -27,4 +28,15 @@ export class UserInfo {
   @OneToOne(() => UserDbModel, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: UserDbModel
+
+  static createUserInfo(userConfirmationData: UserConfirmationData, userId: string) {
+    const newUserInfo: UserInfo = new UserInfo()
+
+    newUserInfo.user_id = userId
+    newUserInfo.confirmation_code = userConfirmationData.confirmationCode
+    newUserInfo.is_confirmed = userConfirmationData.isConfirmed
+    newUserInfo.confirmation_code_expiration_date = userConfirmationData.confirmationCodeExpirationDate
+
+    return newUserInfo
+  }
 }

@@ -37,7 +37,7 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
     userData.userInfo.is_password_recovery_confirmed = false
 
     try {
-      const mailInfo = this.emailSendManager.sendPasswordRecoveryEmail(email, recoveryCode)
+      const mailInfo = await this.emailSendManager.sendPasswordRecoveryEmail(email, recoveryCode)
       console.log('@> Information::mailInfo: ', mailInfo)
     } catch (err) {
       console.error('@> Error::emailManager: ', err)

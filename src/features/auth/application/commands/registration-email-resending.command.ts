@@ -37,7 +37,7 @@ export class RegistrationEmailResendingHandler implements ICommandHandler<Regist
     await this.usersRepository.updateUserAndInfo(userData.user, userData.userInfo)
 
     try {
-      const mailInfo = this.emailSendManager.resendRegistrationEmail(email, confirmationCode)
+      const mailInfo = await this.emailSendManager.resendRegistrationEmail(email, confirmationCode)
       console.log('@> Information::mailInfo: ', mailInfo)
     } catch (err) {
       console.error('@> Error::emailManager: ', err)

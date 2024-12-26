@@ -45,7 +45,7 @@ export class BlogsMappers {
     mappedPost.extendedLikesInfo = {}
     mappedPost.extendedLikesInfo.likesCount = post.likes_count
     mappedPost.extendedLikesInfo.dislikesCount = post.dislikes_count
-    mappedPost.extendedLikesInfo.myStatus = likeStatus
+    mappedPost.extendedLikesInfo.myStatus = likeStatus ?? LikeStatus.NONE
     mappedPost.extendedLikesInfo.newestLikes = threeLatestLikes
 
     return mappedPost

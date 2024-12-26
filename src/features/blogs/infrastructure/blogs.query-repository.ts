@@ -34,7 +34,7 @@ export class BlogsQueryRepository {
       .where('b.name ILIKE :searchNameTerm', { searchNameTerm: `%${searchNameTerm || ''}%` })
       .orderBy(`b.${sortBySnakeCase}`, direction)
       .skip(offset)
-      .limit(pageSize)
+      .take(pageSize)
       .getManyAndCount()
 
     const mappedBlogs = blogs.map(this.blogsMappers.mapBlogToOutput)
@@ -109,7 +109,7 @@ export class BlogsQueryRepository {
       .where(blogId ? 'blog_id = :blogId' : '', blogId ? { blogId } : {})
       .orderBy(`p.${sortBySnakeCase}`, direction)
       .skip(offset)
-      .limit(pageSize)
+      .take(pageSize)
       .getManyAndCount()
 
     const mappedPostsPromises = posts.map(async (post) => {

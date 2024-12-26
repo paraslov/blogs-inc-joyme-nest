@@ -47,7 +47,7 @@ export class LikesRepository {
       .andWhere('l.parent_id = :parentId', { parentId })
       .orderBy('created_at', 'DESC')
       .skip(0)
-      .limit(likesCount)
+      .take(likesCount)
       .getMany()
 
     return latestLikesData?.map(this.likesMappers.mapDtoToView) ?? []

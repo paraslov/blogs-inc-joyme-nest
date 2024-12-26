@@ -20,6 +20,10 @@ export class BlogsTestManager {
     }
   }
 
+  public resetIndex() {
+    this.blogIndex = 0
+  }
+
   expectCorrectModel(blogRequest: CreateBlogDto, blogResponse: BlogViewDto) {
     expect(blogResponse.name).toBe(blogRequest.name)
     expect(blogResponse.description).toBe(blogRequest.description)
@@ -45,14 +49,11 @@ export class BlogsTestManager {
     return { blogRequest: createBlogDto, blogResponse: response.body }
   }
 
-  async createSeveralBlogs(auth: { username: string; password: string }, createData: { blogsCount: number }) {
+  createSeveralBlogs(auth: { username: string; password: string }, createData: { blogsCount: number }) {
     const arr = Array(createData.blogsCount).fill(0)
 
-    const promises = arr.map(async () => {
-      return await this.createBlog(auth)
-    })
-
-    return Promise.all(promises)
+    const tasks = arr.map(() => () => this.createBlog(auth))
+    return this.executeInBatches(4, tasks)
   }
 
   async getAllBlogs(
@@ -76,5 +77,15 @@ export class BlogsTestManager {
     const response = await request(this.httpSever).get(`/api/blogs/${blogId}`).expect(expectedStatus)
 
     return response.body
+  }
+
+  async executeInBatches(batchSize: number, tasks: (() => Promise<any>)[]) {
+    const results = []
+    for (let i = 0; i < tasks.length; i += batchSize) {
+      const batch = tasks.slice(i, i + batchSize)
+      const batchResults = await Promise.all(batch.map((task) => task()))
+      results.push(...batchResults)
+    }
+    return results
   }
 }

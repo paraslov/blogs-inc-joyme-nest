@@ -58,7 +58,7 @@ export class CommentsQueryRepository {
       .where('c.parent_id = :parentId', { parentId })
       .orderBy(`c.${sortBySnakeCase}`, direction)
       .skip(offset)
-      .limit(pageSize)
+      .take(pageSize)
       .getManyAndCount()
 
     const mappedCommentsPromises = comments.map(async (comment) => {

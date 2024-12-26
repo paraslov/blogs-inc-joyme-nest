@@ -79,6 +79,26 @@ aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', ()
     expect(response.body.items?.some((item: any) => item.id === blogResponse.id)).toBeTruthy()
   })
 
+  it('should get all blogs with pagination', async () => {
+    await dataSource.query('DELETE FROM public.posts;')
+    await dataSource.query('DELETE FROM public.blogs;')
+    blogsTestManager.resetIndex()
+
+    const { username, password } = userTestManger.getSaCredits
+    await blogsTestManager.createSeveralBlogs({ username, password }, { blogsCount: 12 })
+
+    const response = await request(httpServer)
+      .get('/api/blogs')
+      .query({ pageSize: 3, pageNumber: 3 })
+      .expect(HttpStatusCodes.OK_200)
+
+    expect(response.body.totalCount).toBe(12)
+    expect(response.body.items?.length).toBe(3)
+    expect(response.body.items[0].name).toBe('Blog Name 6')
+    expect(response.body.items[1].name).toBe('Blog Name 5')
+    expect(response.body.items[2].name).toBe('Blog Name 4')
+  })
+
   it('should get blogs by id', async () => {
     const { username, password } = userTestManger.getSaCredits
     const { blogResponse } = await blogsTestManager.createBlog({ username, password })

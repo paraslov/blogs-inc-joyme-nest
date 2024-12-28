@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm'
-import { UserDbModel } from './user-db-model'
-import { UserConfirmationData } from '../business_entity/users.entity'
+import { UserEntity } from './user.entity'
+import { UserConfirmationData } from '../business_entity/users'
 
 @Entity('users_confirmation_info')
-export class UserInfo {
+export class UserInfoEntity {
   @PrimaryColumn('uuid')
   user_id: string
 
@@ -25,12 +25,12 @@ export class UserInfo {
   @Column({ nullable: true })
   is_password_recovery_confirmed: boolean | null
 
-  @OneToOne(() => UserDbModel, { onDelete: 'CASCADE' })
+  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  user: UserDbModel
+  user: UserEntity
 
   static createUserInfo(userConfirmationData: UserConfirmationData, userId: string) {
-    const newUserInfo: UserInfo = new UserInfo()
+    const newUserInfo: UserInfoEntity = new UserInfoEntity()
 
     newUserInfo.user_id = userId
     newUserInfo.confirmation_code = userConfirmationData.confirmationCode

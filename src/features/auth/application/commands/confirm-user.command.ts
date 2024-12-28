@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { UserInfo, UsersRepository } from '../../../users'
+import { UserInfoEntity, UsersRepository } from '../../../users'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
 import { AuthRepository } from '../../infrastructure/auth.repository'
@@ -31,7 +31,7 @@ export class ConfirmUserHandler implements ICommandHandler<ConfirmUserCommand> {
     return resultNotice
   }
 
-  checkUserToConfirm(userToConfirm: UserInfo | null) {
+  checkUserToConfirm(userToConfirm: UserInfoEntity | null) {
     const notice = new InterlayerDataManager()
 
     if (!userToConfirm) {

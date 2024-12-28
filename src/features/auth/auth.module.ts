@@ -17,7 +17,7 @@ import { AuthMappers } from './infrastructure/auth.mappers'
 import { DevicesModule } from '../devices'
 import { AuthRepository } from './infrastructure/auth.repository'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { UserDbModel, UserInfo } from '../users'
+import { UserEntity, UserInfoEntity } from '../users'
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { UserDbModel, UserInfo } from '../users'
     UsersModule,
     DevicesModule,
     CqrsModule,
-    TypeOrmModule.forFeature([UserDbModel, UserInfo]),
+    TypeOrmModule.forFeature([UserEntity, UserInfoEntity]),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService<ConfigurationType>) => ({
         secret: configService.get('jwtSettings').ACCESS_JWT_SECRET,

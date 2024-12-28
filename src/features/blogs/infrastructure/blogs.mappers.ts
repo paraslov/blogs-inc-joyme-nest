@@ -1,13 +1,13 @@
 import { BlogViewDto } from '../api/models/output/blog-view.dto'
 import { Injectable } from '@nestjs/common'
-import { BlogDbModel } from '../domain/postgres/blog-db-model.entity'
+import { BlogEntity } from '../domain/postgres/blog.entity'
 import { LikeDetailsViewDto, LikeStatus } from '../../likes'
-import { PostDbModel } from '../domain/postgres/post-db-model.entity'
+import { PostEntity } from '../domain/postgres/post.entity'
 import { PostViewDto } from '../api/models/output/post.view.dto'
 
 @Injectable()
 export class BlogsMappers {
-  mapBlogToOutput(blog: BlogDbModel): BlogViewDto {
+  mapBlogToOutput(blog: BlogEntity): BlogViewDto {
     if (!blog) {
       return null
     }
@@ -25,7 +25,7 @@ export class BlogsMappers {
   }
 
   mapPostToOutputDto(
-    post: PostDbModel,
+    post: PostEntity,
     threeLatestLikes: LikeDetailsViewDto[] = [],
     likeStatus: LikeStatus = LikeStatus.NONE,
   ): PostViewDto | null {

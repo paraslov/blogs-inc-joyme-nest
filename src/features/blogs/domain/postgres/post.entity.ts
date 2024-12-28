@@ -1,9 +1,9 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { BlogDbModel } from './blog-db-model.entity'
-import { PostEntity } from '../business_entities/posts'
+import { BlogEntity } from './blog.entity'
+import { Post } from '../business_entities/posts'
 
 @Entity('posts')
-export class PostDbModel {
+export class PostEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -31,12 +31,12 @@ export class PostDbModel {
   @Column({ type: 'integer', nullable: true })
   dislikes_count?: number
 
-  @ManyToOne(() => BlogDbModel)
+  @ManyToOne(() => BlogEntity)
   @JoinColumn({ name: 'blog_id' })
-  blog: BlogDbModel
+  blog: BlogEntity
 
-  static createPostModel(newPost: PostEntity) {
-    const createdPostDto = new PostDbModel()
+  static createPostModel(newPost: Post) {
+    const createdPostDto = new PostEntity()
 
     createdPostDto.title = newPost.title
     createdPostDto.short_description = newPost.shortDescription

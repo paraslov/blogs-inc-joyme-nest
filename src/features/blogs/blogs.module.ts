@@ -12,19 +12,19 @@ import { PostsController } from './api/posts.controller'
 import { UsersModule } from '../users/users.module'
 import { CommentsModule } from '../comments'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { BlogDbModel } from './domain/postgres/blog-db-model.entity'
-import { PostDbModel } from './domain/postgres/post-db-model.entity'
+import { BlogEntity } from './domain/postgres/blog.entity'
+import { PostEntity } from './domain/postgres/post.entity'
 
 @Module({
-  imports: [LikesModule, CqrsModule, UsersModule, CommentsModule, TypeOrmModule.forFeature([BlogDbModel, PostDbModel])],
+  imports: [LikesModule, CqrsModule, UsersModule, CommentsModule, TypeOrmModule.forFeature([BlogEntity, PostEntity])],
   exports: [BlogsQueryRepository, BlogsMappers, BlogsModule],
   controllers: [BlogsSaController, BlogsController, PostsController],
   providers: [
     BlogsCommandService,
     BlogsRepository,
     BlogsQueryRepository,
-    BlogDbModel,
-    PostDbModel,
+    BlogEntity,
+    PostEntity,
     BlogsMappers,
     ...blogsCommandHandlers,
   ],

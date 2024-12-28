@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeor
 import { Blog } from '../business_entities/blogs'
 
 @Entity('blogs')
-export class BlogDbModel {
+export class BlogEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -22,7 +22,7 @@ export class BlogDbModel {
   is_membership: boolean
 
   static createBlogModel(newBlog: Blog) {
-    const createdBlogDto = new BlogDbModel()
+    const createdBlogDto = new BlogEntity()
 
     createdBlogDto.name = newBlog.name
     createdBlogDto.description = newBlog.description

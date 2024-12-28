@@ -9,10 +9,10 @@ import { JwtModule } from '@nestjs/jwt'
 import { JwtOperationsService } from '../../common/services'
 import { DevicesRepository } from './infrastructure/devices.repository'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { Devices } from './domain/postgres/device-db-model'
+import { DeviceEntity } from './domain/postgres/device.entity'
 
 @Module({
-  imports: [CqrsModule, JwtModule, TypeOrmModule.forFeature([Devices])],
+  imports: [CqrsModule, JwtModule, TypeOrmModule.forFeature([DeviceEntity])],
   exports: [DevicesCommandService, DevicesRepository],
   controllers: [DevicesController],
   providers: [
@@ -20,7 +20,7 @@ import { Devices } from './domain/postgres/device-db-model'
     DevicesQueryRepository,
     DevicesRepository,
     DevicesCommandService,
-    Devices,
+    DeviceEntity,
     JwtOperationsService,
     ...devicesCommandHandlers,
   ],

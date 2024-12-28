@@ -3,12 +3,12 @@ import { DevicesMappers } from './devices.mappers'
 import { Repository } from 'typeorm'
 import { DeviceViewDto } from '../api/models/output/device-view.dto'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Devices } from '../domain/postgres/device-db-model'
+import { DeviceEntity } from '../domain/postgres/device.entity'
 
 @Injectable()
 export class DevicesQueryRepository {
   constructor(
-    @InjectRepository(Devices) private devicesOrmRepository: Repository<Devices>,
+    @InjectRepository(DeviceEntity) private devicesOrmRepository: Repository<DeviceEntity>,
     private devicesMappers: DevicesMappers,
   ) {}
 

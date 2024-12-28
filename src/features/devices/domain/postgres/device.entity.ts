@@ -1,8 +1,8 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm'
-import { DeviceEntity } from '../business_entity/device.entity'
+import { Device } from '../business_entity/device'
 
 @Entity()
-export class Devices {
+export class DeviceEntity {
   @PrimaryColumn({ type: 'uuid' })
   device_id: string
 
@@ -21,8 +21,8 @@ export class Devices {
   @Column({ type: 'integer', nullable: true })
   exp: number
 
-  static createDeviceModel(device: DeviceEntity) {
-    const newDevice = new Devices()
+  static createDeviceModel(device: Device) {
+    const newDevice = new DeviceEntity()
 
     newDevice.device_id = device.deviceId
     newDevice.device_name = device.deviceName

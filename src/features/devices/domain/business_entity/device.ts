@@ -1,4 +1,4 @@
-export class DeviceEntity {
+export class Device {
   ip: string
   deviceId: string
   deviceName: string

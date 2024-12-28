@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { BlogDbModel } from './blog-db-model'
-import { PostEntity } from '../business_entities/posts.entity'
+import { BlogDbModel } from './blog-db-model.entity'
+import { PostEntity } from '../business_entities/posts'
 
 @Entity('posts')
 export class PostDbModel {

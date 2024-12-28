@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { CreateBlogPostDto } from '../../api/models/input/create-blog-post.dto'
 import { BlogsRepository } from '../../infrastructure/blogs.repository'
-import { PostEntity } from '../../domain/business_entities/posts.entity'
+import { PostEntity } from '../../domain/business_entities/posts'
 
 export class CreatePostForBlogCommand {
   constructor(

@@ -1,8 +1,8 @@
 import { BlogViewDto } from '../api/models/output/blog-view.dto'
 import { Injectable } from '@nestjs/common'
-import { BlogDbModel } from '../domain/postgres/blog-db-model'
+import { BlogDbModel } from '../domain/postgres/blog-db-model.entity'
 import { LikeDetailsViewDto, LikeStatus } from '../../likes'
-import { PostDbModel } from '../domain/postgres/post-db-model'
+import { PostDbModel } from '../domain/postgres/post-db-model.entity'
 import { PostViewDto } from '../api/models/output/post.view.dto'
 
 @Injectable()

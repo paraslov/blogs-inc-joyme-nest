@@ -12,8 +12,8 @@ import { PostsController } from './api/posts.controller'
 import { UsersModule } from '../users/users.module'
 import { CommentsModule } from '../comments'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { BlogDbModel } from './domain/postgres/blog-db-model'
-import { PostDbModel } from './domain/postgres/post-db-model'
+import { BlogDbModel } from './domain/postgres/blog-db-model.entity'
+import { PostDbModel } from './domain/postgres/post-db-model.entity'
 
 @Module({
   imports: [LikesModule, CqrsModule, UsersModule, CommentsModule, TypeOrmModule.forFeature([BlogDbModel, PostDbModel])],

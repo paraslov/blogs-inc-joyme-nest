@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { Blog } from '../business_entities/blogs.entity'
+import { Blog } from '../business_entities/blogs'
 
 @Entity('blogs')
 export class BlogDbModel {

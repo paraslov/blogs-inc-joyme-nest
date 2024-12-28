@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { Blog } from '../domain/business_entities/blogs.entity'
+import { Blog } from '../domain/business_entities/blogs'
 import { CreateBlogDto } from '../api/models/input/create-blog.dto'
 import { UpdatePostDto } from '../api/models/input/update-post.dto'
-import { PostEntity } from '../domain/business_entities/posts.entity'
+import { PostEntity } from '../domain/business_entities/posts'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BlogDbModel } from '../domain/postgres/blog-db-model'
-import { PostDbModel } from '../domain/postgres/post-db-model'
+import { BlogDbModel } from '../domain/postgres/blog-db-model.entity'
+import { PostDbModel } from '../domain/postgres/post-db-model.entity'
 
 @Injectable()
 export class BlogsRepository {

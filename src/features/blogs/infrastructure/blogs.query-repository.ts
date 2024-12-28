@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { BlogsMappers } from './blogs.mappers'
 import { Repository } from 'typeorm'
-import { BlogDbModel } from '../domain/postgres/blog-db-model'
+import { BlogDbModel } from '../domain/postgres/blog-db-model.entity'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { FilterBlogDto } from '../api/models/input/filter.blog.dto'
@@ -10,7 +10,7 @@ import { BlogViewDto } from '../api/models/output/blog-view.dto'
 import { PostFilterDto } from '../api/models/input/posts.filter.dto'
 import { LikesRepository } from '../../likes/infrastructure/likes.repository'
 import { PostViewDto } from '../api/models/output/post.view.dto'
-import { PostDbModel } from '../domain/postgres/post-db-model'
+import { PostDbModel } from '../domain/postgres/post-db-model.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()

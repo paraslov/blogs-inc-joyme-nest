@@ -21,7 +21,7 @@
     "migration:empty": "typeorm-ts-node-commonjs migration:create  ./src/migrations/empty",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/migrations-data-source.ts",
     "migrations:apply": "typeorm-ts-node-commonjs migration:run -d ./src/migrations-data-source.ts",
-    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d ./src/migrations-data-source.ts"
+    "migrations:revert": "typeorm-ts-node-commonjs migration:revert -d ./src/migrations-data-source.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

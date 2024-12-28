@@ -45,25 +45,11 @@ import { dbConfig } from './settings/config/db.config'
         const databaseSettings = configService.get('databaseSettings', {
           infer: true,
         })!
-        const environmentSettings = configService.get('environmentSettings', {
-          infer: true,
-        })!
-
-        const username = databaseSettings.POSTGRES_USER_NAME
-        const password = databaseSettings.POSTGRES_USER_PASSWORD
-        const database = databaseSettings.POSTGRES_DATABASE
-        const host = databaseSettings.POSTGRES_HOST
         const port = Number(databaseSettings.POSTGRES_PORT)
-        const ssl = environmentSettings.isProduction
-          ? {
-              rejectUnauthorized: false,
-            }
-          : undefined
 
         if (!port) {
           throw new InternalServerErrorException('PORT IS NOT DEFINED')
         }
-        console.log('@. dbconfig: ', dbConfig)
 
         return {
           ...dbConfig,

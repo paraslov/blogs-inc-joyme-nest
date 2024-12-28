@@ -14,6 +14,7 @@ import { JwtMiddleware } from './base/middlewares'
 import { JwtService } from '@nestjs/jwt'
 import { DevicesModule } from './features/devices'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { dbConfig } from './settings/config/db.config'
 
 @Module({
   imports: [
@@ -62,17 +63,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
         if (!port) {
           throw new InternalServerErrorException('PORT IS NOT DEFINED')
         }
+        console.log('@. dbconfig: ', dbConfig)
 
         return {
-          database,
-          username,
-          password,
-          host,
-          port,
-          type: 'postgres',
+          ...dbConfig,
           autoLoadEntities: true,
-          synchronize: true,
-          ssl,
         }
       },
       inject: [ConfigService],

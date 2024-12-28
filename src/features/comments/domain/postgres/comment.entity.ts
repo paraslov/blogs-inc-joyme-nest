@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { CommentDto } from '../business_entity/comment.entity'
+import { CommentDto } from '../business_entity/comment'
 
 @Entity('comments')
-export class CommentDbModel {
+export class CommentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -28,7 +28,7 @@ export class CommentDbModel {
   dislikes_count: number
 
   static createCommentModel(comment: CommentDto) {
-    const newComment = new CommentDbModel()
+    const newComment = new CommentEntity()
 
     newComment.parent_id = comment.parentId
     newComment.content = comment.content

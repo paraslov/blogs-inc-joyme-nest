@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { DeviceEntity } from '../domain/business_entity/device.entity'
-import { Devices } from '../domain/postgres/device-db-model'
+import { Device } from '../domain/business_entity/device'
+import { DeviceEntity } from '../domain/postgres/device.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()
 export class DevicesRepository {
-  constructor(@InjectRepository(Devices) private devicesOrmRepository: Repository<Devices>) {}
+  constructor(@InjectRepository(DeviceEntity) private devicesOrmRepository: Repository<DeviceEntity>) {}
 
-  getDeviceById(deviceId: string): Promise<Devices> {
+  getDeviceById(deviceId: string): Promise<DeviceEntity> {
     return this.devicesOrmRepository
       .createQueryBuilder('d')
       .select(['d.device_id', 'd.device_name', 'd.user_id', 'd.ip', 'd.iat', 'd.exp'])
@@ -16,8 +16,8 @@ export class DevicesRepository {
       .getOne()
   }
 
-  async createDeviceSession(device: DeviceEntity) {
-    const newDevice = Devices.createDeviceModel(device)
+  async createDeviceSession(device: Device) {
+    const newDevice = DeviceEntity.createDeviceModel(device)
 
     const createResult = await this.devicesOrmRepository.save(newDevice)
     return createResult.device_id
@@ -35,7 +35,7 @@ export class DevicesRepository {
     return deleteResult.affected
   }
 
-  async updateDeviceSession(device: Devices) {
+  async updateDeviceSession(device: DeviceEntity) {
     const updateResult = await this.devicesOrmRepository.update(device.device_id, device)
 
     return Boolean(updateResult.affected)

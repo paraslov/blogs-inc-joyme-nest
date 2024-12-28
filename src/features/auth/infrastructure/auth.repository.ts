@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { UserDbModel, UserInfo } from '../../users'
+import { UserEntity, UserInfoEntity } from '../../users'
 import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()
 export class AuthRepository {
   constructor(
-    @InjectRepository(UserDbModel) private usersOrmRepository: Repository<UserDbModel>,
-    @InjectRepository(UserInfo) private usersInfoOrmRepository: Repository<UserInfo>,
+    @InjectRepository(UserEntity) private usersOrmRepository: Repository<UserEntity>,
+    @InjectRepository(UserInfoEntity) private usersInfoOrmRepository: Repository<UserInfoEntity>,
   ) {}
 
   private userInfoSelectFields = [
@@ -19,7 +19,7 @@ export class AuthRepository {
     'ui.is_password_recovery_confirmed',
   ]
 
-  async getUserByLoginOrEmail(loginOrEmail: string): Promise<{ user: UserDbModel; userInfo: UserInfo } | null> {
+  async getUserByLoginOrEmail(loginOrEmail: string): Promise<{ user: UserEntity; userInfo: UserInfoEntity } | null> {
     const user = await this.usersOrmRepository
       .createQueryBuilder('u')
       .select(['u.id', 'u.email', 'u.login', 'u.password_hash', 'u.created_at'])
@@ -44,7 +44,7 @@ export class AuthRepository {
     return { user, userInfo }
   }
 
-  async getUserInfoByConfirmationCode(confirmationCode: string): Promise<UserInfo | null> {
+  async getUserInfoByConfirmationCode(confirmationCode: string): Promise<UserInfoEntity | null> {
     const userInfo = await this.usersInfoOrmRepository
       .createQueryBuilder('ui')
       .select(this.userInfoSelectFields)
@@ -54,7 +54,7 @@ export class AuthRepository {
     return userInfo ?? null
   }
 
-  async getUserInfoByRecoveryCode(passwordRecoveryCode: string): Promise<UserInfo | null> {
+  async getUserInfoByRecoveryCode(passwordRecoveryCode: string): Promise<UserInfoEntity | null> {
     const userInfo = await this.usersInfoOrmRepository
       .createQueryBuilder('ui')
       .select([...this.userInfoSelectFields, 'ui.user_id'])

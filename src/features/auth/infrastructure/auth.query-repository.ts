@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common'
 import { AuthMappers } from './auth.mappers'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { UserDbModel } from '../../users'
+import { UserEntity } from '../../users'
 
 @Injectable()
 export class AuthQueryRepository {
   constructor(
     private readonly authMappers: AuthMappers,
-    @InjectRepository(UserDbModel) private usersOrmRepository: Repository<UserDbModel>,
+    @InjectRepository(UserEntity) private usersOrmRepository: Repository<UserEntity>,
   ) {}
 
   async getMeInformation(userId: string) {

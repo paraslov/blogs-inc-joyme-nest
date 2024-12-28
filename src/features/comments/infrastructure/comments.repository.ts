@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { CommentDto } from '../domain/business_entity/comment.entity'
+import { CommentDto } from '../domain/business_entity/comment'
 import { CreateUpdateCommentDto } from '../api/models/input/create-update-comment.dto'
-import { CommentDbModel } from '../domain/postgres/comment-db-model'
+import { CommentEntity } from '../domain/postgres/comment.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()
 export class CommentsRepository {
-  constructor(@InjectRepository(CommentDbModel) private commentsOrmRepository: Repository<CommentDbModel>) {}
+  constructor(@InjectRepository(CommentEntity) private commentsOrmRepository: Repository<CommentEntity>) {}
 
   async createComment(comment: CommentDto): Promise<string | null> {
-    const newComment = CommentDbModel.createCommentModel(comment)
+    const newComment = CommentEntity.createCommentModel(comment)
 
     const createdCommentResult = await this.commentsOrmRepository.save(newComment)
     return createdCommentResult?.id ?? null
   }
 
   async updateCommentContent(commentId: string, updateCommentDto: CreateUpdateCommentDto) {
-    const updatedComment = new CommentDbModel()
+    const updatedComment = new CommentEntity()
     updatedComment.content = updateCommentDto.content
 
     const updateResult = await this.commentsOrmRepository.update({ id: commentId }, updatedComment)
@@ -25,7 +25,7 @@ export class CommentsRepository {
   }
 
   async updateComment(commentId: string, commentDto: CommentDto) {
-    const updatedComment = CommentDbModel.createCommentModel(commentDto)
+    const updatedComment = CommentEntity.createCommentModel(commentDto)
 
     const updateResult = await this.commentsOrmRepository.update({ id: commentId }, updatedComment)
     return Boolean(updateResult?.affected)

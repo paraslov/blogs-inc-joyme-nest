@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common'
-import { UserDbModel, UserInfo, UsersTestManager } from '../../users'
+import { UserEntity, UserInfoEntity, UsersTestManager } from '../../users'
 import { aDescribe, initTestsSettings, skipSettings } from '../../../common/tests'
 import request from 'supertest'
 import { HttpStatusCodes } from '../../../common/models'
@@ -23,8 +23,8 @@ aDescribe(skipSettings.for('auth_reg_actions'))('>> auth_reg_actions <<', () => 
       app = result.app
       httpServer = result.httpServer
 
-      const userRepository = app.get<Repository<UserDbModel>>(getRepositoryToken(UserDbModel))
-      const userInfoRepository = app.get<Repository<UserInfo>>(getRepositoryToken(UserInfo))
+      const userRepository = app.get<Repository<UserEntity>>(getRepositoryToken(UserEntity))
+      const userInfoRepository = app.get<Repository<UserInfoEntity>>(getRepositoryToken(UserInfoEntity))
       authTestManager = new AuthTestManager(app, new AuthRepository(userRepository, userInfoRepository))
     } catch (err) {
       console.log('@> auth tests error: ', err)

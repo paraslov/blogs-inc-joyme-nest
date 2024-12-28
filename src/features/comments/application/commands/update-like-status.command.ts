@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { LikesCommandService, UpdateLikeStatusDto } from '../../../likes'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { CommentDto } from '../../domain/business_entity/comment.entity'
+import { CommentDto } from '../../domain/business_entity/comment'
 import { CommentsRepository } from '../../infrastructure/comments.repository'
 
 export class UpdateCommentLikeStatusCommand {

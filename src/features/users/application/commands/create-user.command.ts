@@ -1,6 +1,6 @@
 import { CreateUserDto } from '../../api/models/input/create-user.dto'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { User } from '../../domain/business_entity/users.entity'
+import { User } from '../../domain/business_entity/users'
 import { CryptService } from '../../../../common/services'
 import { UsersRepository } from '../../infrastructure/users.repository'
 import { UsersQueryRepository } from '../../infrastructure/users.query-repository'

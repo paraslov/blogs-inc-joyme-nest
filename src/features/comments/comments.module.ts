@@ -8,11 +8,11 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { LikesModule } from '../likes/likes.module'
 import { UsersModule } from '../users/users.module'
 import { CommentsRepository } from './infrastructure/comments.repository'
-import { CommentDbModel } from './domain/postgres/comment-db-model'
+import { CommentEntity } from './domain/postgres/comment.entity'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
-  imports: [CqrsModule, LikesModule, UsersModule, TypeOrmModule.forFeature([CommentDbModel])],
+  imports: [CqrsModule, LikesModule, UsersModule, TypeOrmModule.forFeature([CommentEntity])],
   exports: [CommentsQueryRepository, CommentsCommandService],
   controllers: [CommentsController],
   providers: [
@@ -20,7 +20,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
     CommentsMappers,
     CommentsRepository,
     CommentsCommandService,
-    CommentDbModel,
+    CommentEntity,
     ...CommentsCommandHandlers,
   ],
 })

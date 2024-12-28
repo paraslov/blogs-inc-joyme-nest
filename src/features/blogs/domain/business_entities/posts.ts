@@ -1,4 +1,4 @@
-export class PostEntity {
+export class Post {
   title: string
   shortDescription: string
   content: string

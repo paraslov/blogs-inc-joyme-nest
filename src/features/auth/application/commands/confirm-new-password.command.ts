@@ -2,7 +2,7 @@ import { PasswordRecoveryDto } from '../../api/models/input/password-recovery.dt
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { HttpStatusCodes } from '../../../../common/models'
-import { UserInfo, UsersRepository } from '../../../users'
+import { UserInfoEntity, UsersRepository } from '../../../users'
 import { CryptService } from '../../../../common/services'
 import { AuthRepository } from '../../infrastructure/auth.repository'
 
@@ -37,7 +37,7 @@ export class ConfirmNewPasswordHandler implements ICommandHandler<ConfirmNewPass
     return resultNotice
   }
 
-  validateUser(user?: UserInfo) {
+  validateUser(user?: UserInfoEntity) {
     const notice = new InterlayerDataManager()
 
     if (!user) {

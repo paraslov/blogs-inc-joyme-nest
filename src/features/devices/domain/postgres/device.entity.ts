@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm'
 import { Device } from '../business_entity/device'
 
-@Entity()
+@Entity('devices')
 export class DeviceEntity {
   @PrimaryColumn({ type: 'uuid' })
   device_id: string

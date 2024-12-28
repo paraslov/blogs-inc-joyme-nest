@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { CommentViewDto } from '../api/models/output/comment.view.dto'
 import { LikeStatus } from '../../likes'
-import { CommentDbModel } from '../domain/postgres/comment-db-model'
+import { CommentDbModel } from '../domain/postgres/comment-db-model.entity'
 
 @Injectable()
 export class CommentsMappers {

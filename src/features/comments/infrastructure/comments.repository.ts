@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { CommentDto } from '../domain/business_entity/comment.entity'
+import { CommentDto } from '../domain/business_entity/comment'
 import { CreateUpdateCommentDto } from '../api/models/input/create-update-comment.dto'
-import { CommentDbModel } from '../domain/postgres/comment-db-model'
+import { CommentDbModel } from '../domain/postgres/comment-db-model.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 
 @Injectable()

@@ -8,7 +8,7 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { LikesModule } from '../likes/likes.module'
 import { UsersModule } from '../users/users.module'
 import { CommentsRepository } from './infrastructure/comments.repository'
-import { CommentDbModel } from './domain/postgres/comment-db-model'
+import { CommentDbModel } from './domain/postgres/comment-db-model.entity'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({

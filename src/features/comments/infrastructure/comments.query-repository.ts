@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { CommentsMappers } from './comments.mappers'
 import { Repository } from 'typeorm'
-import { CommentDbModel } from '../domain/postgres/comment-db-model'
+import { CommentDbModel } from '../domain/postgres/comment-db-model.entity'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { CommentsFilterDto } from '../api/models/input/comments.filter.dto'

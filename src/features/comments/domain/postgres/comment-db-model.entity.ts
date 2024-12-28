@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { CommentDto } from '../business_entity/comment.entity'
+import { CommentDto } from '../business_entity/comment'
 
 @Entity('comments')
 export class CommentDbModel {

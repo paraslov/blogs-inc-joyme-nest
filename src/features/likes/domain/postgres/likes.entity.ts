@@ -1,9 +1,9 @@
 import { LikeStatus } from '../../api/models/enums/like-status'
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm'
-import { Like } from '../business_entity/likes.entity'
+import { Like } from '../business_entity/likes'
 
 @Entity('likes')
-export class LikesDbModel {
+export class LikesEntity {
   @PrimaryColumn()
   parent_id: string
 
@@ -20,7 +20,7 @@ export class LikesDbModel {
   user_login: string
 
   static createLikeModel(likeData: Like) {
-    const newLike = new LikesDbModel()
+    const newLike = new LikesEntity()
 
     newLike.status = likeData.status
     newLike.parent_id = likeData.parentId

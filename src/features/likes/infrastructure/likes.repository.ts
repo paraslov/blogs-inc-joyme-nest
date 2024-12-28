@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { LikesDbModel } from '../domain/postgres/likes-db-model'
-import { Like } from '../domain/business_entity/likes.entity'
+import { LikesEntity } from '../domain/postgres/likes.entity'
+import { Like } from '../domain/business_entity/likes'
 import { LikeStatus } from '../api/models/enums/like-status'
 import { LikesMappers } from './likes.mappers'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 @Injectable()
 export class LikesRepository {
   constructor(
-    @InjectRepository(LikesDbModel) private likesOrmRepository: Repository<LikesDbModel>,
+    @InjectRepository(LikesEntity) private likesOrmRepository: Repository<LikesEntity>,
     private likesMappers: LikesMappers,
   ) {}
 
@@ -54,13 +54,13 @@ export class LikesRepository {
   }
 
   async createLikeInfo(newLikeInfo: Like) {
-    const newLikeModel = LikesDbModel.createLikeModel(newLikeInfo)
+    const newLikeModel = LikesEntity.createLikeModel(newLikeInfo)
 
     await this.likesOrmRepository.save(newLikeModel)
   }
 
   async updateLikeStatus(likeStatusDto: Like, parentId: string) {
-    const updateLikeModel = LikesDbModel.createLikeModel(likeStatusDto)
+    const updateLikeModel = LikesEntity.createLikeModel(likeStatusDto)
 
     const updateResult = await this.likesOrmRepository.update({ parent_id: parentId }, updateLikeModel)
     return Boolean(updateResult?.affected)

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UpdateLikeStatusDto } from '../../api/models/input/update-like-status.dto'
 import { LikeStatus } from '../../api/models/enums/like-status'
-import { Like } from '../../domain/business_entity/likes.entity'
+import { Like } from '../../domain/business_entity/likes'
 import { InterlayerDataManager } from '../../../../common/manager'
 import { LikesRepository } from '../../infrastructure/likes.repository'
 

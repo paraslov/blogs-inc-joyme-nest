@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { CommentsMappers } from './comments.mappers'
 import { Repository } from 'typeorm'
-import { CommentDbModel } from '../domain/postgres/comment-db-model.entity'
+import { CommentEntity } from '../domain/postgres/comment.entity'
 import { SortDirection } from '../../../common/models/enums/sort-direction'
 import { camelToSnakeUtil } from '../../../common/utils'
 import { CommentsFilterDto } from '../api/models/input/comments.filter.dto'
@@ -11,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    @InjectRepository(CommentDbModel) private commentsOrmRepository: Repository<CommentDbModel>,
+    @InjectRepository(CommentEntity) private commentsOrmRepository: Repository<CommentEntity>,
     private likesRepository: LikesRepository,
     private commentsMappers: CommentsMappers,
   ) {}

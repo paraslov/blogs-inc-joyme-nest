@@ -19,7 +19,7 @@ aDescribe(skipSettings.for('users'))('>> users <<', () => {
       httpServer = result.httpServer
       dataSource = result.dataSource
     } catch (err) {
-      console.log('@> users tests error: ', err)
+      console.log('users tests error: ', err)
     }
   })
 

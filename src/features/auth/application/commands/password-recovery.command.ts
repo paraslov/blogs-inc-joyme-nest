@@ -38,9 +38,9 @@ export class PasswordRecoveryHandler implements ICommandHandler<PasswordRecovery
 
     try {
       const mailInfo = await this.emailSendManager.sendPasswordRecoveryEmail(email, recoveryCode)
-      console.log('@> Information::mailInfo: ', mailInfo)
+      console.log('Information::mailInfo: ', mailInfo)
     } catch (err) {
-      console.error('@> Error::emailManager: ', err)
+      console.error('Error::emailManager: ', err)
       notice.addError('Cannot send email. Try again later', 'email', HttpStatusCodes.FAILED_DEPENDENCY_424)
     }
 

@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { BlogEntity } from './blog.entity'
 import { Post } from '../business_entities/posts'
 
@@ -22,6 +22,7 @@ export class PostEntity {
   @Column({ type: 'varchar', length: 15 })
   blog_name: string
 
+  @Index()
   @CreateDateColumn({ nullable: true })
   created_at?: string
 

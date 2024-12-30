@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
 import { Blog } from '../business_entities/blogs'
 
 @Entity('blogs')
@@ -16,6 +16,7 @@ export class BlogEntity {
   website_url: string
 
   @CreateDateColumn({ nullable: true })
+  @Index()
   created_at: string
 
   @Column({ type: 'boolean', nullable: true })

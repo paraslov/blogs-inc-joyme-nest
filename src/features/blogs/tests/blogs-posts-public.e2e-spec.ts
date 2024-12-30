@@ -27,7 +27,7 @@ aDescribe(skipSettings.for('blogs_posts_public'))('>> blogs_posts_public <<', ()
       blogsTestManager = new BlogsTestManager(app)
       postsTestManager = new PostsTestManager(app)
     } catch (err) {
-      console.log('@> posts tests error: ', err)
+      console.log('posts tests error: ', err)
     }
   })
 

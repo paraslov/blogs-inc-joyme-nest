@@ -53,9 +53,8 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand>
 
     try {
       const mailInfo = await this.emailSendManager.sendRegistrationEmail(email, confirmationCode)
-      console.log('@> Information::mailInfo: ', mailInfo)
     } catch (err) {
-      console.error('@> Error::emailManager: ', err)
+      console.error('Error::emailManager: ', err)
     }
 
     return resultNotice

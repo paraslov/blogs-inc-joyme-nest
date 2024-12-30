@@ -29,7 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       } else {
         errorsResponse.errorsMessages.push(responseBody.message)
       }
-      console.log('@> errorsResponse: ', errorsResponse)
+      console.log('errorsResponse: ', errorsResponse)
 
       response.status(status).json(errorsResponse)
     } else {

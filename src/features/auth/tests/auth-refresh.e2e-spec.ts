@@ -23,7 +23,7 @@ aDescribe(skipSettings.for('auth_refresh'))('>> auth_refresh <<', () => {
       authTestManager = new AuthTestManager(app)
       devicesTestManager = new DevicesTestManager(app)
     } catch (err) {
-      console.log('@> auth tests error: ', err)
+      console.log('auth tests error: ', err)
     }
   })
 

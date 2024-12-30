@@ -27,7 +27,7 @@ aDescribe(skipSettings.for('devices'))('>> devices <<', () => {
       jwtOperationsService = new JwtOperationsService(new JwtService())
       authTestManager = new AuthTestManager(app)
     } catch (err) {
-      console.log('@> auth tests error: ', err)
+      console.log('auth tests error: ', err)
     }
   })
 

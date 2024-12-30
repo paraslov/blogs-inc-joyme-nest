@@ -20,7 +20,7 @@ aDescribe(skipSettings.for('auth'))('>> auth <<', () => {
 
       authTestManager = new AuthTestManager(app)
     } catch (err) {
-      console.log('@> auth tests error: ', err)
+      console.log('auth tests error: ', err)
     }
   })
 

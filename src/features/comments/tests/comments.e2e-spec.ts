@@ -26,7 +26,7 @@ aDescribe(skipSettings.for('comments'))('>> comments <<', () => {
       postsTestManager = new PostsTestManager(app)
       commentsTestManager = new CommentsTestManager(app)
     } catch (err) {
-      console.log('@> comments tests error: ', err)
+      console.log('comments tests error: ', err)
     }
   })
 

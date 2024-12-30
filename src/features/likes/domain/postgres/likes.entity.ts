@@ -1,5 +1,5 @@
 import { LikeStatus } from '../../api/models/enums/like-status'
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, PrimaryColumn } from 'typeorm'
 import { Like } from '../business_entity/likes'
 
 @Entity('likes')
@@ -11,6 +11,7 @@ export class LikesEntity {
   status: LikeStatus
 
   @CreateDateColumn()
+  @Index()
   created_at: Date
 
   @PrimaryColumn()

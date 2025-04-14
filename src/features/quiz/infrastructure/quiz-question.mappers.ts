@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { QuizQuestionsEntity } from "../domain/postgres/quiz-questions.entity";
-import { QuestionViewDto } from "../api/models/output/question-view.dto";
+import { Injectable } from '@nestjs/common'
+import { QuizQuestionsEntity } from '../domain/postgres/quiz-questions.entity'
+import { QuestionViewDto } from '../api/models/output/question-view.dto'
 
 @Injectable()
 export class QuizQuestionMappers {

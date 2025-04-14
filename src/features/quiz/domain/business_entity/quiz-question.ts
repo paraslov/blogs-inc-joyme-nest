@@ -1,8 +1,8 @@
 export class QuizQuestion {
-  id: string;
-  body: string;
-  correctAnswers: string[];
-  published: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  body: string
+  correctAnswers: string[]
+  published: boolean
+  createdAt: Date
+  updatedAt: Date
 }

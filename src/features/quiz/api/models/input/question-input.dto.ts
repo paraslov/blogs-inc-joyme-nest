@@ -15,4 +15,3 @@ export class CreateUpdateQuestionDto {
   @MaxLength(50, { each: true })
   correctAnswers: string[]
 }
-
